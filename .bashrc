@@ -77,7 +77,7 @@ shopt -s cmdhist
 export IGNOREEOF=1
 
 # customise ls 
-eval `/opt/local/bin/dircolors`
+eval `dircolors`
 alias ls='ls --color -hF'
 alias ll='ls -l'
 alias lt='ll -t'
