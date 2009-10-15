@@ -7,9 +7,7 @@ set smartindent
 
 set tabstop=4
 set shiftwidth=4
-set shiftwidth=4
-set expandtab
-
+set expandtab       " tabs to spaces 
 
 set hlsearch        " highlight search 
 set showcmd			" Show (partial) command in status line.
