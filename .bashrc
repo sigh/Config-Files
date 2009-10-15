@@ -148,3 +148,6 @@ fi
 # shortcut vim and set it as our editor
 alias vi=vim
 export EDITOR=vim
+
+# config for python interactive shell
+export PYTHONSTARTUP=~/.pystartup
