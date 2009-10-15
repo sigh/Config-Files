@@ -21,11 +21,7 @@ if [ -n "$PS1" ] ; then
         *)      TITLEBAR='' ;;
     esac
 
-    export PS1="$TITLEBAR$PROMPT_COLOR[\A] $LVL\w\n$PROMPT_COLOR\! \$$NONE "
-    export PS1_BASE="$TITLEBAR$PROMPT_COLOR[\A] \x\n$PROMPT_COLOR\! \$$NONE "
-
-    export SHORTCUT_FILE=~/.shortcuts
-    touch $SHORTCUT_FILE
+    export PS1="$TITLEBAR$PROMPT_COLOR[\A] \u@\h:\w\n$PROMPT_COLOR\! \$$NONE "
 
     # set other prompts
     export PS2="$PROMPT_COLOR>$NONE "
@@ -34,11 +30,6 @@ if [ -n "$PS1" ] ; then
     unset NONE
     unset PROMPT_COLOR
 
-    # shortcuts
-    alias sc='shortcut'
-    alias usc='sc -u'
-    export SHORTCUT_FILE=~/.shortcuts;
-    
     # disable flow control (C-s, C-r)
     stty -ixon
 fi
