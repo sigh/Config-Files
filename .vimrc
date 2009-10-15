@@ -1,6 +1,7 @@
-set nu
-set nocompatible
+set number          " turn on line numbers
+set nocompatible    " make vim incompatible with vi
 
+" turn on indent options
 set autoindent
 set smartindent
 
@@ -9,10 +10,8 @@ set shiftwidth=4
 set shiftwidth=4
 set expandtab
 
-set hls
 
-" The following are commented out as they cause vim to behave a lot
-" differently from regular Vi. They are highly recommended though.
+set hlsearch        " highlight search 
 set showcmd			" Show (partial) command in status line.
 set showmatch		" Show matching brackets.
 set ignorecase		" Do case insensitive matching
