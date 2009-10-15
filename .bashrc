@@ -23,9 +23,6 @@ if [ -n "$PS1" ] ; then
 
     export PS1="$TITLEBAR$PROMPT_COLOR[\A] $LVL\w\n$PROMPT_COLOR\! \$$NONE "
     export PS1_BASE="$TITLEBAR$PROMPT_COLOR[\A] \x\n$PROMPT_COLOR\! \$$NONE "
-    PROMPT_COMMAND=' test -e $SHORTCUT_FILE && source $SHORTCUT_FILE;'; 
-    PROMPT_COMMAND=$PROMPT_COMMAND' PS1="`create_ps1`";'
-    export PROMPT_COMMAND;
 
     export SHORTCUT_FILE=~/.shortcuts
     touch $SHORTCUT_FILE
