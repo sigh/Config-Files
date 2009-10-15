@@ -2,102 +2,85 @@
 
 [ -z "$PS1" ] && return
 
-# make a colorful prompt
-NONE="\[\033[0m\]"    # unsets color to term's fg color
+# put our bin folder in the path
+export PATH="${PATH}:~/bin"
 
-if [ "$USER" = 'root' ] ; then
-    PROMPT_COLOR="\[\033[0;31m\]" # red for root 
-else
-    PROMPT_COLOR="\[\033[0;32m\]" # green for other
+# only set the prompt if interactive
+if [ -n "$PS1" ] ; then
+
+    # make a colorful prompt
+    NONE="\[$(tput setf 0)\]"    # unsets color to term's fg color
+
+    if [ "$USER" = 'root' ] ; then
+        PROMPT_COLOR="\[$(tput setf 4)\]" # red for root
+    else
+        PROMPT_COLOR="\[$(tput setf 2)\]" # green for other
+    fi
+    case $TERM in
+        xterm*) TITLEBAR='\[\033]0;\u@\h:\w\007\]' ;;
+        *)      TITLEBAR='' ;;
+    esac
+
+    export PS1="$TITLEBAR$PROMPT_COLOR[\A] $LVL\w\n$PROMPT_COLOR\! \$$NONE "
+    export PS1_BASE="$TITLEBAR$PROMPT_COLOR[\A] \x\n$PROMPT_COLOR\! \$$NONE "
+    PROMPT_COMMAND=' test -e $SHORTCUT_FILE && source $SHORTCUT_FILE;'; 
+    PROMPT_COMMAND=$PROMPT_COMMAND' PS1="`create_ps1`";'
+    export PROMPT_COMMAND;
+
+    export SHORTCUT_FILE=~/.shortcuts
+    touch $SHORTCUT_FILE
+
+    # set other prompts
+    export PS2="$PROMPT_COLOR>$NONE "
+    export PS4="\[$(tput setf 5)\]+$NONE "
+
+    unset NONE
+    unset PROMPT_COLOR
+
+    # shortcuts
+    alias sc='shortcut'
+    alias usc='sc -u'
+    export SHORTCUT_FILE=~/.shortcuts;
+    
+    # disable flow control (C-s, C-r)
+    stty -ixon
 fi
-case $TERM in
-    xterm*) TITLEBAR='\[\033]0;\u@\h:\w\007\]' ;;
-    *)      TITLEBAR='' ;;
-esac
 
-export PS1="$TITLEBAR$PROMPT_COLOR[\A] \u@\h:\w\n$PROMPT_COLOR\! \$$NONE "
-export PS1_BASE="$TITLEBAR$PROMPT_COLOR[\A] \u@\h:\x\n$PROMPT_COLOR\! \$$NONE "
-PROMPT_COMMAND=' test -e $SHORTCUT_FILE && source $SHORTCUT_FILE;' 
-PROMPT_COMMAND=$PROMPT_COMMAND' PS1="`create_ps1`";'
-export PROMPT_COMMAND;
+# customise cd
 
-export PS2="$PROMPT_COLOR>$NONE "
-export PS4="\[\033[0;35m\]+$NONE "
-
-export SHORTCUT_FILE=~/.shortcuts;
-export usb
-
-unset NONE
-unset PROMPT_COLOR
-
-export SHORTCUT_FILE=~/.shortcuts
-
-alias sc='shortcut'
-alias usc='sc -u'
-
-# customise cd to use pushd and popd
-
-function cd {
-    if  [ -z "$1" ] ; then
-        pushd ~ > /dev/null 
-    elif [ "$1" = '-' ] ; then
-        popd > /dev/null
-    elif [ "$1" = '--' ] ; then
-        popd > /dev/null 2>&1
-        popd > /dev/null
-    elif [ "$1" = '---' ] ; then
-        popd > /dev/null 2>&1
-        popd > /dev/null 2>&1
-        popd > /dev/null
-    elif [ "$1" = '...' ] ; then
-        pushd ../.. > /dev/null
-    elif [ "$1" = '....' ] ; then
-        pushd ../../.. > /dev/null
-    elif [ "$1" = '.....' ] ; then
-        pushd ../../../.. > /dev/null
-	else
-		pushd "$1" > /dev/null
-	fi
-}
-
-alias cd-='cd -'
-alias cd--='cd --'
-alias cd---='cd ---'
+function cd { pushd "$1" > /dev/null; }
 
 alias cd..='cd ..'
-alias cd...='cd ...'
-alias cd....='cd ....'
-alias cd.....='cd .....'
-
 alias ..='cd ..'
-alias ...='cd ...'
-alias ....='cd ....'
-alias .....='cd .....'
+alias d='dirs -v'
 
 function mkdcd { mkdir "$@" && cd "$1" ; }
-
-# turn on smart tab completetion
-if [ -f /etc/bash_completion ] ; then
-    shopt -s progcomp
-    source /etc/bash_completion
-fi 
 
 # allow for correction of inaccurate cd commands
 shopt -s cdspell
 
+# turn off before bash_completion setup
+# otherwise all variables match for cd
+shopt -u cdable_vars
+
+# turn on smart tab completetion
+shopt -s progcomp
+source ~/.bash_completion
+
+# allow us to cd to variables (turn on AFTER bash_completion)
+shopt -s cdable_vars
+
+# allow for correction of inaccurate cd commands
+shopt -s cdspell
 shopt -s cdable_vars
 
 # ignore files with the following suffixes for tab completion
 export FIGNORE='.swp:.svn:.0:~';
 
-
-# disable flow control (C-s, C-r)
-stty -ixon
-
 # customise history
 export HISTIGNORE='&:ls:[bf]g:clear:exit:[ ]*'
-export HISTSIZE=5000
-export HISTFILESIZE=1000
+export HISTSIZE=20000
+export HISTFILESIZE=20000
 
 shopt -s histappend
 shopt -s cmdhist
@@ -105,8 +88,9 @@ shopt -s cmdhist
 # make sure we don't leave accidentally
 export IGNOREEOF=1
 
-# easier directory browsing
-alias ls='ls -hFG'
+# customise ls 
+eval `/opt/local/bin/dircolors`
+alias ls='ls --color -hF'
 alias ll='ls -l'
 alias lt='ll -t'
 alias la='ls -A'
@@ -127,15 +111,37 @@ shopt -s nocaseglob
 shopt -s extglob
 
 # colorize search results for grep
+alias zg='zgrep -e --color=always'
+alias zgi='zgrep -ei --color=always'
 alias g='egrep --color=always'
 alias gi='egrep -i --color=always'
 alias gh='history | gi'
 
+# Handy Extract Program.
+function extract()      
+{
+     if [ -f "$1" ] ; then
+         case "$1" in
+             *.tar.bz2)   tar xvjf "$1"     ;;
+             *.tar.gz)    tar xvzf "$1"     ;;
+             *.bz2)       bunzip2 "$1"      ;;
+             *.rar)       7za x "$1"        ;;
+             *.gz)        gunzip "$1"       ;;
+             *.tar)       tar xvf "$1"      ;;
+             *.tbz2)      tar xvjf "$1"     ;;
+             *.tgz)       tar xvzf "$1"     ;;
+             *.zip)       unzip "$1"        ;;
+             *.Z)         uncompress "$1"   ;;
+             *.7z)        7za x "$1"         ;;
+             *)           echo "'$1' cannot be extracted via >extract<" ;;
+         esac
+     else
+         echo "'$1' is not a valid file"
+     fi
+}
+
 # make less display colors
 alias less='less -R'
-
-# terminal calculator
-function calc { echo "$@" | bc -l ; }
 
 # share directory on the web
 alias webshare='python -c "import SimpleHTTPServer; SimpleHTTPServer.test()"'
@@ -145,6 +151,11 @@ alias e='echo'
 
 # Make bash check it's window size after a process completes
 shopt -s checkwinsize
+
+# open man page as a PDF in preview
+if [[ -f /Applications/Preview.app ]] ; then
+    function pman { man -t "$@" | open -f -a /Applications/Preview.app; }
+fi
 
 # shortcut vim and set it as our editor
 alias vi=vim
