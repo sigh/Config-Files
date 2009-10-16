@@ -3,7 +3,7 @@
 [ -z "$PS1" ] && return
 
 # put our bin folder in the path
-export PATH="${PATH}:~/bin"
+export PATH="${PATH}:$HOME/bin"
 
 # only set the prompt if interactive
 if [ -n "$PS1" ] ; then
@@ -53,7 +53,7 @@ shopt -u cdable_vars
 
 # turn on smart tab completetion
 shopt -s progcomp
-source ~/.bash_completion
+source "$HOME/.bash_completion"
 
 # allow us to cd to variables (turn on AFTER bash_completion)
 shopt -s cdable_vars
@@ -150,4 +150,4 @@ alias vi=vim
 export EDITOR=vim
 
 # config for python interactive shell
-export PYTHONSTARTUP=~/.pystartup
+export PYTHONSTARTUP="$HOME/.pystartup"
