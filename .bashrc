@@ -36,13 +36,13 @@ fi
 
 # customise cd
 
-function cd { pushd "$1" > /dev/null; }
+cd { pushd "$1" > /dev/null; }
 
 alias cd..='cd ..'
 alias ..='cd ..'
 alias d='dirs -v'
 
-function mkdcd { mkdir "$@" && cd "$1" ; }
+mkdcd { mkdir "$@" && cd "$1" ; }
 
 # allow for correction of inaccurate cd commands
 shopt -s cdspell
@@ -83,8 +83,8 @@ alias ll='ls -l'
 alias lt='ll -t'
 alias la='ls -A'
 alias lla='ll -A'
-function lth { lla -t "$@" | head ; }
-function lsd { ls "$@" | grep '/$' ; }
+lth { lla -t "$@" | head ; }
+lsd { ls "$@" | grep '/$' ; }
 
 # display full paths
 alias realpath='readlink -f'
@@ -106,7 +106,7 @@ alias gi='egrep -i --color=always'
 alias gh='history | gi'
 
 # Handy Extract Program.
-function extract()      
+extract()      
 {
      if [ -f "$1" ] ; then
          case "$1" in
@@ -142,7 +142,7 @@ shopt -s checkwinsize
 
 # open man page as a PDF in preview
 if [[ -f /Applications/Preview.app ]] ; then
-    function pman { man -t "$@" | open -f -a /Applications/Preview.app; }
+    pman { man -t "$@" | open -f -a /Applications/Preview.app; }
 fi
 
 # shortcut vim and set it as our editor
