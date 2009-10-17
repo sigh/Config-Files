@@ -36,13 +36,13 @@ fi
 
 # customise cd
 
-cd { pushd "$1" > /dev/null; }
+cd() { pushd "$1" > /dev/null; }
 
 alias cd..='cd ..'
 alias ..='cd ..'
 alias d='dirs -v'
 
-mkdcd { mkdir "$@" && cd "$1" ; }
+mkdcd() { mkdir "$@" && cd "$1" ; }
 
 # allow for correction of inaccurate cd commands
 shopt -s cdspell
@@ -66,9 +66,11 @@ shopt -s cdable_vars
 export FIGNORE='.swp:.svn:.0:~';
 
 # customise history
-export HISTIGNORE='&:ls:[bf]g:clear:exit:[ ]*'
-export HISTSIZE=20000
-export HISTFILESIZE=20000
+export HISTIGNORE='&:ls:echo*'
+unset  HISTFILESIZE					# never delete from history
+export HISTFILESIZE
+export HISTSIZE=10000
+export PROMPT_COMMAND='history -a'	# update history file after each command
 
 shopt -s histappend
 shopt -s cmdhist
@@ -83,8 +85,8 @@ alias ll='ls -l'
 alias lt='ll -t'
 alias la='ls -A'
 alias lla='ll -A'
-lth { lla -t "$@" | head ; }
-lsd { ls "$@" | grep '/$' ; }
+lth() { lla -t "$@" | head ; }
+lsd() { ls "$@" | grep '/$' ; }
 
 # display full paths
 alias realpath='readlink -f'
@@ -103,7 +105,7 @@ alias zg='zgrep -e --color=always'
 alias zgi='zgrep -ei --color=always'
 alias g='egrep --color=always'
 alias gi='egrep -i --color=always'
-alias gh='history | gi'
+function gh() { gi "$@" "$HISTFILE"; }
 
 # Handy Extract Program.
 extract()      
@@ -142,7 +144,7 @@ shopt -s checkwinsize
 
 # open man page as a PDF in preview
 if [[ -f /Applications/Preview.app ]] ; then
-    pman { man -t "$@" | open -f -a /Applications/Preview.app; }
+    pman() { man -t "$@" | open -f -a /Applications/Preview.app; }
 fi
 
 # shortcut vim and set it as our editor
