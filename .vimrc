@@ -25,8 +25,13 @@ filetype plugin on
 " load indent files for specific filetypes
 filetype indent on
 
-" save global variables that consists of upper case letters
-set viminfo+=!
+" Tell vim to remember certain things when we exit
+"  '100 : marks will be remembered for up to 100 previously edited files
+"  "100 : will save up to 100 lines for each register
+"  :100 : up to 100 lines of command-line history will be remembered
+"  % : saves and restores the buffer list
+"  n... : where to save the viminfo files
+set viminfo='100,\"100,:100,%,n~/.viminfo
 
 " none of these should be word dividers, so make them not be
 set iskeyword+=_,$,@,%,#,-
@@ -115,7 +120,15 @@ set virtualedit=all
 
 " set history to something large
 set history=100 
-
+ 
+" Restore cursor position when we load up the file
+if has("autocmd")
+    autocmd BufReadPost * 
+	\ if line("'\"") > 0 && line("'\"") <= line("$") |
+	\ exe "normal g`\"" |
+	\ endif 
+endif
+ 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Visual Cues
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
