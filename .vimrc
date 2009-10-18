@@ -1,5 +1,7 @@
 " Sources:
 "   http://www.linode.com/wiki/index.php/Vim_Tutorial
+"   http://www.derekwyatt.org/vim/the-vimrc-file/
+"   http://vim.wikia.com/wiki/Highlight_all_search_pattern_matches
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " General
@@ -70,6 +72,7 @@ set linespace=0
 
 " command-line completion operates in an enhanced mode
 set wildmenu
+set wildmode=list:longest,full
 
 " Show the line and column number of the cursor position
 set ruler
@@ -107,6 +110,12 @@ set noerrorbells
 " make the splitters between windows be blank
 set fillchars=vert:\ ,stl:\ ,stlnc:\
 
+" all cursor to go anywhere
+set virtualedit=all
+
+" set history to something large
+set history=100 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Visual Cues
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -120,8 +129,11 @@ set matchtime=5
 " highlight searched phrases
 set hlsearch
 
-" but do highlight as you type you search phrase
-set incsearch
+" highlight as you type you search phrase
+set incsearch           
+
+" Press Space to turn off highlighting and clear any message already displayed.
+nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 
 " what to show when I hit :set list
 set listchars=tab:\|\ ,trail:.,extends:>,precedes:<,eol:$
@@ -132,11 +144,14 @@ set scrolloff=10
 " don't blink
 set novisualbell
 
-" When nonempty, this option determines the content of the status line
-set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]\ [POS=%04l,%04v][%p%%]\ [LEN=%L]
+" Set the status line
+set statusline=%f\ %m\ %r\ %l:%c/%L\ [%p%%]\ Buf:\ #%n\ [%b][0x%B]
 
 " always show the status line
 set laststatus=2
+
+" always show the mode we are in
+set showmode
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Text Formatting/Layout
@@ -172,6 +187,12 @@ set nowrap
 " use tabs at the start of a line, spaces elsewhere
 set smarttab
 
+" toggle paste mode on and off
+nmap <silent> ,p :set invpaste<CR>:set paste?<CR>
+
+" Set text wrapping toggles
+nmap <silent> ,w :set invwrap<CR>:set wrap?<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Folding
 " Enable folding, but by default make it act like folding is off, because
@@ -203,3 +224,46 @@ let g:explVertical=1
 " width of 35 pixels
 let g:explWinSize=35
  
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Move around windows
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Move the cursor to the window left of the current one
+noremap <silent> ,h :wincmd h<cr>
+
+" Move the cursor to the window below the current one
+noremap <silent> ,j :wincmd j<cr>
+
+" Move the cursor to the window above the current one
+noremap <silent> ,k :wincmd k<cr>
+
+" Move the cursor to the window right of the current one
+noremap <silent> ,l :wincmd l<cr>
+
+" Close the window below this one
+noremap <silent> ,cj :wincmd j<cr>:close<cr>
+
+" Close the window above this one
+noremap <silent> ,ck :wincmd k<cr>:close<cr>
+
+" Close the window to the left of this one
+noremap <silent> ,ch :wincmd h<cr>:close<cr>
+
+" Close the window to the right of this one
+noremap <silent> ,cl :wincmd l<cr>:close<cr>
+
+" Close the current window
+noremap <silent> ,cc :close<cr>
+
+" Move the current window to the right of the main Vim window
+noremap <silent> ,ml <C-W>L
+
+" Move the current window to the top of the main Vim window
+noremap <silent> ,mk <C-W>K
+
+" Move the current window to the left of the main Vim window
+noremap <silent> ,mh <C-W>H
+
+" Move the current window to the bottom of the main Vim window
+noremap <silent> ,mj <C-W>J
+
