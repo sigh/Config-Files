@@ -156,7 +156,7 @@ nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 set listchars=tab:\|\ ,trail:.,extends:>,precedes:<,eol:$
 
 " Minimal number of screen lines to keep above and below the cursor
-set scrolloff=10
+set scrolloff=4
 
 " don't blink
 set novisualbell
@@ -216,7 +216,7 @@ function! MyPasteMode()
 endfunction
 
 " Set text wrapping toggles
-nmap <silent> ,w :set invwrap<CR>:set wrap?<CR>
+nmap <silent> ,w :set invwrap wrap?<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Folding
@@ -265,20 +265,8 @@ noremap <silent> ,k :wincmd k<cr>
 " Move the cursor to the window right of the current one
 noremap <silent> ,l :wincmd l<cr>
 
-" Close the window below this one
-noremap <silent> ,cj :wincmd j<cr>:close<cr>
-
-" Close the window above this one
-noremap <silent> ,ck :wincmd k<cr>:close<cr>
-
-" Close the window to the left of this one
-noremap <silent> ,ch :wincmd h<cr>:close<cr>
-
-" Close the window to the right of this one
-noremap <silent> ,cl :wincmd l<cr>:close<cr>
-
 " Close the current window
-noremap <silent> ,cc :close<cr>
+noremap <silent> ,c :close<cr>
 
 " Move the current window to the right of the main Vim window
 noremap <silent> ,ml <C-W>L
