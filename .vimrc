@@ -204,16 +204,27 @@ set nowrap
 " use tabs at the start of a line, spaces elsewhere
 set smarttab
 
-" ,p enters insert mode with paste on and mouse off and line numbering
-"    changes are reverted when exiting insert mode
-nmap <silent> ,p :call MyPasteMode()<CR>i
+if v:version >= 700
+	" ,p enters insert mode with paste on and mouse off and line numbering
+	"    changes are reverted when exiting insert mode
+	nmap <silent> ,p :call MyPasteMode()<CR>i
 
-function! MyPasteMode()
-    set paste nonumber mouse=
-	augroup paste 
-		autocmd InsertLeave * :set nopaste number mouse=a | autocmd! paste
-	augroup end
-endfunction
+	function! MyPasteMode()
+		set paste nonumber mouse=
+		augroup paste 
+			autocmd InsertLeave * :set nopaste number mouse=a | autocmd! paste
+		augroup end
+	endfunction                
+else
+	" older versions don't have InsertLeave
+	" so just press escape twice
+	nmap <silent> ,p :call MyPasteMode()<CR>i
+
+	function! MyPasteMode()
+		set paste nonumber mouse=
+		map <silent> <Esc> :set nopaste number mouse=a<CR>:unmap <Char-60>Esc><CR>
+	endfunction
+endif
 
 " Set text wrapping toggles
 nmap <silent> ,w :set invwrap wrap?<CR>
