@@ -129,6 +129,10 @@ if has("autocmd")
 	\ endif 
 endif
  
+" Switch buffers with tab
+:nnoremap <Tab> :bnext<CR>:redraw<CR>:ls<CR>
+:nnoremap <S-Tab> :bprevious<CR>:redraw<CR>:ls<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Visual Cues
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -200,8 +204,16 @@ set nowrap
 " use tabs at the start of a line, spaces elsewhere
 set smarttab
 
-" toggle paste mode on and off
-nmap <silent> ,p :set invpaste<CR>:set paste?<CR>
+" ,p enters insert mode with paste on and mouse off and line numbering
+"    changes are reverted when exiting insert mode
+nmap <silent> ,p :call MyPasteMode()<CR>i
+
+function! MyPasteMode()
+    set paste nonumber mouse=
+	augroup paste 
+		autocmd InsertLeave * :set nopaste number mouse=a | autocmd! paste
+	augroup end
+endfunction
 
 " Set text wrapping toggles
 nmap <silent> ,w :set invwrap<CR>:set wrap?<CR>
