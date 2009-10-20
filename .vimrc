@@ -213,8 +213,7 @@ set softtabstop=4
 " unify
 set shiftwidth=4
 
-" real tabs please!
-set noexpandtab
+set expandtab " no tabs
 
 " do not wrap lines
 set nowrap
@@ -326,8 +325,6 @@ set directory=~/.vim/.swap
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Language specific
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-autocmd FileType python,haskell,lisp set expandtab nocindent
-
 nmap ,pt :%! perltidy -et=4<CR>
 vmap ,pt :'<,'>! perltidy -et=4<CR>
 
