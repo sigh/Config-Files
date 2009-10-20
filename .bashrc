@@ -12,10 +12,12 @@ if [ -n "$PS1" ] ; then
     NONE="\[$(tput setf 0)\]"    # unsets color to term's fg color
 
     if [ "$USER" = 'root' ] ; then
-        PROMPT_COLOR="\[$(tput setf 4)\]" # red for root
+        RAW_PROMPT_COLOR="$(tput setf 4)" # red for root
     else
-        PROMPT_COLOR="\[$(tput setf 2)\]" # green for other
+        RAW_PROMPT_COLOR="$(tput setf 2)" # green for other
     fi
+    PROMPT_COLOR="\[$RAW_PROMPT_COLOR\]"
+
     case $TERM in
         xterm*) TITLEBAR='\[\033]0;\u@\h:\w\007\]' ;;
         *)      TITLEBAR='' ;;
@@ -27,8 +29,12 @@ if [ -n "$PS1" ] ; then
     export PS2="$PROMPT_COLOR>$NONE "
     export PS4="\[$(tput setf 5)\]+$NONE "
 
+    # mysql prompt
+    export MYSQL_PS1="$RAW_PROMPT_COLOR\d > $(tput setf 0)"
+
     unset NONE
     unset PROMPT_COLOR
+    unset RAW_PROMPT_COLOR
 
     # disable flow control (C-s, C-r)
     stty -ixon
@@ -67,10 +73,10 @@ export FIGNORE='.swp:.svn:.0:~';
 
 # customise history
 export HISTIGNORE='&:ls:echo*'
-unset  HISTFILESIZE					# never delete from history
+unset  HISTFILESIZE                 # never delete from history
 export HISTFILESIZE
 export HISTSIZE=10000
-export PROMPT_COMMAND='history -a'	# update history file after each command
+export PROMPT_COMMAND='history -a'  # update history file after each command
 
 shopt -s histappend
 shopt -s cmdhist
@@ -150,6 +156,7 @@ fi
 # shortcut vim and set it as our editor
 alias vi=vim
 export EDITOR=vim
+export SVNEDITOR=vim
 
 # config for python interactive shell
 export PYTHONSTARTUP="$HOME/.pystartup"
