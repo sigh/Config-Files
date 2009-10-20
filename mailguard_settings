@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+                       
+# use tabs
+sed -i '' 's/^set expandtab " no/set noexpandtab " real/g' .vimrc
+
+if grep '^# mailguard specific' .bashrc > /dev/null 2>&1 ; then : 
+    exit 0  
+fi
+
+# add mailguard specific section to bashrc
+(cat >> .bashrc) <<'EOF'
+
+# mailguard specific
+
+echo x
+    
+EOF
