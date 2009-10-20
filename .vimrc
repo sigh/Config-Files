@@ -31,7 +31,8 @@ filetype indent on
 "  :100 : up to 100 lines of command-line history will be remembered
 "  % : saves and restores the buffer list
 "  n... : where to save the viminfo files
-set viminfo='100,\"100,:100,%,n~/.viminfo
+" ! : save global variables
+set viminfo='100,\"100,:100,%,n~/.viminfo,!
 
 " none of these should be word dividers, so make them not be
 set iskeyword+=_,$,@,%,#,-
@@ -47,6 +48,9 @@ set showcmd
 
 " Automatically save before commands like :next and :make
 set autowrite
+
+" detect filetype
+set ffs=unix,dos,mac
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Theme/Colors
@@ -83,6 +87,7 @@ set wildmode=list:longest,full
 set ruler
 
 " Number of screen lines to use for the command-line
+" Helps avoid 'Hit enter' prompt
 set cmdheight=2
 
 " Print the line number in front of each line
@@ -98,7 +103,7 @@ set hidden
 set backspace=2
 
 " allow backspace and cursor keys to cross line boundaries
-set whichwrap+=<,>,h,l
+set whichwrap+=<,>,h,l,b,[,],~
 
 " use mouse everywhere
 set mouse=a
@@ -123,7 +128,7 @@ nmap j gj
 nmap k gk
 
 " set history to something large
-set history=100 
+set history=1000 
 
 " make C-u and C-d scroll more slowly
 set scroll=3
@@ -169,7 +174,13 @@ set scrolloff=4
 set novisualbell
 
 " Set the status line
-set statusline=%f\ %m\ %r\ %l:%c/%L\ [%p%%]\ Buf:\ #%n\ [%b][0x%B]
+set statusline=%F\ [%M%n%R%H]\ %l:%v/%L\ [%p%%]\ [%b,0x%B]
+
+" color the status line
+highlight clear StatusLine
+highlight clear StatusLineNC
+highlight StatusLine   term=reverse cterm=reverse
+highlight StatusLineNC term=reverse ctermfg=black ctermbg=grey
 
 " always show the status line
 set laststatus=2
