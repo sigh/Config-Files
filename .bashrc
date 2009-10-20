@@ -30,7 +30,7 @@ if [ -n "$PS1" ] ; then
     export PS4="\[$(tput setf 5)\]+$NONE "
 
     # mysql prompt
-    export MYSQL_PS1="$RAW_PROMPT_COLOR\d > $(tput setf 0)"
+    export MYSQL_PS1="$RAW_PROMPT_COLOR[\R:\m] \U:\d$(tput setf 0)\nmysql> "
 
     unset NONE
     unset PROMPT_COLOR
