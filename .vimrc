@@ -311,6 +311,19 @@ noremap <silent> ,mh <C-W>H
 noremap <silent> ,mj <C-W>J
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Backup
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" create backup directories
+silent ! mkdir -p ~/.vim/.backup
+silent ! mkdir -p ~/.vim/.swap
+
+" set backup to go to backup directories
+set backup
+set backupdir=~/.vim/.backup
+set directory=~/.vim/.swap
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Language specific
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 autocmd FileType python,haskell,lisp set expandtab nocindent
