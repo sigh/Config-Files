@@ -72,7 +72,7 @@ shopt -s cdable_vars
 export FIGNORE='.swp:.svn:.0:~';
 
 # customise history
-export HISTIGNORE='&:ls:echo*'
+export HISTIGNORE='&:ls:[ ]*'
 unset  HISTFILESIZE                 # never delete from history
 export HISTFILESIZE
 export HISTSIZE=10000
