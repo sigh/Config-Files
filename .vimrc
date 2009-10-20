@@ -35,7 +35,7 @@ filetype indent on
 set viminfo='100,\"100,:100,%,n~/.viminfo,!
 
 " none of these should be word dividers, so make them not be
-set iskeyword+=_,$,@,%,#,-
+set iskeyword+=_,$,@,%,#,:
 
 " ignore case sensitivity on search patterns
 set ignorecase
@@ -309,4 +309,14 @@ noremap <silent> ,mh <C-W>H
 
 " Move the current window to the bottom of the main Vim window
 noremap <silent> ,mj <C-W>J
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Language specific
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+autocmd FileType python,haskell,lisp set expandtab nocindent
+
+nmap ,pt :%! perltidy -et=4<CR>
+vmap ,pt :'<,'>! perltidy -et=4<CR>
+
+nmap ,pc :! perl -c %<CR>
 
