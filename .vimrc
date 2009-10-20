@@ -118,8 +118,15 @@ set fillchars=vert:\ ,stl:\ ,stlnc:\
 " all cursor to go anywhere
 set virtualedit=all
 
+" cursor doesn't honor lines
+nmap j gj
+nmap k gk
+
 " set history to something large
 set history=100 
+
+" make C-u and C-d scroll more slowly
+set scroll=3
  
 " Restore cursor position when we load up the file
 if has("autocmd")
@@ -204,22 +211,28 @@ set nowrap
 " use tabs at the start of a line, spaces elsewhere
 set smarttab
 
-" ,p enters insert mode with paste on and mouse off and line numbering
-"    changes are reverted when exiting insert mode
-"    In older versions of vim, you must press <Esc> again to revert
-nmap <silent> ,p :call MyPasteMode()<CR>i
+if executable("pbcopy")
+	" ,p pastes when in normal mode, and copies in normal mode
+	vmap ,p :w !pbcopy<CR><CR>
+	nmap ,p :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
+else
+	" ,p enters insert mode with paste on and mouse off and line numbering
+	"    changes are reverted when exiting insert mode
+	"    In older versions of vim, you must press <Esc> again to revert
+	nmap <silent> ,p :call MyPasteMode()<CR>i
 
-function! MyPasteMode()
-	set paste nonumber mouse=
-
-	if v:version >= 700
-		augroup paste 
-			autocmd InsertLeave * :set nopaste number mouse=a | autocmd! paste
-		augroup end
-	else
-		map <silent> <Esc> :set nopaste number mouse=a<CR>:unmap <Char-60>Esc><CR>
-	endif
-endfunction                
+	function! MyPasteMode()
+		set paste nonumber mouse=
+		
+		if v:version >= 700
+			augroup paste 
+				autocmd InsertLeave * :set nopaste number mouse=a | autocmd! paste
+			augroup end
+		else
+			map <silent> <Esc> :set nopaste number mouse=a<CR>:unmap <Char-60>Esc><CR>
+		endif
+	endfunction                
+endif
 
 " Set text wrapping toggles
 nmap <silent> ,w :set invwrap wrap?<CR>
