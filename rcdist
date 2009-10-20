@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
+#
+# Distribute $files to $hosts
+# Options:
+#   -d       dry run (automatically turns on verbose)
+#   -b <dir> base directory (default is current directory)
+#   -v       verbose
 
 declare -a hosts files
 
 hosts=(
     zim
-    xxx
 )
 
 files=( 
@@ -15,9 +20,33 @@ files=(
     .inputrc
 )
 
-for host in "${hosts[@]}" ; do
-    remote_cksum=$(ssh $host cksum "${files[@]}" 2> /dev/null)
+verbose=
+base=
+dry=
 
+while getopts "db:v" flag ; do
+    case $flag in
+        d)  dry=1
+            verbose=1
+            ;;
+        b)  base=$OPTARG
+            ;;
+        v)  verbose=1
+            ;;
+        ?)  exit 1
+            ;;
+    esac
+done
+
+# change base directory if required
+if [[ -n "$base" ]] ; then
+    cd "$base"
+fi
+
+for host in "${hosts[@]}" ; do
+    [[ -n "$verbose" ]] && echo "Checking host: $host"
+    remote_cksum=$(ssh $host cksum "${files[@]}" 2> /dev/null)
+                              
     # check if error occurred connection to server
     if [[ $? = 255 ]] ; then
         echo "$0: Could not connect to $host" 1>&2
@@ -26,8 +55,9 @@ for host in "${hosts[@]}" ; do
 
     for file in "${files[@]}" ; do
         # if checksum matched, upload
-        if grep -qx "$(cksum $file)" <<<"$remote_cksum" ; then : ; else
-            echo scp $file $host:$file
+        if ! grep -qx "$(cksum $file)" <<<"$remote_cksum" ; then
+            [[ -n "$verbose" ]] && echo "Copy $file to $host"
+            [[ -z "$dry" ]] && scp $file $host:$file
         fi
     done
 done
