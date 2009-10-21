@@ -14,10 +14,11 @@ else
 fi
 PROMPT_COLOR="\[$RAW_PROMPT_COLOR\]"
 
-case $TERM in
-    xterm*) TITLEBAR='\[\033]0;\u@\h:\w $WINDOW \007\]' ;;
-    *)      TITLEBAR='' ;;
-esac
+if [[ "$TERM" == xterm* && -z "$STY" ]] ; then
+    TITLEBAR='\[\033]0;\u@\h\007\]'
+else
+    TITLEBAR=
+fi
 
 export PS1="$TITLEBAR$PROMPT_COLOR[\A] \u@\h:\w\n$PROMPT_COLOR\! \$$NONE "
 
