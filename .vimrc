@@ -76,8 +76,8 @@ endif
 highlight clear StatusLine
 highlight clear StatusLineNC
 highlight StatusLine   term=reverse cterm=reverse
-highlight StatusLineNC term=reverse cterm=reverse ctermbg=grey 
-                           
+highlight StatusLineNC term=reverse ctermfg=black ctermbg=grey
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vim UI
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -113,6 +113,7 @@ set whichwrap+=<,>,h,l,b,[,],~
 
 " use mouse everywhere
 set mouse=a
+set ttymouse=xterm2
 
 " shortens messages to avoid 'press a key' prompt
 set shortmess=atI
@@ -180,7 +181,7 @@ set scrolloff=4
 set novisualbell
 
 " Set the status line
-set statusline=%F\ [%M%n%R%H]\ %l:%v/%L\ [%p%%]\ [%b,0x%B]
+set statusline=%f\ [%M%n%R%H]\ %l:%v/%L\ [%p%%]\ [%b,0x%B]
 
 " always show the status line
 set laststatus=2
