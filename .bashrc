@@ -4,40 +4,36 @@ export PATH="${PATH}:$HOME/bin"
 # only run if we are interactive
 [ -z "$PS1" ] && return
 
-# only set the prompt if interactive
-if [ -n "$PS1" ] ; then
+# make a colorful prompt
+NONE="\[$(tput setf 0)\]"    # unsets color to term's fg color
 
-    # make a colorful prompt
-    NONE="\[$(tput setf 0)\]"    # unsets color to term's fg color
-
-    if [ "$USER" = 'root' ] ; then
-        RAW_PROMPT_COLOR="$(tput setf 4)" # red for root
-    else
-        RAW_PROMPT_COLOR="$(tput setf 2)" # green for other
-    fi
-    PROMPT_COLOR="\[$RAW_PROMPT_COLOR\]"
-
-    case $TERM in
-        xterm*) TITLEBAR='\[\033]0;\u@\h:\w\007\]' ;;
-        *)      TITLEBAR='' ;;
-    esac
-
-    export PS1="$TITLEBAR$PROMPT_COLOR[\A] \u@\h:\w\n$PROMPT_COLOR\! \$$NONE "
-
-    # set other prompts
-    export PS2="$PROMPT_COLOR>$NONE "
-    export PS4="\[$(tput setf 5)\]+$NONE "
-
-    # mysql prompt
-    export MYSQL_PS1="$RAW_PROMPT_COLOR[\R:\m] \U:\d$(tput setf 0)\nmysql> "
-
-    unset NONE
-    unset PROMPT_COLOR
-    unset RAW_PROMPT_COLOR
-
-    # disable flow control (C-s, C-r)
-    stty -ixon
+if [ "$USER" = 'root' ] ; then
+    RAW_PROMPT_COLOR="$(tput setf 4)" # red for root
+else
+    RAW_PROMPT_COLOR="$(tput setf 2)" # green for other
 fi
+PROMPT_COLOR="\[$RAW_PROMPT_COLOR\]"
+
+case $TERM in
+    xterm*) TITLEBAR='\[\033]0;\u@\h:\w $WINDOW \007\]' ;;
+    *)      TITLEBAR='' ;;
+esac
+
+export PS1="$TITLEBAR$PROMPT_COLOR[\A] \u@\h:\w\n$PROMPT_COLOR\! \$$NONE "
+
+# set other prompts
+export PS2="$PROMPT_COLOR>$NONE "
+export PS4="\[$(tput setf 5)\]+$NONE "
+
+# mysql prompt
+export MYSQL_PS1="$RAW_PROMPT_COLOR[\R:\m] \U:\d$(tput setf 0)\nmysql> "
+
+unset NONE
+unset PROMPT_COLOR
+unset RAW_PROMPT_COLOR
+
+# disable flow control (C-s, C-r)
+stty -ixon
 
 # customise cd
 
