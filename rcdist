@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 #
 # Distribute $files to $hosts
-# Options:
-#   -d       dry run (automatically turns on verbose)
-#   -b <dir> base directory (default is current directory)
-#   -v       verbose
+# 
+# rcdist [-d] [base_dir]
+#
+#   -d       dry run
+#   base_dir base directory (default is $HOME)
 
 declare -a hosts files
 
@@ -20,32 +21,30 @@ files=(
     .inputrc
 )
 
-verbose=
-base=
+# get options
 dry=
 
-while getopts "db:v" flag ; do
+while getopts "d" flag ; do
     case $flag in
         d)  dry=1
-            verbose=1
-            ;;
-        b)  base=$OPTARG
-            ;;
-        v)  verbose=1
             ;;
         ?)  exit 1
             ;;
     esac
 done
+shift $(( $OPTIND-1 ))
 
-# change base directory if required
-if [[ -n "$base" ]] ; then
-    cd "$base"
+base="$1"
+if [[ -z "$base" ]] ; then
+    base="$HOME"
 fi
 
+# change to base directory
+cd "$base"
+
 for host in "${hosts[@]}" ; do
-    [[ -n "$verbose" ]] && echo "Checking host: $host"
-    remote_cksum=$(ssh $host cksum "${files[@]}" 2> /dev/null)
+    echo "Checking host: $host"
+    remote_cksum=$(ssh -C "$host" cksum "${files[@]}" 2> /dev/null)
                               
     # check if error occurred connection to server
     if [[ $? = 255 ]] ; then
@@ -54,10 +53,16 @@ for host in "${hosts[@]}" ; do
     fi
 
     for file in "${files[@]}" ; do
-        # if checksum matched, upload
-        if ! grep -qx "$(cksum $file)" <<<"$remote_cksum" ; then
-            [[ -n "$verbose" ]] && echo "Copy $file to $host"
-            [[ -z "$dry" ]] && scp $file $host:$file
+        if [[ ! -r "$file" ]] ; then
+            # error if we can't read the file
+            echo "$0: Could not read file: $file" 1>&2
+        elif ! grep -qx "$(cksum "$file")" <<<"$remote_cksum" ; then
+            # if checksum matched, upload
+            if [[ -n $dry ]] ; then
+                echo "Copy $file"
+            else
+                scp -C "$file" "$host":"$file"
+            fi
         fi
     done
 done
