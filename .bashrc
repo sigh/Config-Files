@@ -1,9 +1,8 @@
-# only run if we are interactive
-
-[ -z "$PS1" ] && return
-
 # put our bin folder in the path
 export PATH="${PATH}:$HOME/bin"
+
+# only run if we are interactive
+[ -z "$PS1" ] && return
 
 # only set the prompt if interactive
 if [ -n "$PS1" ] ; then
