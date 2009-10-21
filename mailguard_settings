@@ -3,6 +3,9 @@
 # use tabs
 sed -i '' 's/^set expandtab " no/set noexpandtab " real/g' .vimrc
 
+# os x doesn't kow about dircolors right away :(
+sed -i '' 's/^eval `dircolors`/eval $(dircolors  2> \/dev\/null || \/opt\/local\/bin\/dircolors)/' .bashrc
+
 if grep '^# mailguard specific' .bashrc > /dev/null 2>&1 ; then : 
     exit 0  
 fi
@@ -12,6 +15,65 @@ fi
 
 # mailguard specific
 
-echo x
-    
+gsvn() {
+    find . -name .svn -prune -o -exec egrep --color=always -H "$@" {} + 2> /dev/null
+
+	# if fast version doesn't work, try the slow one
+    if [[ $? > 0 ]] ; then
+        find . -name .svn -prune -o -exec egrep --color=always -H "$@" {} \; 2> /dev/null
+    fi
+}
+
+current_repo() {
+	dir=${PWD#$HOME/svn/}	
+	echo ${dir%%/*}
+}
+
+cr() {
+	base="$HOME/svn"
+	declare -a dirs
+	dirs=($(find $base -maxdepth 3 -mindepth 3 -path '*/cr/*' -name "cr$1"'*'))
+
+	opt=""
+	if (( ${#dirs[@]} == 1 )) ; then
+		opt=${dirs[0]}
+	elif [[ -n "$2" ]] ; then
+		opt=${dirs[$2]}
+	elif (( ${#dirs[@]} > 1 )); then
+		select dir in "${dirs[@]#$base/}" ; do
+			if [[ -n "$dir" ]] ; then
+				opt="$base/$dir"
+			fi
+			break
+		done
+	fi
+
+	if [[ -n "$opt" ]]; then
+		cd "$opt"
+	else
+		echo "cr: No directory found" 1>&2
+		return 1
+	fi
+}
+
+release() {
+	if [[ -n "$1" ]] ; then
+		dir=$1
+	else
+		dir=$(current_repo)
+	fi
+
+	cd "$HOME/svn/$dir/release"
+}
+ 
+rc() {
+	if [[ -n "$1" ]] ; then
+		dir=$1
+	else
+		dir=$(current_repo)
+	fi
+
+	cd "$HOME/svn/$dir/rc"
+}                              
+
 EOF
