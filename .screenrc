@@ -1,0 +1,21 @@
+# Set terminal type to xterm
+term            xterm
+
+# Kill startup message
+startup_message off
+
+# save all our running programs if we hang up
+autodetach      on
+
+# allows programs (such as vi) to restore state
+altscreen       on
+
+# remeber a lot of scrollback
+defscrollback   10000
+
+# show windows in lastline
+hardstatus      alwayslastline
+hardstatus      string '%{= kW} %-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<%{= kW} %='
+
+# caption is blue when active
+caption         string '%?%F%{.B.}%?%3n%f %t'
