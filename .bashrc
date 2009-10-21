@@ -156,3 +156,9 @@ export SVNEDITOR=vim
 
 # config for python interactive shell
 export PYTHONSTARTUP="$HOME/.pystartup"
+
+# screen commands
+
+if [[ -n "$STY" ]] ; then
+    alias title='screen -X title'
+fi
