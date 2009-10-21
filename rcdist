@@ -19,6 +19,7 @@ files=(
     .bash_completion
     .pystartup
     .inputrc
+    .screenrc
 )
 
 # get options
