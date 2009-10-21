@@ -148,7 +148,7 @@ alias e='echo'
 shopt -s checkwinsize
 
 # open man page as a PDF in preview
-if [[ -f /Applications/Preview.app ]] ; then
+if [[ -d /Applications/Preview.app ]] ; then
     pman() { man -t "$@" | open -f -a /Applications/Preview.app; }
 fi
 
