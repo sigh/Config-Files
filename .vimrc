@@ -52,6 +52,9 @@ set autowrite
 " detect filetype
 set ffs=unix,dos,mac
 
+" make vim smoother
+set ttyfast
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Theme/Colors
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
