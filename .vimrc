@@ -72,6 +72,12 @@ if &term =~ "xterm"
     endif
 endif
 
+" color the status line
+highlight clear StatusLine
+highlight clear StatusLineNC
+highlight StatusLine   term=reverse cterm=reverse
+highlight StatusLineNC term=reverse cterm=reverse ctermbg=grey 
+                           
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vim UI
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -175,12 +181,6 @@ set novisualbell
 
 " Set the status line
 set statusline=%F\ [%M%n%R%H]\ %l:%v/%L\ [%p%%]\ [%b,0x%B]
-
-" color the status line
-highlight clear StatusLine
-highlight clear StatusLineNC
-highlight StatusLine   term=reverse cterm=reverse
-highlight StatusLineNC term=reverse ctermfg=black ctermbg=grey
 
 " always show the status line
 set laststatus=2
@@ -325,6 +325,8 @@ set directory=~/.vim/.swap
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Language specific
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+autocmd FileType python,haskell,lisp set expandtab nocindent
+
 nmap ,pt :%! perltidy -et=4<CR>
 vmap ,pt :'<,'>! perltidy -et=4<CR>
 
