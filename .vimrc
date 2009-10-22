@@ -341,6 +341,6 @@ nmap ,pc :! perl -c %<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " ensure that all our functions work when we shell out
-" this must always be LAST
-set shellcmdflag=-ic
+" this must always be LAST (not working :( )
+" set shellcmdflag=-ic
 
