@@ -159,11 +159,14 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 
 # screen commands
 
-attach() {
-    screen -d -R "$@"
-}
+if [[ -z "$STY" ]] ; then
+    # commands for outside screen
 
-if [[ -n "$STY" ]] ; then
+    # attach to an existing screen session or create one if it doesn't exist
+    attach() {
+        screen -d -R "$@"
+    }
+else
     # commands for use inside screen
-    alias title='screen -X title'
+    title() { screen -X title "$@" ; }
 fi
