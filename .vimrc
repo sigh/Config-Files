@@ -336,3 +336,11 @@ vmap ,pt :'<,'>! perltidy -et=4<CR>
 
 nmap ,pc :! perl -c %<CR>
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Finally
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" ensure that all our functions work when we shell out
+" this must always be LAST
+set shellcmdflag=-ic
+
