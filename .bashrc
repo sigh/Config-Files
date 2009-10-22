@@ -14,7 +14,7 @@ else
 fi
 PROMPT_COLOR="\[$RAW_PROMPT_COLOR\]"
 
-if [[ "$TERM" == xterm* && -z "$STY" ]] ; then
+if [[ "$TERM" == xterm* ]] ; then
     TITLEBAR='\[\033]0;\u@\h\007\]'
 else
     TITLEBAR=
@@ -159,6 +159,11 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 
 # screen commands
 
+attach() {
+    screen -d -R "$@"
+}
+
 if [[ -n "$STY" ]] ; then
+    # commands for use inside screen
     alias title='screen -X title'
 fi
