@@ -19,3 +19,4 @@ hardstatus      string '%{= kW} %-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<%{= kW} %='
 
 # caption is blue when active
 caption         string '%?%F%{.B.}%?%3n%f %t'
+

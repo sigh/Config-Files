@@ -38,7 +38,7 @@ cr() {
 	if (( ${#dirs[@]} == 1 )) ; then
 		opt=${dirs[0]}
 	elif [[ -n "$2" ]] ; then
-		opt=${dirs[$2]}
+		opt=${dirs[(($2-1))]}
 	elif (( ${#dirs[@]} > 1 )); then
 		select dir in "${dirs[@]#$base/}" ; do
 			if [[ -n "$dir" ]] ; then
