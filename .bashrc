@@ -164,9 +164,44 @@ if [[ -z "$STY" ]] ; then
 
     # attach to an existing screen session or create one if it doesn't exist
     attach() {
-        screen -d -R "$@"
+        # store ssh session data in screen variables
+        if [ -n "$SSH_CLIENT" ]; then
+            # Variables to save
+            SSHVARS="SSH_CLIENT SSH_TTY SSH_AUTH_SOCK SSH_CONNECTION DISPLAY"
+
+            string=
+            for x in ${SSHVARS} ; do
+                string="$string; export $x='$(eval $x)'"
+            done
+            string="$string
+"           # intentional newline
+
+            opt=
+            if [[ -n "$1" ]] ; then
+                opt="-S $1"
+            fi
+
+            screen $opt -X register ssh "$string" 
+
+            retval=$?
+            if (( "$retval" != 0 )) ; then
+                return $retval
+            fi
+        fi
+
+        # run screen
+        screen -d -R $1
     }
 else
     # commands for use inside screen
+
     title() { screen -X title "$@" ; }
+
+    # import ssh session
+    screen-fix() {
+        screen -X process ssh
+    }
+    
+    # revert titlebar if screen messes with it
+    printf "\033];$USER@${HOSTNAME%%.*}\007"
 fi
