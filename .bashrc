@@ -38,11 +38,11 @@ stty -ixon
 
 # customise cd
 
-cd() { pushd "$1" > /dev/null; }
+cd()   { pushd "$1" > /dev/null; }
 
-alias cd..='cd ..'
-alias ..='cd ..'
-alias d='dirs -v'
+cd..() { cd .. "$@" ; }
+..()   { cd .. "$@" ; }
+d()    { dirs -v "$@" ; }
 
 mkdcd() { mkdir "$@" && cd "$1" ; }
 
@@ -82,32 +82,32 @@ export IGNOREEOF=1
 
 # customise ls 
 eval `dircolors`
-alias ls='ls --color -hF'
-alias ll='ls -l'
-alias lt='ll -t'
-alias la='ls -A'
-alias lla='ll -A'
+ls()  { command ls --color -hF "$@" ; }
+ll()  { ls  -l "$@" ; }
+lt()  { ll  -t "$@" ; }
+la()  { ls  -A "$@" ; }
+lla() { ll  -A "$@" ; }
 lth() { lla -t "$@" | head ; }
-lsd() { ls "$@" | grep '/$' ; }
+lsd() { ls     "$@" | grep '/$' ; }
 
 # display full paths
-alias realpath='readlink -f'
-alias rp='realpath'
+realpath() { readlink -f "$@" ; }
+rp() { realpath "$@" ; }
 
 # make disk usage display nicer
-alias du='du -hc'
-alias dus='du -s'
+du()  { command du -hc "$@" ; }
+dus() { du -s  "$@" ; }
 
 # globbing options
 shopt -s nocaseglob
 shopt -s extglob
 
 # colorize search results for grep
-alias zg='zgrep -e --color=always'
-alias zgi='zgrep -ei --color=always'
-alias g='egrep --color=always'
-alias gi='egrep -i --color=always'
-function gh() { gi "$@" "$HISTFILE"; }
+zg()  { zgrep -e  --color=always "$@" ; }
+zgi() { zgrep -ei --color=always "$@" ; }
+g()   { egrep     --color=always "$@" ; }
+gi()  { egrep -i  --color=always "$@" ; }
+gh()  { gi "$@" "$HISTFILE"; }
 
 # Handy Extract Program.
 extract()      
@@ -133,13 +133,13 @@ extract()
 }
 
 # make less display colors
-alias less='less -R'
+less() { command less -R "$@" ; }
 
 # share directory on the web
-alias webshare='python -c "import SimpleHTTPServer; SimpleHTTPServer.test()"'
+webshare() { python -c "import SimpleHTTPServer; SimpleHTTPServer.test()" "$@" ; }
 
 # echo shortcut
-alias e='echo'
+e() { echo "$@" ; }
 
 # Make bash check it's window size after a process completes
 shopt -s checkwinsize
@@ -150,7 +150,7 @@ if [[ -d /Applications/Preview.app ]] ; then
 fi
 
 # shortcut vim and set it as our editor
-alias vi=vim
+vi() { vim "$@" ; }
 export EDITOR=vim
 export SVNEDITOR=vim
 
