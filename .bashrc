@@ -23,7 +23,8 @@ else
     TITLEBAR=
 fi
 
-export PS1="$TITLEBAR$PROMPT_COLOR[\A] \u@\h:\w\n$PROMPT_COLOR\! \$$NONE "
+PARENT_NAME=$(ps -c -o command -p $PPID | tail -n +2)
+export PS1="$TITLEBAR$PROMPT_COLOR[\A] [$PARENT_NAME] \u@\h:\w\n$PROMPT_COLOR\! \$$NONE "
 
 # set other prompts
 export PS2="$PROMPT_COLOR>$NONE "
@@ -35,6 +36,8 @@ export MYSQL_PS1="$RAW_PROMPT_COLOR[\R:\m] \U:\d$(tput setf 0)\nmysql> "
 unset NONE
 unset PROMPT_COLOR
 unset RAW_PROMPT_COLOR
+unset PARENT_NAME
+unset TITLEBAR
 
 # disable flow control (C-s, C-r)
 stty -ixon
