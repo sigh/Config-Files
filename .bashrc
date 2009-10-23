@@ -171,7 +171,7 @@ if [[ -z "$STY" ]] ; then
 
             string=
             for x in ${SSHVARS} ; do
-                string="$string; export $x='$(eval $x)'"
+                string="$string export $x='$(eval echo \$$x)' ; "
             done
             string="$string
 "           # intentional newline
@@ -181,12 +181,7 @@ if [[ -z "$STY" ]] ; then
                 opt="-S $1"
             fi
 
-            screen $opt -X register ssh "$string" 
-
-            retval=$?
-            if (( "$retval" != 0 )) ; then
-                return $retval
-            fi
+            screen $opt -X register z "$string" > /dev/null 2>&1
         fi
 
         # run screen
@@ -198,8 +193,8 @@ else
     title() { screen -X title "$@" ; }
 
     # import ssh session
-    screen-fix() {
-        screen -X process ssh
+    ssh-fix() {
+        screen -X process z
     }
     
     # revert titlebar if screen messes with it
