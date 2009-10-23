@@ -184,7 +184,7 @@ set scrolloff=4
 set novisualbell
 
 " Set the status line
-set statusline=%f\ [%M%n%R%H]\ %l:%v/%L\ [%p%%]\ [%b,0x%B]
+set statusline=%f\ [%M%n%R%H]%<\ %{$PWD}\ %=%l/%L%<\ [%p%%]\ %v\ [%b,0x%B]
 
 " always show the status line
 set laststatus=2
