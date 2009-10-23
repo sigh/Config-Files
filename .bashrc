@@ -4,6 +4,9 @@ export PATH="${PATH}:$HOME/bin"
 # only run if we are interactive
 [ -z "$PS1" ] && return
 
+# remove all aliases so that we can redfine them without errors
+unalias -a
+
 # make a colorful prompt
 NONE="\[$(tput setf 0)\]"    # unsets color to term's fg color
 
@@ -82,7 +85,8 @@ export IGNOREEOF=1
 
 # customise ls 
 eval `dircolors`
-ls()  { command ls --color -hF "$@" ; }
+ls()  { command ls --color=tty -hF "$@" ; }
+l.()  { ls  -d .*   ; }
 ll()  { ls  -l "$@" ; }
 lt()  { ll  -t "$@" ; }
 la()  { ls  -A "$@" ; }
