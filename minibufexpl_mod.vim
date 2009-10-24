@@ -651,7 +651,8 @@ function! <SID>StartExplorer(sticky, delBufNum)
     syn clear
     syn match MBENormal             '\[[^\]]*\]'
     syn match MBEChanged            '\[[^\]]*\]+'
-    syn match MBEVisibleNormal      '\[[^\]]*\]\*+\='
+    syn match MBEVisibleNormal      '\[[^\]]*\]'
+    syn match MBEActiveNormal       '{[^}]*}'
     syn match MBEVisibleChanged     '\[[^\]]*\]\*+'
     
     if !exists("g:did_minibufexplorer_syntax_inits")
@@ -659,7 +660,7 @@ function! <SID>StartExplorer(sticky, delBufNum)
       hi def link MBENormal         Comment
       hi def link MBEChanged        String
       hi def link MBEVisibleNormal  Special
-      hi def link MBEVisibleChanged Special
+      hi def link MBEActiveNormal   StatusLineNC
     endif
   endif
 
@@ -1032,10 +1033,9 @@ function! <SID>ShowBuffers(delBufNum)
     $ d _
 
     " DA: center current window 
+
     " find where our current buffer is in the string
-    wincmd p
-    let l:buffer_pos = strridx(g:miniBufExplBufList,   '[' . bufnr('%') . ':' )
-    wincmd p
+    let l:buffer_pos = strridx(g:miniBufExplBufList,   '{' . s:curBuf . ':' )
 
     " we want the current buffer to be in the middle
     let l:width = winwidth('.')
@@ -1111,12 +1111,18 @@ function! <SID>BuildBufferList(delBufNum, updateBufList)
             
             " Get filename & Remove []'s & ()'s
             let l:shortBufName = fnamemodify(l:BufName, ":t")                  
-            let l:shortBufName = substitute(l:shortBufName, '[][()]', '', 'g') 
+            let l:shortBufName = substitute(l:shortBufName, '[][()]{}', '', 'g') 
+
+            " DA: modified how buffers are displayed
             let l:tab = l:i.':'.l:shortBufName
 
             " If the buffer is open in a window mark it
             if bufwinnr(l:i) != -1
-              let l:tab = '[' . l:tab . ']'
+              if l:i == s:curBuf
+                let l:tab = '{' . l:tab . '}'
+              else
+                let l:tab = '[' . l:tab . ']'
+              endif
             endif
 
             " If the buffer is modified then mark it
@@ -1246,6 +1252,8 @@ function! <SID>AutoUpdate(delBufNum)
   else
     let g:miniBufExplInAutoUpdate = 1
   endif
+
+  let s:curBuf = bufnr('%')
 
   " Don't bother autoupdating the MBE window
   if (bufname('%') == '-MiniBufExplorer-')
