@@ -79,6 +79,7 @@ endif
 highlight clear StatusLine
 highlight clear StatusLineNC
 highlight StatusLineHidden  ctermfg=grey ctermbg=grey 
+highlight MatchParen        ctermbg=grey 
 highlight StatusLine        term=reverse cterm=reverse
 highlight StatusLineNC      term=reverse ctermfg=black ctermbg=grey
 
@@ -153,8 +154,17 @@ if has("autocmd")
 endif
  
 " Switch buffers with tab
-:nnoremap <silent> <Tab> :bnext<CR>
-:nnoremap <silent> <S-Tab> :bprevious<CR>
+:nnoremap <silent> <Tab> :call MyTab()<CR>
+:nnoremap <silent> <S-Tab> :bprevious<Bar>:MiniBufExplorer<CR>
+
+function! MyTab()
+    if MBEIsOpen() == 1
+        bnext
+    else
+        MiniBufExplorer
+    endif
+endfunction
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Visual Cues
@@ -173,7 +183,7 @@ set hlsearch
 set incsearch           
 
 " Press Space to turn off highlighting and clear any message already displayed.
-nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
+nnoremap <silent> <Space> :nohlsearch<Bar>:CMiniBufExplorer<CR>:echo<CR>
 
 " what to show when I hit :set list
 set listchars=tab:\|\ ,trail:.,extends:>,precedes:<,eol:$
