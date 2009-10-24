@@ -161,6 +161,8 @@ function! MyTab()
     endif
 endfunction
 
+" <Tab> is C-I, so assign jump list navi to C-P
+noremap <C-P> <C-I>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Visual Cues

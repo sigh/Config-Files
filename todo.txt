@@ -7,3 +7,4 @@
     + mouse support for MBE
     + shortcut deleting buffer
     + svn plugin
+    + Alt+num goes to buffer
