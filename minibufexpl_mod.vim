@@ -1112,17 +1112,19 @@ function! <SID>BuildBufferList(delBufNum, updateBufList)
             " Get filename & Remove []'s & ()'s
             let l:shortBufName = fnamemodify(l:BufName, ":t")                  
             let l:shortBufName = substitute(l:shortBufName, '[][()]', '', 'g') 
-            let l:tab = '['.l:i.':'.l:shortBufName.']'
+            let l:tab = l:i.':'.l:shortBufName
 
             " If the buffer is open in a window mark it
             if bufwinnr(l:i) != -1
-              let l:tab = l:tab . '*'
+              let l:tab = '[' . l:tab . ']'
             endif
 
             " If the buffer is modified then mark it
             if(getbufvar(l:i, '&modified') == 1)
               let l:tab = l:tab . '+'
             endif
+
+            let l:tab = l:tab . ' '
 
             let l:maxTabWidth = <SID>Max(strlen(l:tab), l:maxTabWidth)
             let l:fileNames = l:fileNames.l:tab
