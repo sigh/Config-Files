@@ -141,9 +141,6 @@ nmap k gk
 " set history to something large
 set history=1000 
 
-" make C-u and C-d scroll more slowly
-set scroll=3
- 
 " Restore cursor position when we load up the file
 if has("autocmd")
     autocmd BufReadPost * 
@@ -190,6 +187,10 @@ set listchars=tab:\|\ ,trail:.,extends:>,precedes:<,eol:$
 " Minimal number of screen lines to keep above and below the cursor
 set scrolloff=4
 
+" Make side scrolling act more naturally
+set sidescrolloff=10
+set sidescroll=1
+
 " don't blink
 set novisualbell
 
@@ -201,6 +202,9 @@ set laststatus=2
 
 " always show the mode we are in
 set showmode
+
+" make C-u and C-d scroll more slowly (this must be set after laststatus is set)
+set scroll=3
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Text Formatting/Layout
@@ -364,3 +368,4 @@ let g:miniBufExplUseSingleClick = 1
 " this must always be LAST (not working :( )
 " set shellcmdflag=-ic
 
+ 

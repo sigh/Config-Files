@@ -4,6 +4,6 @@
 .vimrc
     + display pwd in empty cmd area
     + map C-O to go forward, C-o to co backward
-    + fix scroll being reset (maybe by paste?)
     + mouse support for MBE
     + shortcut deleting buffer
+    + svn plugin
