@@ -878,6 +878,11 @@ function! <SID>FindCreateWindow(bufName, forceEdge, isExplorer, doDebug)
       endif
     endif
 
+    " DA: Set up local options for explorer window
+    setlocal nowrap
+    setlocal statusline=%{$PWD}
+    setlocal noshowmatch
+
     if a:doDebug
       call <SID>DEBUG('Window ('.a:bufName.') created: '.winnr(),9)
     endif
@@ -1025,6 +1030,29 @@ function! <SID>ShowBuffers(delBufNum)
     $
     put! =g:miniBufExplBufList
     $ d _
+
+    " DA: center current window 
+    " find where our current buffer is in the string
+    wincmd p
+    let l:buffer_pos = strridx(g:miniBufExplBufList,   '[' . bufnr('%') . ':' )
+    wincmd p
+
+    " we want the current buffer to be in the middle
+    let l:width = winwidth('.')
+    let l:strlen = strlen(g:miniBufExplBufList)
+    let l:offset = l:buffer_pos - l:width/2
+    
+    " don't go too far
+    if l:offset + l:width >= l:strlen
+        let l:offset = l:strlen - l:width
+    endif
+
+    " we never want to move backwards
+    if l:offset >= 0
+        execute 'normal! ' . l:offset . 'zl'
+    else
+        normal! zs
+    endif
 
     let g:miniBufExplForceDisplay = 0
 
