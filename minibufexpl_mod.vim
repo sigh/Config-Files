@@ -1114,49 +1114,50 @@ function! <SID>BuildBufferList(delBufNum, updateBufList)
       if(getbufvar(l:i, '&buflisted') == 1)
         " Get the name of the buffer.
         let l:BufName = bufname(l:i)
-        " Check to see if the buffer is a blank or not. If the buffer does have
-        " a name, process it.
-        if(strlen(l:BufName))
-          " Only show modifiable buffers (The idea is that we don't 
-          " want to show Explorers)
-          if (getbufvar(l:i, '&modifiable') == 1 && BufName != '-MiniBufExplorer-')
-            
-            " Get filename & Remove []'s & ()'s
-            let l:shortBufName = fnamemodify(l:BufName, ":t")                  
-            let l:shortBufName = substitute(l:shortBufName, '[][()]{}', '', 'g') 
+        " DA: show empty buffers
+        if ! strlen(l:BufName)
+            let l:BufName = '=No Name='
+        endif
 
-            " DA: modified how buffers are displayed
+        " Only show modifiable buffers (The idea is that we don't 
+        " want to show Explorers)
+        if (getbufvar(l:i, '&modifiable') == 1 && BufName != '-MiniBufExplorer-')
+          
+          " Get filename & Remove []'s & ()'s
+          let l:shortBufName = fnamemodify(l:BufName, ":t")                  
+          let l:shortBufName = substitute(l:shortBufName, '[][()]{}', '', 'g') 
 
-            if l:i == s:curBuf
-              " Active
-              let l:tab = '{' . l:i . ' ' . l:shortBufName . '}'
-            elseif bufwinnr(l:i) != -1
-              " Visible
-              let l:tab = '[' . l:i . ' ' . l:shortBufName . ']'
-            else
-              " Hidden
-              let l:tab = l:i.':'.l:shortBufName
+          " DA: modified how buffers are displayed
+
+          if l:i == s:curBuf
+            " Active
+            let l:tab = '{' . l:i . ' ' . l:shortBufName . '}'
+          elseif bufwinnr(l:i) != -1
+            " Visible
+            let l:tab = '[' . l:i . ' ' . l:shortBufName . ']'
+          else
+            " Hidden
+            let l:tab = l:i.':'.l:shortBufName
+          endif
+
+          " If the buffer is modified then mark it
+          " if(getbufvar(l:i, '&modified') == 1)
+          "  let l:tab = l:tab . '+'
+          " endif
+
+          let l:tab = l:tab . ' '
+
+          let l:maxTabWidth = <SID>Max(strlen(l:tab), l:maxTabWidth)
+          let l:fileNames = l:fileNames.l:tab
+
+          " If horizontal and tab wrap is turned on we need to add spaces
+          if g:miniBufExplVSplit == 0
+            if g:miniBufExplTabWrap != 0
+              let l:fileNames = l:fileNames.' '
             endif
-
-            " If the buffer is modified then mark it
-            " if(getbufvar(l:i, '&modified') == 1)
-            "  let l:tab = l:tab . '+'
-            " endif
-
-            let l:tab = l:tab . ' '
-
-            let l:maxTabWidth = <SID>Max(strlen(l:tab), l:maxTabWidth)
-            let l:fileNames = l:fileNames.l:tab
-
-            " If horizontal and tab wrap is turned on we need to add spaces
-            if g:miniBufExplVSplit == 0
-              if g:miniBufExplTabWrap != 0
-                let l:fileNames = l:fileNames.' '
-              endif
-            " If not horizontal we need a newline
-            else
-              let l:fileNames = l:fileNames . "\n"
-            endif
+          " If not horizontal we need a newline
+          else
+            let l:fileNames = l:fileNames . "\n"
           endif
         endif
       endif
@@ -1213,16 +1214,12 @@ function! <SID>HasEligibleBuffers(delBufNum)
       if (getbufvar(l:i, '&buflisted') == 1)
         " Get the name of the buffer.
         let l:BufName = bufname(l:i)
-        " Check to see if the buffer is a blank or not. If the buffer does have
-        " a name, process it.
-        if (strlen(l:BufName))
-          " Only show modifiable buffers (The idea is that we don't 
-          " want to show Explorers)
-          if ((getbufvar(l:i, '&modifiable') == 1) && (BufName != '-MiniBufExplorer-'))
-            
-              let l:found = l:found + 1
-  
-          endif
+        " Only show modifiable buffers (The idea is that we don't 
+        " want to show Explorers)
+        if ((getbufvar(l:i, '&modifiable') == 1) && (BufName != '-MiniBufExplorer-'))
+          
+            let l:found = l:found + 1
+
         endif
       endif
     endif
@@ -1296,7 +1293,7 @@ function! <SID>AutoUpdate(delBufNum)
   " this allows us to stop updates on startup.
   if g:miniBufExplorerAutoUpdate == 1
     " Only show MiniBufExplorer if we have a real buffer
-    if ((g:miniBufExplorerMoreThanOne == 0) || (bufnr('%') != -1 && bufname('%') != ""))
+    if ((g:miniBufExplorerMoreThanOne == 0) || (bufnr('%') != -1))
       if <SID>HasEligibleBuffers(a:delBufNum) == 1
         " if we don't have a window then create one
         let l:bufnr = <SID>FindWindow('-MiniBufExplorer-', 0)
