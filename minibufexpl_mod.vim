@@ -1047,7 +1047,7 @@ function! <SID>ShowBuffers(delBufNum)
     " DA: center current window 
 
     " find where our current buffer is in the string
-    let l:buffer_pos = strridx(g:miniBufExplBufList,   '{' . s:curBuf . ':' )
+    let l:buffer_pos = strridx(g:miniBufExplBufList,   '{' . s:curBuf . ' ' )
 
     " we want the current buffer to be in the middle
     let l:width = winwidth('.')
@@ -1126,15 +1126,16 @@ function! <SID>BuildBufferList(delBufNum, updateBufList)
             let l:shortBufName = substitute(l:shortBufName, '[][()]{}', '', 'g') 
 
             " DA: modified how buffers are displayed
-            let l:tab = l:i.':'.l:shortBufName
 
-            " If the buffer is open in a window mark it
-            if bufwinnr(l:i) != -1
-              if l:i == s:curBuf
-                let l:tab = '{' . l:tab . '}'
-              else
-                let l:tab = '[' . l:tab . ']'
-              endif
+            if l:i == s:curBuf
+              " Active
+              let l:tab = '{' . l:i . ' ' . l:shortBufName . '}'
+            elseif bufwinnr(l:i) != -1
+              " Visible
+              let l:tab = '[' . l:i . ' ' . l:shortBufName . ']'
+            else
+              " Hidden
+              let l:tab = l:i.':'.l:shortBufName
             endif
 
             " If the buffer is modified then mark it
