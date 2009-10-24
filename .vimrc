@@ -165,6 +165,33 @@ endfunction
 noremap <C-P> <C-I>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Swith buffer with alt keys
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"NORMAL mode bindings for vim( terminal)
+noremap <unique> <script> 1 :b! 1<CR>
+noremap <unique> <script> 2 :b! 2<CR>
+noremap <unique> <script> 3 :b! 3<CR>
+noremap <unique> <script> 4 :b! 4<CR>
+noremap <unique> <script> 5 :b! 5<CR>
+noremap <unique> <script> 6 :b! 6<CR>
+noremap <unique> <script> 7 :b! 7<CR>
+noremap <unique> <script> 8 :b! 8<CR>
+noremap <unique> <script> 9 :b! 9<CR>
+noremap <unique> <script> 0 :b! 0<CR>
+"INSERT mode bindings for vim( terminal)
+inoremap <unique> <script> 1 <esc>:b! 1<CR>
+inoremap <unique> <script> 2 <esc>:b! 2<CR>
+inoremap <unique> <script> 3 <esc>:b! 3<CR>
+inoremap <unique> <script> 4 <esc>:b! 4<CR>
+inoremap <unique> <script> 5 <esc>:b! 5<CR>
+inoremap <unique> <script> 6 <esc>:b! 6<CR>
+inoremap <unique> <script> 7 <esc>:b! 7<CR>
+inoremap <unique> <script> 8 <esc>:b! 8<CR>
+inoremap <unique> <script> 9 <esc>:b! 9<CR>
+inoremap <unique> <script> 0 <esc>:b! 0<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Visual Cues
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
