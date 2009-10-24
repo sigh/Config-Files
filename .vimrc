@@ -78,8 +78,9 @@ endif
 " color the status line
 highlight clear StatusLine
 highlight clear StatusLineNC
-highlight StatusLine   term=reverse cterm=reverse
-highlight StatusLineNC term=reverse ctermfg=black ctermbg=grey
+highlight StatusLineHidden  ctermfg=grey ctermbg=grey 
+highlight StatusLine        term=reverse cterm=reverse
+highlight StatusLineNC      term=reverse ctermfg=black ctermbg=grey
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vim UI
@@ -152,8 +153,8 @@ if has("autocmd")
 endif
  
 " Switch buffers with tab
-:nnoremap <Tab> :bnext<CR>:redraw<CR>:ls<CR>
-:nnoremap <S-Tab> :bprevious<CR>:redraw<CR>:ls<CR>
+:nnoremap <silent> <Tab> :bnext<CR>
+:nnoremap <silent> <S-Tab> :bprevious<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Visual Cues
@@ -335,6 +336,16 @@ nmap ,pt :%! perltidy -et=4<CR>
 vmap ,pt :'<,'>! perltidy -et=4<CR>
 
 nmap ,pc :! perl -c %<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" PLugin options
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Mini-buffer explorer
+
+let g:miniBufExplMaxSize = 1
+let g:miniBufExplModSelTarget = 1 
+let g:miniBufExplUseSingleClick = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Finally

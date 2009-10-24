@@ -651,11 +651,10 @@ function! <SID>StartExplorer(sticky, delBufNum)
     syn clear
     syn match MBEHidden     '[{}]'
     syn match MBEVisible    '\[[^\]]*\]' contains=MBEHidden
-    syn match MBEActive     '{[^}]*}'    contains=MBEHidden
+    syn match MBEActive     '[[^}]*}'    contains=MBEHidden
     
     if !exists("g:did_minibufexplorer_syntax_inits")
       let g:did_minibufexplorer_syntax_inits = 1
-      highlight StatusLineHidden    ctermfg=white ctermbg=white 
       hi def link MBEHidden         StatusLineHidden
       hi def link MBEVisible        Special
       hi def link MBEActive         StatusLineNC
