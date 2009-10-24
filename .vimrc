@@ -78,10 +78,9 @@ endif
 " color the status line
 highlight clear StatusLine
 highlight clear StatusLineNC
-highlight StatusLineHidden  ctermfg=grey ctermbg=grey 
-highlight MatchParen        ctermbg=grey 
-highlight StatusLine        term=reverse cterm=reverse
-highlight StatusLineNC      term=reverse ctermfg=black ctermbg=grey
+highlight StatusLineHidden  ctermfg=black ctermbg=black 
+highlight StatusLine        term=reverse ctermfg=DarkYellow  ctermbg=black
+highlight StatusLineNC      term=reverse ctermfg=grey ctermbg=black
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vim UI
@@ -195,7 +194,7 @@ set scrolloff=4
 set novisualbell
 
 " Set the status line
-set statusline=%f\ [%M%n%R%H]%<\ %{$PWD}\ %=%l/%L%<\ [%p%%]\ %v\ [%b,0x%B]
+set statusline=%f\ [%M%n%R%H%W]%<\ %y\ %#StatusLineHidden#%=%*%l/%L%<\ [%p%%]\ %v\ [%b,0x%B]
 
 " always show the status line
 set laststatus=2
