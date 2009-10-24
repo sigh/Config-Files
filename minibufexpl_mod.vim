@@ -649,18 +649,16 @@ function! <SID>StartExplorer(sticky, delBufNum)
  
   if has("syntax")
     syn clear
-    syn match MBENormal             '\[[^\]]*\]'
-    syn match MBEChanged            '\[[^\]]*\]+'
-    syn match MBEVisibleNormal      '\[[^\]]*\]'
-    syn match MBEActiveNormal       '{[^}]*}'
-    syn match MBEVisibleChanged     '\[[^\]]*\]\*+'
+    syn match MBEHidden     '[{}]'
+    syn match MBEVisible    '\[[^\]]*\]' contains=MBEHidden
+    syn match MBEActive     '{[^}]*}'    contains=MBEHidden
     
     if !exists("g:did_minibufexplorer_syntax_inits")
       let g:did_minibufexplorer_syntax_inits = 1
-      hi def link MBENormal         Comment
-      hi def link MBEChanged        String
-      hi def link MBEVisibleNormal  Special
-      hi def link MBEActiveNormal   StatusLineNC
+      highlight StatusLineHidden    ctermfg=white ctermbg=white 
+      hi def link MBEHidden         StatusLineHidden
+      hi def link MBEVisible        Special
+      hi def link MBEActive         StatusLineNC
     endif
   endif
 
@@ -1126,9 +1124,9 @@ function! <SID>BuildBufferList(delBufNum, updateBufList)
             endif
 
             " If the buffer is modified then mark it
-            if(getbufvar(l:i, '&modified') == 1)
-              let l:tab = l:tab . '+'
-            endif
+            " if(getbufvar(l:i, '&modified') == 1)
+            "  let l:tab = l:tab . '+'
+            " endif
 
             let l:tab = l:tab . ' '
 
@@ -1152,7 +1150,8 @@ function! <SID>BuildBufferList(delBufNum, updateBufList)
 
   if (g:miniBufExplBufList != l:fileNames)
     if (a:updateBufList)
-      let g:miniBufExplBufList = l:fileNames
+      " DA: cut off the last space
+      let g:miniBufExplBufList = strpart(l:fileNames, -1, strlen(l:fileNames))
       let s:maxTabWidth = l:maxTabWidth
     endif
     return 1
