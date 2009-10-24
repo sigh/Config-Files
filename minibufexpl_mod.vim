@@ -658,7 +658,7 @@ function! <SID>StartExplorer(sticky, delBufNum)
       let g:did_minibufexplorer_syntax_inits = 1
       hi def link MBEHidden         StatusLineHidden
       hi def link MBEVisible        Special
-      hi def link MBEActive         StatusLineNC
+      hi def link MBEActive         StatusLine
     endif
   endif
 
@@ -893,7 +893,7 @@ function! <SID>FindCreateWindow(bufName, forceEdge, isExplorer, doDebug)
 
     " DA: Set up local options for explorer window
     setlocal nowrap
-    setlocal statusline=%{$PWD}
+    setlocal statusline=%{$PWD}%#StatusLineHidden#
     setlocal noshowmatch
 
     if a:doDebug
