@@ -600,7 +600,8 @@ let s:debugIndex = 0
 augroup MiniBufExplorer
 autocmd MiniBufExplorer BufDelete   * call <SID>DEBUG('-=> BufDelete AutoCmd', 10) |call <SID>AutoUpdate(expand('<abuf>'))
 autocmd MiniBufExplorer BufEnter    * call <SID>DEBUG('-=> BufEnter  AutoCmd', 10) |call <SID>AutoUpdate(-1)
-autocmd MiniBufExplorer VimEnter    * call <SID>DEBUG('-=> VimEnter  AutoCmd', 10) |let g:miniBufExplorerAutoUpdate = 1 |call <SID>AutoUpdate(-1)
+" DA Don't start on startup
+" autocmd MiniBufExplorer VimEnter    * call <SID>DEBUG('-=> VimEnter  AutoCmd', 10) |let g:miniBufExplorerAutoUpdate = 1 |call <SID>AutoUpdate(-1)
 " }}}
 
 " Functions
@@ -651,7 +652,7 @@ function! <SID>StartExplorer(sticky, delBufNum)
     syn clear
     syn match MBEHidden     '[{}]'
     syn match MBEVisible    '\[[^\]]*\]' contains=MBEHidden
-    syn match MBEActive     '[[^}]*}'    contains=MBEHidden
+    syn match MBEActive     '{[^}]*}'    contains=MBEHidden
     
     if !exists("g:did_minibufexplorer_syntax_inits")
       let g:did_minibufexplorer_syntax_inits = 1
@@ -695,6 +696,9 @@ function! <SID>StartExplorer(sticky, delBufNum)
 
   let &report  = l:save_rep
   let &showcmd = l:save_sc
+
+  " DA: switch back to previous buffer
+  wincmd p
 
   call <SID>DEBUG('===========================',10)
   call <SID>DEBUG('Completed StartExplorer()'  ,10)
@@ -753,6 +757,17 @@ function! <SID>ToggleExplorer()
 
 endfunction
 
+" }}}
+" MBEIsOpen - Return 1 if MBE is open, 0 otherwise {{{
+" DA: Added by me
+"
+function! MBEIsOpen()
+  if <SID>FindWindow('-MiniBufExplorer-', 1) >= 0
+      return 1
+  else
+      return 0
+  endif
+endfunction
 " }}}
 " FindWindow - Return the window number of a named buffer {{{
 " If none is found then returns -1. 
