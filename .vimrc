@@ -26,16 +26,18 @@ filetype plugin on
 filetype indent on
 
 " Tell vim to remember certain things when we exit
-"  '100 : marks will be remembered for up to 100 previously edited files
-"  "100 : will save up to 100 lines for each register
-"  :100 : up to 100 lines of command-line history will be remembered
+"  '1000 : marks will be remembered for up to 1000 previously edited files
+"  f1: store global marks
+"  "1000 : will save up to 1000 lines for each register
+"  :1000 : up to 1000 lines of command-line history will be remembered
+"  /1000 : up to 1000 lines of search history
 "  % : saves and restores the buffer list
 "  n... : where to save the viminfo files
 " ! : save global variables
-set viminfo='100,\"100,:100,%,n~/.viminfo,!
+set viminfo='1000,f1,\"1000,/1000,:1000,n~/.viminfo,!
 
 " none of these should be word dividers, so make them not be
-set iskeyword+=_,$,@,%,#,:
+set iskeyword+=_,$,@,%,#
 
 " ignore case sensitivity on search patterns
 set ignorecase
