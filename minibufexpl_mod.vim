@@ -1358,18 +1358,16 @@ function! <SID>GetSelectedBuffer()
     return -1
   endif
 
-  let l:save_reg = @"
-  let @" = ""
-  normal ""yi[
-  if @" != ""
-    let l:retv = substitute(@",'\([0-9]*\):.*', '\1', '') + 0
-    let @" = l:save_reg
-    return l:retv
+  let l:text = getline(1)
+  let l:pos = max( [ searchpos("[ ][0-9]*:", 'bcnW')[1], searchpos("^[0-9]*:", 'bcnW')[1], searchpos("[^]}][0-9]*[ ]", 'bcnW')[1] ])
+
+  if l:pos == 1
+      return l:text+0
+  elseif l:pos > 0
+    return strpart(l:text, l:pos) + 0
   else
-    let @" = l:save_reg
     return -1
   endif
-
 endfunction
 
 " }}}
