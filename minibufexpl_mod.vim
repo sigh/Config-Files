@@ -1359,6 +1359,7 @@ function! <SID>GetSelectedBuffer()
   endif
 
   let l:text = getline(1)
+  " \| wont work :( Don't know why
   let l:pos = max( [ searchpos("[ ][0-9]*:", 'bcnW')[1], searchpos("^[0-9]*:", 'bcnW')[1], searchpos("[^]}][0-9]*[ ]", 'bcnW')[1] ])
 
   if l:pos == 1

@@ -6,4 +6,8 @@
     + mouse support for MBE
     + shortcut deleting buffer
     + svn plugin
-    + Alt+num goes to buffer
+    + tagliist plugin
+    + scroll moves horizontally in mini bar
+
+rcdist
+    + Needs to handle directories
