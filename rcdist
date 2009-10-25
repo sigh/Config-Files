@@ -7,7 +7,7 @@
 #   -d       dry run
 #   base_dir base directory (default is $HOME)
 
-declare -a hosts files
+declare -a hosts files dirs
 
 hosts=(
     zim
@@ -20,6 +20,7 @@ files=(
     .pystartup
     .inputrc
     .screenrc
+    .vim/plugin/minibufexpl_mod.vim
 )
 
 # get options
@@ -43,9 +44,32 @@ fi
 # change to base directory
 cd "$base"
 
+function elemExists() {
+    needle=$1
+    shift
+
+    for i in "$@" ; do
+        [[ "$i" == "$needle" ]] && exit 0
+    done
+    return 1
+}
+
+# find all the directories that need to be created
+for file in "${files[@]}" ; do
+    if [[ ! -r "$file" ]] ; then
+        echo "$0: Could not read file: $file" 1>&2
+        exit 1;
+    fi
+    dir=${file%/*}
+
+    if [[ "$dir" != "$file" ]] && ! elemExists "$dir" "${dirs[@]}" ; then
+        dirs[${#dirs[@]}]="$dir"
+    fi
+done
+
 for host in "${hosts[@]}" ; do
     echo "Checking host: $host"
-    remote_cksum=$(ssh -C "$host" cksum "${files[@]}" 2> /dev/null)
+    remote_cksum=$(ssh -C "$host" cksum "${files[@]}" ";" mkdir -p "${dirs[@]}" 2> /dev/null)
                               
     # check if error occurred connection to server
     if [[ $? = 255 ]] ; then
@@ -54,10 +78,7 @@ for host in "${hosts[@]}" ; do
     fi
 
     for file in "${files[@]}" ; do
-        if [[ ! -r "$file" ]] ; then
-            # error if we can't read the file
-            echo "$0: Could not read file: $file" 1>&2
-        elif ! grep -qx "$(cksum "$file")" <<<"$remote_cksum" ; then
+        if ! grep -qx "$(cksum "$file")" <<<"$remote_cksum" ; then
             # if checksum matched, upload
             if [[ -n $dry ]] ; then
                 echo "Copy $file"
