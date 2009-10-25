@@ -226,7 +226,7 @@ set sidescroll=1
 set novisualbell
 
 " Set the status line
-set statusline=%f\ [%M%n%R%H%W]%<\ %y\ %#StatusLineHidden#%=%*%l/%L%<\ [%p%%]\ %v\ [%b,0x%B]
+set statusline=%f\ [%M%n%R%H%W]%<\ %Y\ [%{&ff}]\ %#StatusLineHidden#%=%*%l/%L%<\ [%p%%]\ %v\ [%b,0x%B]
 
 " always show the status line
 set laststatus=2
@@ -390,6 +390,7 @@ nmap ,pc :! perl -c %<CR>
 let g:miniBufExplMaxSize = 1
 let g:miniBufExplModSelTarget = 1 
 let g:miniBufExplUseSingleClick = 1
+let g:miniBufExplorerMoreThanOne = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Finally
