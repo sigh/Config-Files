@@ -146,9 +146,9 @@ set history=1000
 " Restore cursor position when we load up the file
 if has("autocmd")
     autocmd BufReadPost * 
-	\ if line("'\"") > 0 && line("'\"") <= line("$") |
-	\ exe "normal g`\"" |
-	\ endif 
+    \ if line("'\"") > 0 && line("'\"") <= line("$") |
+    \ exe "normal g`\"" |
+    \ endif 
 endif
  
 " Switch buffers with tab
@@ -159,6 +159,7 @@ function! MyTab()
     if MBEIsOpen() == 1
         bnext
     else
+        set laststatus=0
         MiniBufExplorer
     endif
 endfunction
@@ -210,7 +211,8 @@ set hlsearch
 set incsearch           
 
 " Press Space to turn off highlighting and clear any message already displayed.
-nnoremap <silent> <Space> :nohlsearch<Bar>:CMiniBufExplorer<CR>:echo<CR>
+" Also turn off MBE
+nnoremap <silent> <Space> :nohlsearch<Bar>:CMiniBufExplorer<CR>:set<Space>laststatus=2<CR>:pwd<CR>
 
 " what to show when I hit :set list
 set listchars=tab:\|\ ,trail:.,extends:>,precedes:<,eol:$
@@ -226,7 +228,7 @@ set sidescroll=1
 set novisualbell
 
 " Set the status line
-set statusline=%f\ [%M%n%R%H%W]%<\ %Y\ [%{&ff}]\ %#StatusLineHidden#%=%*%l/%L%<\ [%p%%]\ %v\ [%b,0x%B]
+set statusline=%f\ [%M%n%R%H%W]%<\ %Y\ [%{&ff}]\ %=%l/%L%<\ [%p%%]\ %v\ [%b,0x%B]
 
 " always show the status line
 set laststatus=2
@@ -271,26 +273,26 @@ set nowrap
 set smarttab
 
 if executable("pbcopy")
-	" ,p pastes when in normal mode, and copies in normal mode
-	vmap ,p :w !pbcopy<CR><CR>
-	nmap ,p :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
+    " ,p pastes when in normal mode, and copies in normal mode
+    vmap ,p :w !pbcopy<CR><CR>
+    nmap ,p :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
 else
-	" ,p enters insert mode with paste on and mouse off and line numbering
-	"    changes are reverted when exiting insert mode
-	"    In older versions of vim, you must press <Esc> again to revert
-	nmap <silent> ,p :call MyPasteMode()<CR>i
+    " ,p enters insert mode with paste on and mouse off and line numbering
+    "    changes are reverted when exiting insert mode
+    "    In older versions of vim, you must press <Esc> again to revert
+    nmap <silent> ,p :call MyPasteMode()<CR>i
 
-	function! MyPasteMode()
-		set paste nonumber mouse=
-		
-		if v:version >= 700
-			augroup paste 
-				autocmd InsertLeave * :set nopaste number mouse=a | autocmd! paste
-			augroup end
-		else
-			map <silent> <Esc> :set nopaste number mouse=a<CR>:unmap <Char-60>Esc><CR>
-		endif
-	endfunction                
+    function! MyPasteMode()
+        set paste nonumber mouse=
+        
+        if v:version >= 700
+            augroup paste 
+                autocmd InsertLeave * :set nopaste number mouse=a | autocmd! paste
+            augroup end
+        else
+            map <silent> <Esc> :set nopaste number mouse=a<CR>:unmap <Char-60>Esc><CR>
+        endif
+    endfunction                
 endif
 
 " Set text wrapping toggles
@@ -374,7 +376,7 @@ set directory=~/.vim/.swap
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Language specific
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-autocmd FileType python,haskell,lisp set expandtab nocindent
+autocmd FileType python,haskell,lisp setlocal expandtab nocindent
 
 nmap ,pt :%! perltidy -et=4<CR>
 vmap ,pt :'<,'>! perltidy -et=4<CR>
@@ -391,6 +393,7 @@ let g:miniBufExplMaxSize = 1
 let g:miniBufExplModSelTarget = 1 
 let g:miniBufExplUseSingleClick = 1
 let g:miniBufExplorerMoreThanOne = 1
+let g:miniBufExplSplitBelow = 1  
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Finally

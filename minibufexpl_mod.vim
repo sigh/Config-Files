@@ -893,7 +893,6 @@ function! <SID>FindCreateWindow(bufName, forceEdge, isExplorer, doDebug)
 
     " DA: Set up local options for explorer window
     setlocal nowrap
-    setlocal statusline=%{$PWD}%#StatusLineHidden#
     setlocal noshowmatch
 
     if a:doDebug
