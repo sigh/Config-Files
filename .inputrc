@@ -38,6 +38,7 @@ set page-completions off
 
 # shift tab cycles through completions
 "\C-y": menu-complete
+"\e[Z": menu-complete
 
 # reverse menu complete (no workie)
 # "\C-y": "\M--\C-i"
