@@ -23,7 +23,8 @@ else
     TITLEBAR=
 fi
 
-PARENT_NAME=$(ps -c -o command -p $PPID | tail -n +2)
+PARENT_NAME=$(ps -o command -p $PPID | tail -n +2)
+PARENT_NAME=${PARENT_NAME%%[: ]*}
 export PS1="$TITLEBAR$PROMPT_COLOR[\A] [$PARENT_NAME] \u@\h:\w\n$PROMPT_COLOR\! \$$NONE "
 
 # set other prompts
@@ -87,7 +88,7 @@ shopt -s cmdhist
 export IGNOREEOF=1
 
 # customise ls 
-eval `dircolors`
+eval $(dircolors)
 ls()  { command ls --color=tty -hF "$@" ; }
 l.()  { ls  -d .*   ; }
 ll()  { ls  -l "$@" ; }
@@ -207,3 +208,4 @@ else
     # revert titlebar if screen messes with it
     printf "\033];$USER@${HOSTNAME%%.*}\007"
 fi
+
