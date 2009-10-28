@@ -236,8 +236,10 @@ set laststatus=2
 " always show the mode we are in
 set showmode
 
-" make C-u and C-d scroll more slowly (this must be set after laststatus is set)
-set scroll=3
+" make C-u and C-d scroll more slowly
+" set scroll=3   " This keeps being reset so overwrite c-u c-d
+nnoremap <C-U> 3<C-Y>
+nnoremap <C-D> 3<C-E>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Text Formatting/Layout
