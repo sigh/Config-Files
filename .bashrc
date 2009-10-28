@@ -45,13 +45,13 @@ stty -ixon
 
 # customise cd
 
-cd()   { pushd "$1" > /dev/null; }
+cd()   { pushd "$@" > /dev/null; }
 
-cd..() { cd .. "$@" ; }
-..()   { cd .. "$@" ; }
+cd..() { cd "$@" .. ; }
+..()   { cd "$@" .. ; }
 d()    { dirs -v "$@" ; }
 
-mkdcd() { mkdir "$@" && cd "$1" ; }
+mkdcd() { mkdir -p "$@" && cd "${!#}" ; }
 
 # allow for correction of inaccurate cd commands
 shopt -s cdspell
@@ -75,7 +75,7 @@ shopt -s cdable_vars
 export FIGNORE='.swp:.svn:.0:~';
 
 # customise history
-export HISTIGNORE='&:ls:fg:bg:[ ]*'
+export HISTIGNORE='&:ls:fg:bg:ssh-fix:[ ]*'
 unset  HISTFILESIZE                 # never delete from history
 export HISTFILESIZE
 export HISTSIZE=10000
@@ -90,7 +90,7 @@ export IGNOREEOF=1
 # customise ls 
 eval $(dircolors)
 ls()  { command ls --color=tty -hF "$@" ; }
-l.()  { ls  -d .*   ; }
+l.()  { ls  -d "$@" .* ; }
 ll()  { ls  -l "$@" ; }
 lt()  { ll  -t "$@" ; }
 la()  { ls  -A "$@" ; }
@@ -177,7 +177,7 @@ if [[ -z "$STY" ]] ; then
             # Variables to save
             SSHVARS="SSH_CLIENT SSH_TTY SSH_AUTH_SOCK SSH_CONNECTION DISPLAY"
 
-            string=
+            string=' ' # start with a space so it is ignored by history
             for x in ${SSHVARS} ; do
                 string="$string export $x='$(eval echo \$$x)' ; "
             done
