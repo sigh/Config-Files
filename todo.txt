@@ -1,5 +1,13 @@
 .bashrc
     + Fix lsd function so that it is more robust (no grep)
+    + Complete logging
+    + archive .bash_history
+    + show warning if bash_history has been truncated
+    + ensure that ssh-fix does not show up in bash history
+
+
+.screen
+    + Quick way to pipe current history scrollback through less
 
 .vimrc
     + display pwd in empty cmd area
@@ -7,7 +15,10 @@
     + shortcut deleting buffer
     + svn plugin
     + tagliist plugin
-    + scroll moves horizontally in mini bar
+    + commentify: http://www.vim.org/scripts/script.php?script_id=23
+    + surround plugin
+    + svn + git filetype recognition
+    + set keywords based on filetpye
 
 rcdist
     + Needs to handle directories
