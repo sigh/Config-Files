@@ -20,6 +20,7 @@ files=(
     .pystartup
     .inputrc
     .screenrc
+    .perltidy
     .vim/plugin/minibufexpl_mod.vim
     .vim/ftplugin/perl.vim
 )

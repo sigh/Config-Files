@@ -15,8 +15,7 @@ endif
 " and insert the comment leader when hitting <CR> or using "o".
 setlocal fo-=t fo+=croql
 setlocal include=\\<\\(use\\\|require\\)\\>
-setlocal includeexpr=substitute(substitute(v:fname,'::','/','g'),'$','
-+.pm','')
+setlocal includeexpr=substitute(substitute(v:fname,'::','/','g'),'$','.pm','')
 setlocal isfname=A-Z,a-z,:,48-57,_
 setlocal keywordprg=perldoc
 setlocal iskeyword=48-57,_,A-Z,a-z,: 
@@ -30,5 +29,5 @@ setlocal errorformat+=%m\ at\ %f\ line\ %l.
 
 " set equalprg to use perltidy if available
 if executable("perltidy")
-    equalprg=perltidy
+    set equalprg=perltidy
 endif
