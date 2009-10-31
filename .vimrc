@@ -246,7 +246,7 @@ nnoremap <C-D> 3<C-E>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " how automatic formatting is to be done
-set formatoptions=tcrqn
+set formatoptions=crqn
 
 " take indent for new line from previous line
 set autoindent
@@ -379,11 +379,6 @@ set directory=~/.vim/.swap
 " Language specific
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 autocmd FileType python,haskell,lisp setlocal expandtab nocindent
-
-nmap ,pt :%! perltidy -et=4<CR>
-vmap ,pt :'<,'>! perltidy -et=4<CR>
-
-nmap ,pc :! perl -c %<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " PLugin options

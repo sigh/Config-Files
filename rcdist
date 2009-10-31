@@ -21,6 +21,7 @@ files=(
     .inputrc
     .screenrc
     .vim/plugin/minibufexpl_mod.vim
+    .vim/ftplugin/perl.vim
 )
 
 # get options

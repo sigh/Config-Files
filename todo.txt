@@ -3,8 +3,7 @@
     + Complete logging
     + archive .bash_history
     + show warning if bash_history has been truncated
-    + ensure that ssh-fix does not show up in bash history
-
+    + make ssh-fix more secure
 
 .screen
     + Quick way to pipe current history scrollback through less
