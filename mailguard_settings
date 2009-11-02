@@ -4,7 +4,7 @@
 sed -i '' 's/^set expandtab " no/set noexpandtab " real/g' .vimrc
 
 # os x doesn't kow about dircolors right away :(
-sed -i '' 's/^eval `dircolors`/eval $(dircolors  2> \/dev\/null || \/opt\/local\/bin\/dircolors)/' .bashrc
+sed -i '' 's/^eval \$(dircolors)/eval $(dircolors  2> \/dev\/null || \/opt\/local\/bin\/dircolors)/' .bashrc
 
 if grep '^-et' .perltidyrc &> /dev/null ; then
     echo '-et=4    # use tabs' >> .perltidyrc
