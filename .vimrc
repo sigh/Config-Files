@@ -66,7 +66,7 @@ syntax on
 
 " Makes colours not fugly
 if ! has("gui_running")
-    set t_Co=8
+    set t_Co=16
 endif 
 
 colorscheme peachpuff_mod
