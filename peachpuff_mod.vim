@@ -29,11 +29,11 @@ hi IncSearch term=reverse cterm=NONE ctermbg=4 ctermfg=7  gui=reverse
 hi Search term=reverse ctermbg=3 ctermfg=0 guibg=Gold2
 hi MoreMsg term=bold ctermfg=2 gui=bold guifg=SeaGreen
 hi ModeMsg term=bold cterm=NONE ctermfg=1 gui=bold
-hi LineNr term=underline ctermfg=4 cterm=NONE guifg=Red3
+hi LineNr term=underline ctermfg=0 ctermbg=7 cterm=NONE guifg=Red3
 hi Question term=standout ctermfg=2 gui=bold guifg=SeaGreen
 hi StatusLine term=bold,reverse cterm=NONE ctermfg=7 ctermbg=4 gui=bold guifg=White guibg=Black
 hi StatusLineNC term=reverse cterm=NONE ctermfg=4 ctermbg=7 gui=bold guifg=PeachPuff guibg=Gray45
-hi VertSplit term=reverse cterm=reverse gui=bold guifg=White guibg=Gray45
+hi VertSplit term=reverse cterm=NONE ctermbg=7 gui=bold guifg=White guibg=Gray45
 hi Title term=bold ctermfg=5 gui=bold guifg=DeepPink3
 hi Visual term=reverse cterm=NONE ctermfg=0 ctermbg=7 gui=reverse guifg=Grey80 guibg=fg
 hi VisualNOS term=bold,underline cterm=underline gui=bold,underline
@@ -58,5 +58,5 @@ hi PreProc term=underline ctermfg=5 guifg=Magenta3
 hi Type term=underline ctermfg=2 gui=bold guifg=SeaGreen
 hi Ignore cterm=NONE ctermfg=7 guifg=bg
 hi Error term=reverse cterm=NONE ctermfg=7 ctermbg=1 gui=bold guifg=White guibg=Red
-hi Todo term=standout ctermfg=0 ctermbg=3 guifg=Blue guibg=Yellow
+hi Todo term=standout ctermfg=4 ctermbg=7 guifg=Blue guibg=Yellow
 
