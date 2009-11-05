@@ -70,9 +70,7 @@ if ! has("gui_running")
 endif 
 
 colorscheme peachpuff_mod
-highlight StatusLineHidden  ctermfg=4 ctermbg=4 
 
-" 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vim UI
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

@@ -656,7 +656,8 @@ function! <SID>StartExplorer(sticky, delBufNum)
     
     if !exists("g:did_minibufexplorer_syntax_inits")
       let g:did_minibufexplorer_syntax_inits = 1
-      hi def link MBEHidden         StatusLineHidden
+      let l:status_color = synIDattr(hlID('StatusLine'),"bg") 
+      exec "hi MBEHidden ctermbg=" . l:status_color . " ctermfg=" . l:status_color
       hi def link MBEVisible        Special
       hi def link MBEActive         StatusLine
     endif
