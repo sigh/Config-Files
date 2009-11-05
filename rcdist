@@ -23,6 +23,7 @@ files=(
     .perltidy
     .vim/plugin/minibufexpl_mod.vim
     .vim/ftplugin/perl.vim
+    .vim/colors/peachpuff.vim
 )
 
 # get options
