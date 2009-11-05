@@ -8,7 +8,7 @@ export PATH="${PATH}:$HOME/bin"
 unalias -a
 
 # make a colorful prompt
-NONE="\[$(tput setf 0)\]"    # unsets color to term's fg color
+NONE="\[$(tput sgr0)\]"    # reset formatting to default
 
 if [ "$USER" = 'root' ] ; then
     RAW_PROMPT_COLOR="$(tput setf 4)" # red for root
