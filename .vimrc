@@ -65,25 +65,14 @@ set ttyfast
 syntax on
 
 " Makes colours not fugly
-if &term =~ "xterm"
-    if has("terminfo")
-        set t_Co=8
-        set t_Sf=[3%p1%dm
-        set t_Sb=[4%p1%dm
-    else
-        set t_Co=8
-        set t_Sf=[3%dm
-        set t_Sb=[4%dm
-    endif
-endif
+if ! has("gui_running")
+    set t_Co=8
+endif 
 
-" color the status line
-highlight clear StatusLine
-highlight clear StatusLineNC
-highlight StatusLineHidden  ctermfg=black ctermbg=black 
-highlight StatusLine        term=reverse ctermfg=DarkYellow  ctermbg=black
-highlight StatusLineNC      term=reverse ctermfg=grey ctermbg=black
+colorscheme peachpuff_mod
+highlight StatusLineHidden  ctermfg=4 ctermbg=4 
 
+" 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vim UI
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
