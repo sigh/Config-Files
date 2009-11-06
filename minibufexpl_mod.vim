@@ -656,10 +656,19 @@ function! <SID>StartExplorer(sticky, delBufNum)
     
     if !exists("g:did_minibufexplorer_syntax_inits")
       let g:did_minibufexplorer_syntax_inits = 1
-      let l:status_color = synIDattr(hlID('StatusLine'),"bg") 
-      exec "hi MBEHidden ctermbg=" . l:status_color . " ctermfg=" . l:status_color
       hi def link MBEVisible        Special
       hi def link MBEActive         StatusLine
+
+      " color in brakets for current window
+      if synIDattr(hlID('StatusLine'),"reverse") 
+        let l:status_color = synIDattr(hlID('StatusLine'),"fg") 
+        let l:status_rev   = "reverse"
+      else
+        let l:status_color = synIDattr(hlID('StatusLine'),"bg") 
+        let l:status_rev   = "NONE"
+      endif
+
+      exec "hi MBEHidden ctermbg=" . l:status_color . " ctermfg=" . l:status_color . " cterm=" . l:status_rev
     endif
   endif
 
@@ -1116,7 +1125,7 @@ function! <SID>BuildBufferList(delBufNum, updateBufList)
         let l:BufName = bufname(l:i)
         " DA: show empty buffers
         if ! strlen(l:BufName)
-            let l:BufName = '=No Name='
+            let l:BufName = '(No Name)'
         endif
 
         " Only show modifiable buffers (The idea is that we don't 
