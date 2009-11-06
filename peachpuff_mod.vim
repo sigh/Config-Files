@@ -29,7 +29,8 @@ hi IncSearch term=reverse cterm=NONE ctermbg=4 ctermfg=7  gui=reverse
 hi Search term=reverse ctermbg=3 ctermfg=0 guibg=Gold2
 hi MoreMsg term=bold ctermfg=2 gui=bold guifg=SeaGreen
 hi ModeMsg term=bold cterm=NONE ctermfg=1 gui=bold
-hi LineNr term=underline ctermfg=0 ctermbg=7 cterm=NONE guifg=Red3
+" TODO: fallback to 7 if in 8 color mode
+hi LineNr term=underline ctermfg=8 ctermbg=NONE cterm=NONE guifg=Red3
 hi Question term=standout ctermfg=2 gui=bold guifg=SeaGreen
 hi StatusLine term=bold,reverse cterm=NONE ctermfg=7 ctermbg=4 gui=bold guifg=White guibg=Black
 hi StatusLineNC term=reverse cterm=NONE ctermfg=4 ctermbg=7 gui=bold guifg=PeachPuff guibg=Gray45
@@ -41,10 +42,11 @@ hi WarningMsg term=standout ctermfg=1 gui=bold guifg=Red
 hi WildMenu term=standout ctermfg=0 ctermbg=3 guifg=Black guibg=Yellow
 hi Folded term=standout ctermfg=4 ctermbg=7 guifg=Black guibg=#e3c1a5
 hi FoldColumn term=standout ctermfg=4 ctermbg=7 guifg=DarkBlue guibg=Gray80
+" TODO: use colors 8-15 when available for better diffs
 hi DiffAdd term=bold ctermbg=5 ctermfg=0 guibg=White
 hi DiffDelete term=bold cterm=NONE ctermfg=7 ctermbg=7 gui=bold guifg=LightBlue guibg=#f6e8d0
-hi DiffChange term=bold cterm=NONE ctermbg=2 ctermfg=0 guibg=#edb5cd
-hi DiffText term=reverse cterm=NONE ctermbg=2 ctermfg=7 gui=bold guibg=#ff8060
+hi DiffChange term=bold cterm=NONE ctermbg=2 ctermfg=7 guibg=#edb5cd
+hi DiffText term=reverse cterm=NONE ctermbg=2 ctermfg=0 gui=bold guibg=#ff8060
 hi Cursor guifg=bg guibg=fg
 hi lCursor guifg=bg guibg=fg
 
