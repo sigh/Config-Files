@@ -19,5 +19,8 @@
     + svn + git filetype recognition
     + set keywords based on filetpye
 
+minibuf:
+    + ensure that Hidden has the same cterm attribute, and use fg if reverse
+
 rcdist
     + Needs to handle directories
