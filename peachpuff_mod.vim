@@ -64,7 +64,7 @@ hi Todo term=standout ctermfg=4 ctermbg=7 guifg=Blue guibg=Yellow
 if &t_Co >= 16
     hi LineNr ctermfg=8
     hi DiffAdd ctermbg=13 ctermfg=0 
-    hi DiffDelete cterm=NONE ctermfg=8 ctermbg=8  
-    hi DiffChange cterm=NONE ctermbg=3 ctermfg=0 
-    hi DiffText cterm=NONE ctermbg=11 ctermfg=0 
+    hi DiffDelete ctermfg=8 ctermbg=8  
+    hi DiffChange ctermbg=3 ctermfg=0 
+    hi DiffText ctermbg=11 ctermfg=0 
 endif
