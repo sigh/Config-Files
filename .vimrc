@@ -393,6 +393,8 @@ vmap do :diffget<CR>
 " DiffChanges shortcuts :)
 map <silent> ,dg :GitDiffChanges<CR>
 map <silent> ,dG :GitDiffChanges!<CR>
+map <silent> ,ds :SvnDiffChanges<CR>
+map <silent> ,dS :SvnDiffChanges!<CR>
 map <silent> ,df :FileDiffChanges<CR>
 map <silent> ,dF :FileDiffChanges!<CR>
 map <silent> ,dt :TDiffChanges<CR>
