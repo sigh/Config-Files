@@ -385,7 +385,7 @@ set directory=~/.vim/.swap
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " set a larger context in diffs
-set diffopt=filler,context:10
+set diffopt=filler,context:10,foldcolumn:1
 
 " allow us to be able to "do" in visual mode
 vmap do :diffget<CR> 
