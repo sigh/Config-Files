@@ -19,5 +19,9 @@
     + svn + git filetype recognition
     + set keywords based on filetpye
 
+minifbuf:
+    + do laststatus changes internally
+
 rcdist
+    + load hosts and files from a config file
     + Needs to handle directories
