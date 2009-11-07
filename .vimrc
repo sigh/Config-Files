@@ -140,7 +140,7 @@ endif
  
 " Switch buffers with tab
 :nnoremap <silent> <Tab> :call <SID>MyTab()<CR>
-:nnoremap <silent> <S-Tab> :bprevious<Bar>:MiniBufExplorer<CR>
+:nnoremap <silent> <S-Tab> :bprevious<Bar>:set laststatus=0<Bar>:MiniBufExplorer<CR>
 
 function! <SID>MyTab()
     if MBEIsOpen() == 1
@@ -153,6 +153,9 @@ endfunction
 
 " <Tab> is C-I, so assign jump list navi to C-P
 noremap <C-P> <C-I>
+
+" Always split on right when vertical
+set splitright
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swith buffer with alt keys
@@ -199,12 +202,20 @@ set incsearch
 
 " Press Space to turn off highlighting and clear any message already displayed.
 " Also turn off MBE
-nnoremap <silent> <Space> :call <SID>ResetAll()<Bar>:pwd<CR>
+nnoremap <silent> <Space> :call <SID>ResetSome()<Bar>:nohlsearch<Bar>:pwd<CR>
 
-function! <SID>ResetAll()
-    nohlsearch
+" Ctrl-Space
+nnoremap <silent> <Nul>   :call <SID>ResetAll()<Bar>:nohlsearch<Bar>:pwd<CR>
+
+" Reset only somethings
+function! <SID>ResetSome()
     CMiniBufExplorer
     set laststatus=2
+endfunction
+
+" Reset most things that we could have opened
+function! <SID>ResetAll()
+    CDiffChanges
 endfunction
 
 " what to show when I hit :set list
@@ -373,7 +384,18 @@ set directory=~/.vim/.swap
 " Diff
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-map ,dg :call GitDiff()<CR>
+" set a larger context in diffs
+set diffopt=filler,context:10
+
+" allow us to be able to "do" in visual mode
+vmap do :diffget<CR> 
+
+" DiffChanges shortcuts :)
+map <silent> ,dg :GitDiffChanges<CR>
+map <silent> ,dG :GitDiffChanges!<CR>
+map <silent> ,df :FileDiffChanges<CR>
+map <silent> ,dF :FileDiffChanges!<CR>
+map <silent> ,dt :TDiffChanges<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Language specific
