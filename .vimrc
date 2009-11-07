@@ -139,10 +139,10 @@ if has("autocmd")
 endif
  
 " Switch buffers with tab
-:nnoremap <silent> <Tab> :call MyTab()<CR>
+:nnoremap <silent> <Tab> :call <SID>MyTab()<CR>
 :nnoremap <silent> <S-Tab> :bprevious<Bar>:MiniBufExplorer<CR>
 
-function! MyTab()
+function! <SID>MyTab()
     if MBEIsOpen() == 1
         bnext
     else
@@ -199,7 +199,13 @@ set incsearch
 
 " Press Space to turn off highlighting and clear any message already displayed.
 " Also turn off MBE
-nnoremap <silent> <Space> :nohlsearch<Bar>:CMiniBufExplorer<CR>:set<Space>laststatus=2<CR>:pwd<CR>
+nnoremap <silent> <Space> :call <SID>ResetAll()<Bar>:pwd<CR>
+
+function! <SID>ResetAll()
+    nohlsearch
+    CMiniBufExplorer
+    set laststatus=2
+endfunction
 
 " what to show when I hit :set list
 set listchars=tab:\|\ ,trail:.,extends:>,precedes:<,eol:$
@@ -269,9 +275,9 @@ else
     " ,p enters insert mode with paste on and mouse off and line numbering
     "    changes are reverted when exiting insert mode
     "    In older versions of vim, you must press <Esc> again to revert
-    nmap <silent> ,p :call MyPasteMode()<CR>i
+    nmap <silent> ,p :call <SID>MyPasteMode()<CR>i
 
-    function! MyPasteMode()
+    function! <SID>MyPasteMode()
         set paste nonumber mouse=
         
         if v:version >= 700
@@ -361,6 +367,13 @@ silent ! mkdir -p ~/.vim/.swap
 set backup
 set backupdir=~/.vim/.backup
 set directory=~/.vim/.swap
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Diff
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+map ,dg :call GitDiff()<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Language specific
