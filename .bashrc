@@ -154,8 +154,18 @@ shopt -s checkwinsize
 
 # open man page as a PDF in preview
 if [[ -d /Applications/Preview.app ]] ; then
-    pman() { man -t "$@" | open -f -a /Applications/Preview.app; }
+    pman() { command man -t "$@" | open -f -a /Applications/Preview.app; }
 fi
+
+# use vim as man pager
+man() { 
+    command man "$@" | col -b | \
+        vim -R -c 'set ft=man nomod nolist' -c 'map q :q<CR>' -
+}
+
+# use vim as our pager for everything else
+
+# TODO
 
 # shortcut vim and set it as our editor
 vi() { vim "$@" ; }
