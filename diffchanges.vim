@@ -79,6 +79,7 @@ function! <SID>DiffStart(close, readwhat)
     " load the file
     let s:diffbuf = bufnr('%')
     exec "read " . a:readwhat
+    normal ggdd " remove the empty first line
     diffthis
 
     " return to original
