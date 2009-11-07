@@ -3,6 +3,8 @@
 "
 " TODO: Handle bdelete on diff buffer
 " TODO: Autodetect VCS
+" TODO: Create AnyDiffChanges which takes any readwhat string (and expands it
+" first)
 
 " Set up default globals
 
@@ -42,6 +44,10 @@ endif
 
 if !exists(':GitDiffChanges')
   command! -bang GitDiffChanges silent call <SID>DiffStartVCS("<bang>", "git diff")
+endif
+
+if !exists(':SvnDiffChanges')
+  command! -bang SvnDiffChanges silent call <SID>DiffStartVCS("<bang>", "svn diff")
 endif
 
 if !exists(':FileDiffChanges')
