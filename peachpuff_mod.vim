@@ -67,4 +67,7 @@ if &t_Co >= 16
     hi DiffDelete ctermfg=8 ctermbg=8  
     hi DiffChange ctermbg=3 ctermfg=0 
     hi DiffText ctermbg=11 ctermfg=0 
+    hi IncSearch ctermfg=15
+    hi Search ctermfg=15
+    hi Error ctermfg=15
 endif
