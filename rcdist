@@ -22,6 +22,7 @@ files=(
     .screenrc
     .perltidyrc
     .vim/plugin/minibufexpl_mod.vim
+    .vim/plugin/diffchanges.vim
     .vim/ftplugin/perl.vim
     .vim/colors/peachpuff.vim
 )
