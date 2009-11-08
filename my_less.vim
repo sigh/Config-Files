@@ -43,8 +43,8 @@ set noswf
 set cmdheight=1
 set nolist
 
-" iDA: Go to the start of a buffer when loading a page
-au BufAdd * normal gg
+" DA: Go to the start of a buffer when loading a page
+au BufAdd * normal ggL
 
 " Used after each command: put cursor at end and display position
 if &wrap

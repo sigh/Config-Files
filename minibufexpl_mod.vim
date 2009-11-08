@@ -904,6 +904,8 @@ function! <SID>FindCreateWindow(bufName, forceEdge, isExplorer, doDebug)
     " DA: Set up local options for explorer window
     setlocal nowrap
     setlocal matchpairs=
+    setlocal modifiable
+    setlocal noreadonly
 
     if a:doDebug
       call <SID>DEBUG('Window ('.a:bufName.') created: '.winnr(),9)
