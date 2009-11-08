@@ -604,6 +604,22 @@ autocmd MiniBufExplorer BufEnter    * call <SID>DEBUG('-=> BufEnter  AutoCmd', 1
 " autocmd MiniBufExplorer VimEnter    * call <SID>DEBUG('-=> VimEnter  AutoCmd', 10) |let g:miniBufExplorerAutoUpdate = 1 |call <SID>AutoUpdate(-1)
 " }}}
 
+" DA: remap C-W so it doesn't enter here
+noremap <silent> <C-W><C-W> :call <SID>UserWinCmd('w')<CR>
+noremap <silent> <C-W>w :call <SID>UserWinCmd('w')<CR>
+
+" Ensure that a user can't navigate to this buffer normally
+function! <SID>UserWinCmd(cmd)
+    exec "wincmd " . a:cmd
+    if bufname('%') == '-MiniBufExplorer-'
+        if a:cmd == 'w' || a:cmd = 'q' || a:cmd == 'c'
+            wincmd w
+        else
+            wincmd p
+        endif
+    endif
+endfunction
+
 " Functions
 "
 " StartExplorer - Sets up our explorer and causes it to be displayed {{{
