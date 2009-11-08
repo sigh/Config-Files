@@ -25,6 +25,7 @@ files=(
     .vim/plugin/minibufexpl_mod.vim
     .vim/plugin/diffchanges.vim
     .vim/ftplugin/perl.vim
+    .vim/ftplugin/diff_nav.vim
     .vim/colors/peachpuff.vim
     .vim/macros/my_less.vim
 )

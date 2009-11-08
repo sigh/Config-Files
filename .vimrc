@@ -395,9 +395,27 @@ map ,dg :GitDiffChanges<CR>
 map ,dG :GitDiffChanges!<CR>
 map ,ds :SvnDiffChanges<CR>
 map ,dS :SvnDiffChanges!<CR>
+map ,dv :VDiffChanges<CR>
+map ,dV :VDiffChanges!<CR>
 map ,df :FileDiffChanges<CR>
 map ,dF :FileDiffChanges!<CR>
 map ,dt :TDiffChanges<CR>
+map ,dr :DiffReturn<CR>
+
+autocmd FileType diff call <SID>SetDiffMaps()
+
+function! <SID>SetDiffMaps()
+    map <buffer> ,dg ,df,dg
+    map <buffer> ,dG ,df,dG
+    map <buffer> ,ds ,df,ds
+    map <buffer> ,dS ,df,dS
+    map <buffer> ,dv ,df,dv
+    map <buffer> ,dV ,df,dV
+    map <buffer> ,dt <Nop>
+    map <buffer> ,dr <Nop>
+    map <buffer> ,df :DiffOpenFile<CR>
+    map <buffer> ,dF :DiffOpenFile!<CR>
+endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Language specific
