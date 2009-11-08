@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Shell script to start Vim with less.vim.
+# Read stdin if no arguments were given.
+
+declare -a args
+args=( -R --cmd 'let no_plugin_maps = 1' -c 'runtime! macros/my_less.vim' )
+
+filetype=
+raw=
+
+while getopts "c:f:r" flag ; do
+    case $flag in
+        f)  filetype=$OPTARG ;;
+        r)  raw=1 ;;
+        *)  args[${#args[@]}]=$flag
+            if [[ -n "$OPTARG" ]] ; then
+                args[${#args[@]}]=$OPTARG
+            fi
+            ;;
+    esac
+done
+
+shift $(( $OPTIND - 1 ))
+
+# set filetype
+if [[ -n "$filetype" ]] ; then
+    args=( "${args[@]}" -c "set ft=$filetype" )
+fi
+
+# add filenames to argument list
+# use stdin if no files
+if test $# = 0; then
+    args[${#args[@]}]=-
+else    
+    args=( "${args[@]}" "$@" )
+    raw=1
+fi
+
+# filter out terminal characters unless told otherwise
+if [[ -n "$raw" ]] ; then
+    vim "${args[@]}"
+else
+    col -b | vim "${args[@]}"
+fi
