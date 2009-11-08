@@ -157,16 +157,14 @@ if [[ -d /Applications/Preview.app ]] ; then
     pman() { command man -t "$@" | open -f -a /Applications/Preview.app; }
 fi
 
-# use vim as man pager
-man() { 
-    command man "$@" | col -b | \
-        vim -R -c 'set ft=man nomod nolist' -c 'map q :q<CR>' -
-}
+# use vim as our pager for everything 
+ 
+export MANPAGER="vimless -f man"
 
-# use vim as our pager for everything else
+vless() { vimless "$@" ; }
 
-# TODO
-
+export PAGER="vimless"
+ 
 # shortcut vim and set it as our editor
 vi() { vim "$@" ; }
 export EDITOR=vim
