@@ -2,6 +2,10 @@
 " Maintainer:	Bram Moolenaar <Bram@vim.org>
 " Last Change:	2002 Aug 15
 
+if &filetype == "diff"
+    finish
+endif
+
 " If not reading from stdin, skip files that can't be read.
 " Exit if there is no file at all.
 if argc() > 0
@@ -27,6 +31,10 @@ if argc() > 0
     endif
     next
   endwhile
+elseif line('$') == 1 && col('$') == 1
+    " This is a stdin stream
+    " if there is no input just exit right away
+    qa
 endif
 
 set nocp

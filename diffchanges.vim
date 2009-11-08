@@ -42,6 +42,10 @@ if !exists(':TDiffChanges')
   command! TDiffChanges silent call <SID>DiffToggle()
 endif
 
+if !exists(':VDiffChanges')
+  command! -bang VDiffChanges silent call <SID>DiffStartVCS("<bang>", "")
+endif
+
 if !exists(':GitDiffChanges')
   command! -bang GitDiffChanges call <SID>DiffStartVCS("<bang>", "git diff")
 endif
@@ -58,8 +62,31 @@ endif
 
 " Diff version control system
 function! <SID>DiffStartVCS(close, prog)
+    let l:prog = a:prog
+
+    if l:prog == ""
+        let l:prog = <SID>FindVCS()
+        if l:prog == ""
+            echoerr "No Version Control System found"
+            return
+        else
+            let l:prog .= " diff"
+        endif
+    endif
+
     let l:filename = expand('%')
-    call <SID>DiffStart(a:close, "!" . a:prog . " " . l:filename . " | " . g:DiffChanges_patchprog . " " . l:filename)
+    call <SID>DiffStart(a:close, "!" . l:prog . " " . l:filename . " | " . g:DiffChanges_patchprog . " " . l:filename)
+endfunction
+
+" Find which VCS we are in
+function! <SID>FindVCS()
+    if isdirectory('.git')
+        return "git"
+    elseif isdirectory('.svn')
+        return "svn"
+    else
+        return ""
+    endif
 endfunction
 
 " Diff against file on disk
@@ -82,6 +109,8 @@ function! <SID>DiffStart(close, readwhat)
     " create buffer to diff against
     exec "vsp " . s:bufname
     set buftype=nofile nobuflisted
+    set noreadonly
+    set modifiable
     exec "set filetype=" . l:filetype
 
     " load the file
