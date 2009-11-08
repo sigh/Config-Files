@@ -143,9 +143,8 @@ endif
 :nnoremap <silent> <S-Tab> :bprevious<Bar>:set laststatus=0<Bar>:MiniBufExplorer<CR>
 
 function! <SID>MyTab()
-    if MBEIsOpen() == 1
-        bnext
-    else
+    bnext
+    if MBEIsOpen() != 1
         set laststatus=0
         MiniBufExplorer
     endif
@@ -215,6 +214,7 @@ endfunction
 
 " Reset most things that we could have opened
 function! <SID>ResetAll()
+    call <SID>ResetSome()
     CDiffChanges
 endfunction
 
