@@ -415,6 +415,10 @@ function! <SID>SetDiffMaps()
     map <buffer> ,dr <Nop>
     map <buffer> ,df :DiffOpenFile<CR>
     map <buffer> ,dF :DiffOpenFile!<CR>
+
+    " TODO: when diff_changes can take patches:
+    "  ,dd opens the current file and applies current patch
+    "  ,dd then returns again from non-diff
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
