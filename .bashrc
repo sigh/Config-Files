@@ -160,6 +160,8 @@ fi
 # use vim as our pager for everything 
  
 export MANPAGER="vimless -f man"
+export PERLDOC_PAGER="vimless -f man"
+export PERLDOC="-otext"
 
 vless() { vimless "$@" ; }
 
