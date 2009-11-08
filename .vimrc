@@ -419,6 +419,7 @@ function! <SID>SetDiffMaps()
     " TODO: when diff_changes can take patches:
     "  ,dd opens the current file and applies current patch
     "  ,dd then returns again from non-diff
+    "  ,dd when there is no diff window should do a diff using VCS
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

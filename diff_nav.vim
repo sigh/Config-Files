@@ -2,7 +2,8 @@
 
 " Give the buffer a name if it has none
 if bufname('%') == ""
-    file diff
+    " TODO: if r -diff- already exists then what????
+    file -diff-
 endif
 
 let s:diffbuf = bufnr('%')
