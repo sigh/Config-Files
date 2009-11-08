@@ -391,13 +391,13 @@ set diffopt=filler,context:10,foldcolumn:1
 vmap do :diffget<CR> 
 
 " DiffChanges shortcuts :)
-map <silent> ,dg :GitDiffChanges<CR>
-map <silent> ,dG :GitDiffChanges!<CR>
-map <silent> ,ds :SvnDiffChanges<CR>
-map <silent> ,dS :SvnDiffChanges!<CR>
-map <silent> ,df :FileDiffChanges<CR>
-map <silent> ,dF :FileDiffChanges!<CR>
-map <silent> ,dt :TDiffChanges<CR>
+map ,dg :GitDiffChanges<CR>
+map ,dG :GitDiffChanges!<CR>
+map ,ds :SvnDiffChanges<CR>
+map ,dS :SvnDiffChanges!<CR>
+map ,df :FileDiffChanges<CR>
+map ,dF :FileDiffChanges!<CR>
+map ,dt :TDiffChanges<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Language specific
