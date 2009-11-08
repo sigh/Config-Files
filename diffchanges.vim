@@ -5,6 +5,7 @@
 " TODO: Autodetect VCS
 " TODO: Create AnyDiffChanges which takes any readwhat string (and expands it
 " first)
+" TODO: Use patch
 
 " Set up default globals
 
@@ -25,7 +26,6 @@ let s:bufname = "-DiffChanges-"
 
 " Set up commands
 
-
 if !exists(':CDiffChanges')
   command! CDiffChanges silent call <SID>DiffStop()
 endif
@@ -43,15 +43,15 @@ if !exists(':TDiffChanges')
 endif
 
 if !exists(':GitDiffChanges')
-  command! -bang GitDiffChanges silent call <SID>DiffStartVCS("<bang>", "git diff")
+  command! -bang GitDiffChanges call <SID>DiffStartVCS("<bang>", "git diff")
 endif
 
 if !exists(':SvnDiffChanges')
-  command! -bang SvnDiffChanges silent call <SID>DiffStartVCS("<bang>", "svn diff")
+  command! -bang SvnDiffChanges call <SID>DiffStartVCS("<bang>", "svn diff")
 endif
 
 if !exists(':FileDiffChanges')
-  command! -bang FileDiffChanges silent call <SID>DiffStartFile("<bang>")
+  command! -bang FileDiffChanges call <SID>DiffStartFile("<bang>")
 endif
 
 " Special DiffStart functions
@@ -74,8 +74,10 @@ function! <SID>DiffStart(close, readwhat)
     call <SID>DiffStop()
 
     let l:filetype = &filetype
-    let s:diff = 1
     let s:origbuf = bufnr('%')
+    let s:wrap = &wrap
+    let s:foldmethod = &foldmethod
+    let s:foldcolumn = &foldcolumn
 
     " create buffer to diff against
     exec "vsp " . s:bufname
@@ -86,6 +88,16 @@ function! <SID>DiffStart(close, readwhat)
     let s:diffbuf = bufnr('%')
     exec "read " . a:readwhat
     normal ggdd " remove the empty first line
+
+    " error if diffbuf is empty
+    if line('$') == 1 && col('$') == 1
+        call <SID>DiffStop()
+        exec "buffer " . s:origbuf
+        redraw
+        echomsg "DiffChanges: Empty result (or error occured)"
+        return
+    endif
+
     diffthis
 
     " return to original
@@ -96,6 +108,8 @@ function! <SID>DiffStart(close, readwhat)
     endif
 
     diffthis
+    redraw
+    echomsg ""
 endfunction
 
 " Stop diff changes (close the window and remove the buffer)
@@ -109,9 +123,9 @@ function! <SID>DiffStop()
         " reset settings in original buffer
         exec "buffer " . s:origbuf
         diffoff
-        " TODO: reset diff, scrollbind, scrollopt, wrap, foldmethod,
-        " foldcolumn
-        exec "buffer " . s:origbuf
+        let &wrap = s:wrap
+        let &foldmethod = s:foldmethod 
+        let &foldcolumn = s:foldcolumn 
     endif   
 endfunction
 
