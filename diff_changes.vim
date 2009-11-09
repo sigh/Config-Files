@@ -91,9 +91,9 @@ function! <SID>DiffStartNavPatch(close)
     exec "buffer " . l:curbuf
 
     let l:command = 'put!'
-    " let l:command = l:command . ' | %!patch -s -R -o ' . s:tmpfile . ' ' . expand('%')
-    " let l:command = l:command . ' ; cat ' . s:tmpfile 
-    " let l:command = l:command . ' ; rm ' . s:tmpfile 
+    let l:command = l:command . ' | %!patch -s -R -o ' . s:tmpfile . ' ' . expand('%')
+    let l:command = l:command . ' ; cat ' . s:tmpfile 
+    let l:command = l:command . ' ; rm ' . s:tmpfile 
     call <SID>DiffStart(a:close, l:command, 0)
 endfunction
 

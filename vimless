@@ -5,12 +5,11 @@
 declare -a args
 
 filetype=
-raw=
+filter=
 
-while getopts "c:f:r" flag ; do
+while getopts "c:f:" flag ; do
     case $flag in
         f)  filetype=$OPTARG ;;
-        r)  raw=1 ;;
         *)  args[${#args[@]}]=$flag
             if [[ -n "$OPTARG" ]] ; then
                 args[${#args[@]}]=$OPTARG
@@ -24,6 +23,9 @@ shift $(( $OPTIND - 1 ))
 # set filetype
 if [[ -n "$filetype" ]] ; then
     args=( "${args[@]}" -c "set ft=$filetype" )
+    if [[ "$filetype" == man ]] ; then
+        filter=1
+    fi
 fi
 
 # set static options
@@ -35,11 +37,10 @@ if test $# = 0; then
     args[${#args[@]}]=-
 else    
     args=( "${args[@]}" "$@" )
-    raw=1
 fi
 
 # filter out terminal characters unless told otherwise
-if [[ -n "$raw" ]] ; then
+if [[ -z "$filter" ]] ; then
     vim "${args[@]}"
 else
     col -b | vim "${args[@]}"
