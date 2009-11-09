@@ -51,6 +51,9 @@ set noswf
 set cmdheight=1
 set nolist
 
+" DA: if any scrips set folds then unset them
+set nofoldenable
+
 " DA: Go to the start of a buffer when loading a page
 au BufAdd * normal ggL
 
