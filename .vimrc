@@ -210,6 +210,9 @@ nnoremap <silent> <Nul>   :call <SID>ResetAll()<Bar>:nohlsearch<Bar>:pwd<CR>
 function! <SID>ResetSome()
     CMiniBufExplorer
     set laststatus=2
+    if &diff
+        diffu
+    endif
 endfunction
 
 " Reset most things that we could have opened
@@ -385,36 +388,28 @@ set directory=~/.vim/.swap
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " set a larger context in diffs
-set diffopt=filler,context:10,foldcolumn:1
+set diffopt=filler,context:10
 
 " allow us to be able to "do" in visual mode
 vmap do :diffget<CR> 
 
 " DiffChanges shortcuts :)
-map ,dg :GitDiffChanges<CR>
-map ,dG :GitDiffChanges!<CR>
-map ,ds :SvnDiffChanges<CR>
-map ,dS :SvnDiffChanges!<CR>
 map ,dv :VDiffChanges<CR>
 map ,dV :VDiffChanges!<CR>
 map ,df :FileDiffChanges<CR>
 map ,dF :FileDiffChanges!<CR>
 map ,dt :TDiffChanges<CR>
-map ,dr :DiffReturn<CR>
+map ,dd :DiffReturn<CR>
 
 autocmd FileType diff call <SID>SetDiffMaps()
 
 function! <SID>SetDiffMaps()
-    map <buffer> ,dg ,df,dg
-    map <buffer> ,dG ,df,dG
-    map <buffer> ,ds ,df,ds
-    map <buffer> ,dS ,df,dS
     map <buffer> ,dv ,df,dv
     map <buffer> ,dV ,df,dV
     map <buffer> ,dt <Nop>
-    map <buffer> ,dr <Nop>
     map <buffer> ,df :DiffOpenFile<CR>
     map <buffer> ,dF :DiffOpenFile!<CR>
+    map <buffer> ,dd ,df:NavPatchDiffChanges<CR>
 
     " TODO: when diff_changes can take patches:
     "  ,dd opens the current file and applies current patch

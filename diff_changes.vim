@@ -15,9 +15,7 @@ if exists('loaded_diffchanged')
 endif
 let loaded_diffchanged = 1
 
-if !exists('g:DiffChanges_patchprog')
-    let g:DiffChanges_patchprog = "patch -s -R -o >(cat)"
-endif
+let s:tmpfile = tempname()
 
 " Set up script variables
 let s:diffbuf = -1
@@ -58,7 +56,47 @@ if !exists(':FileDiffChanges')
   command! -bang FileDiffChanges call <SID>DiffStartFile("<bang>")
 endif
 
+if !exists(':NavDiffChanges')
+  command! -bang NavPatchDiffChanges call <SID>DiffStartNavPatch("<bang>")
+endif
+
+if ! exists(":DiffReturn")
+    command! DiffReturn silent call <SID>DiffReturn()
+endif
+
+
+" Return to the diff window (if we got here from diff nav)
+function! <SID>DiffReturn()
+    CDiffChanges
+    if b:diff_nav_diff_buf
+        exec 'buffer ' . b:diff_nav_diff_buf
+    endif
+endfunction
+
 " Special DiffStart functions
+
+" Diff using diff_nav patch infod
+
+function! <SID>DiffStartNavPatch(close)
+    if ! b:diff_nav_diff_buf
+        return
+    endif
+
+    let l:curbuf = bufnr('%')
+
+    " yank the patch
+    let l:yankstring = b:diff_nav_patch_start . "," . b:diff_nav_patch_end . "yank"
+    exec "buffer " . b:diff_nav_diff_buf
+    exec l:yankstring
+    exec "buffer " . l:curbuf
+
+    let l:command = 'put!'
+    " let l:command = l:command . ' | %!patch -s -R -o ' . s:tmpfile . ' ' . expand('%')
+    " let l:command = l:command . ' ; cat ' . s:tmpfile 
+    " let l:command = l:command . ' ; rm ' . s:tmpfile 
+    call <SID>DiffStart(a:close, l:command, 0)
+endfunction
+
 
 " Diff version control system
 function! <SID>DiffStartVCS(close, prog)
@@ -70,12 +108,17 @@ function! <SID>DiffStartVCS(close, prog)
             echoerr "No Version Control System found"
             return
         else
-            let l:prog .= " diff"
+            let l:prog = l:prog . " diff"
         endif
     endif
 
     let l:filename = expand('%')
-    call <SID>DiffStart(a:close, "!" . l:prog . " " . l:filename . " | " . g:DiffChanges_patchprog . " " . l:filename)
+    let l:command = "!" . l:prog . " " . l:filename
+    let l:command = l:command . " | patch -s -R -o " . s:tmpfile . " " . l:filename 
+    let l:command = l:command . " ; cat " . s:tmpfile 
+    let l:command = l:command . " ; rm " . s:tmpfile 
+    call <SID>DiffStart(a:close, "read " . l:command, 1)
+
 endfunction
 
 " Find which VCS we are in
@@ -91,12 +134,12 @@ endfunction
 
 " Diff against file on disk
 function! <SID>DiffStartFile(close)
-    call <SID>DiffStart(a:close, expand('%'))
+    call <SID>DiffStart(a:close, "read " . expand('%'), 1)
 endfunction
 
 
 " Start diffing the current file
-function! <SID>DiffStart(close, readwhat)
+function! <SID>DiffStart(close, execstring, remove)
     " close current instance if it was running
     call <SID>DiffStop()
 
@@ -115,8 +158,10 @@ function! <SID>DiffStart(close, readwhat)
 
     " load the file
     let s:diffbuf = bufnr('%')
-    exec "read " . a:readwhat
-    normal ggdd " remove the empty first line
+    exec a:execstring
+    if a:remove
+        normal ggdd " remove the empty first line
+    endif
 
     " error if diffbuf is empty
     if line('$') == 1 && col('$') == 1
@@ -151,7 +196,7 @@ function! <SID>DiffStop()
 
         " reset settings in original buffer
         exec "buffer " . s:origbuf
-        diffoff
+		set nodiff
         let &wrap = s:wrap
         let &foldmethod = s:foldmethod 
         let &foldcolumn = s:foldcolumn 

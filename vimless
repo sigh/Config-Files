@@ -3,7 +3,6 @@
 # Read stdin if no arguments were given.
 
 declare -a args
-args=( -R --cmd 'let no_plugin_maps = 1' -c 'runtime! macros/my_less.vim' )
 
 filetype=
 raw=
@@ -26,6 +25,9 @@ shift $(( $OPTIND - 1 ))
 if [[ -n "$filetype" ]] ; then
     args=( "${args[@]}" -c "set ft=$filetype" )
 fi
+
+# set static options
+args=( "${args[@]}" -R --cmd 'let no_plugin_maps = 1' -c 'runtime! macros/my_less.vim' )
 
 # add filenames to argument list
 # use stdin if no files
