@@ -23,9 +23,7 @@ else
     TITLEBAR=
 fi
 
-PARENT_NAME=$(ps -o command -p $PPID | tail -n +2)
-PARENT_NAME=${PARENT_NAME%%[: ]*}
-export PS1="$TITLEBAR$PROMPT_COLOR[\A] [$PARENT_NAME] \u@\h:\w\n$PROMPT_COLOR\! \$$NONE "
+export PS1="$TITLEBAR$PROMPT_COLOR[\A] [\j] \u@\h:\w\n$PROMPT_COLOR\! \$$NONE "
 
 # set other prompts
 export PS2="$PROMPT_COLOR>$NONE "
