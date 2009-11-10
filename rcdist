@@ -26,7 +26,7 @@ files=(
     .vim/plugin/diff_changes.vim
     .vim/ftplugin/perl.vim
     .vim/ftplugin/diff_nav.vim
-    .vim/colors/peachpuff.vim
+    .vim/colors/peachpuff_mod.vim
     .vim/macros/my_less.vim
 )
 
@@ -56,7 +56,7 @@ function elemExists() {
     shift
 
     for i in "$@" ; do
-        [[ "$i" == "$needle" ]] && exit 0
+        [[ "$i" == "$needle" ]] && return 0
     done
     return 1
 }
