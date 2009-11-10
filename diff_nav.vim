@@ -53,10 +53,10 @@ function! <SID>DiffOpenCurrentFile()
     endif
 
     exec "e " . l:filename
-    exec s:file_line
+    exec s:ParseDiff_file_line
 
-    let b:diff_nav_patch_start = s:patch_start - 2 " include headers
-    let b:diff_nav_patch_end   = s:patch_end
+    let b:diff_nav_patch_start = s:ParseDiff_patch_start
+    let b:diff_nav_patch_end   = s:ParseDiff_patch_end
     let b:diff_nav_diff_buf    = l:buf
 
     " TODO: set these appropriately
@@ -94,21 +94,12 @@ function! <SID>ParseDiff()
         let l:patch_start = l:line
 
         while getline(l:line) =~ '^@@ '      " patch loop
-            let l:range = <SID>ParsePatchStart(getline(l:line))
+            call <SID>ParsePatchStart(getline(l:line))
 
-            " get range data
-            let l:pos = 0
-            let l:line1 = matchstr(l:range,'[^,]*',l:pos)
-            let l:pos = l:pos + strlen(l:line1) + 1
-            let l:offset1 = matchstr(l:range,'[^,]*',l:pos)
-            let l:pos = l:pos + strlen(l:offset1) + 1
-            let l:line2 = matchstr(l:range,'[^,]*',l:pos)
-            let l:pos = l:pos + strlen(l:line2) + 1
-            let l:offset2 = matchstr(l:range,'[^,]*',l:pos)
-
-            " convert to ints
-            let l:end1 = l:offset1 + l:line1
-            let l:end2 = l:offset2 + l:line2
+            let l:line1 = s:ParsePatchStart_line1
+            let l:line2 = s:ParsePatchStart_line2
+            let l:end1 = l:line1 + s:ParsePatchStart_offset1
+            let l:end2 = l:line2 + s:ParsePatchStart_offset2
 
             if l:line == l:curline
                 let l:file_line = l:line2
@@ -151,9 +142,9 @@ function! <SID>ParseDiff()
         return ''
     endif
 
-    let s:patch_start = l:patch_start
-    let s:patch_end   = l:patch_end
-    let s:file_line   = l:file_line
+    let s:ParseDiff_patch_start = l:patch_start - 2 " include headers
+    let s:ParseDiff_patch_end   = l:patch_end
+    let s:ParseDiff_file_line   = l:file_line
 
     return l:curfile
 endfunction
@@ -164,18 +155,23 @@ function! <SID>ParsePatchStart(line)
     let l:range1 = matchstr(a:line, '[^ ]*', 4)
     let l:range2 = matchstr(a:line, '[^ ]*', 6 + strlen(l:range1))
 
-    let l:range1_str = <SID>ParseRange(l:range1)
-    let l:range2_str = <SID>ParseRange(l:range2)
+    call <SID>ParseRange(l:range1)
+    let s:ParsePatchStart_line1   = s:ParseRange_line
+    let s:ParsePatchStart_offset1 = s:ParseRange_offset
 
-    return l:range1_str . ',' . l:range2_str 
+    call <SID>ParseRange(l:range2)
+    let s:ParsePatchStart_line2   = s:ParseRange_line
+    let s:ParsePatchStart_offset2 = s:ParseRange_offset
 endfunction
 
 function! <SID>ParseRange(range)
     if a:range !~ ','
-        return a:range . ',0'
+        let s:ParseRange_line   = a:range
+        let s:ParseRange_offset = 0
+    else
+        let s:ParseRange_line   = matchstr(a:range, "[^,]*")
+        let s:ParseRange_offset = matchstr(a:range, ".*", strlen(s:ParseRange_line) + 1 )
     endif
-
-    return a:range
 endfunction
 
 function! <SID>ParseFileLine(fileline)
