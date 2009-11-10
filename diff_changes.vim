@@ -148,6 +148,7 @@ function! <SID>DiffStart(close, execstring, remove)
     let s:wrap = &wrap
     let s:foldmethod = &foldmethod
     let s:foldcolumn = &foldcolumn
+    let s:foldenable = &foldenable
 
     " create buffer to diff against
     exec "vsp " . s:bufname
@@ -200,6 +201,7 @@ function! <SID>DiffStop()
         let &wrap = s:wrap
         let &foldmethod = s:foldmethod 
         let &foldcolumn = s:foldcolumn 
+        let &foldenable = s:foldenable
     endif   
 endfunction
 

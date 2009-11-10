@@ -612,7 +612,7 @@ noremap <silent> <C-W>w :call <SID>UserWinCmd('w')<CR>
 function! <SID>UserWinCmd(cmd)
     exec "wincmd " . a:cmd
     if bufname('%') == '-MiniBufExplorer-'
-        if a:cmd == 'w' || a:cmd = 'q' || a:cmd == 'c'
+        if a:cmd == 'w' || a:cmd == 'q' || a:cmd == 'c'
             wincmd w
         else
             wincmd p

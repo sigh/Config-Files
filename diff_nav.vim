@@ -53,7 +53,7 @@ function! <SID>DiffOpenCurrentFile()
     endif
 
     exec "e " . l:filename
-    exec string(s:file_line)
+    exec s:file_line
 
     let b:diff_nav_patch_start = s:patch_start - 2 " include headers
     let b:diff_nav_patch_end   = s:patch_end
@@ -107,10 +107,8 @@ function! <SID>ParseDiff()
             let l:offset2 = matchstr(l:range,'[^,]*',l:pos)
 
             " convert to ints
-            let l:line1 = str2nr(l:line1)
-            let l:end1 = str2nr(l:offset1) + l:line1
-            let l:line2 = str2nr(l:line2)
-            let l:end2 = str2nr(l:offset2) + l:line2
+            let l:end1 = l:offset1 + l:line1
+            let l:end2 = l:offset2 + l:line2
 
             if l:line == l:curline
                 let l:file_line = l:line2
