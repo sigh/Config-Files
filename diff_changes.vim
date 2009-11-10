@@ -145,10 +145,12 @@ function! <SID>DiffStart(close, execstring, remove)
 
     let l:filetype = &filetype
     let s:origbuf = bufnr('%')
+	" TODO: Save these as b:diff_changes_* vars
     let s:wrap = &wrap
     let s:foldmethod = &foldmethod
     let s:foldcolumn = &foldcolumn
     let s:foldenable = &foldenable
+    let s:foldlevel  = &foldlevel
 
     " create buffer to diff against
     exec "vsp " . s:bufname
@@ -202,6 +204,7 @@ function! <SID>DiffStop()
         let &foldmethod = s:foldmethod 
         let &foldcolumn = s:foldcolumn 
         let &foldenable = s:foldenable
+        let &foldlevel  = s:foldlevel
     endif   
 endfunction
 
