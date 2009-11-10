@@ -1,10 +1,10 @@
-" TODO: open to the correct line
-
-" Give the buffer a name if it has none
-" if bufname('%') == ''
-"     " TODO: if r -diff- already exists then what????
-"     file -diff-
-" endif
+" highlight 
+"	syntax clear
+"	syntax region DiffNavPlusLine start='^+++ ' end='[ \t]\|$'
+"	syntax match DiffNavPlusFile '[^ ]*' " containedin=DiffNavPlusLine
+"
+"	hi def link DiffNavPlusLine Normal
+"	hi def link DiffNavPlusFile Keyword
 
 " define folds
 setlocal foldenable
