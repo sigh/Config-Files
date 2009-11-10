@@ -4,7 +4,6 @@
     + archive .bash_history
     + show warning if bash_history has been truncated
     + make ssh-fix more secure
-    + show stopped jobs instead of parent process in PS1
 
 .screen
     + Quick way to pipe current history scrollback through less

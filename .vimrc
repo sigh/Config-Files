@@ -139,8 +139,8 @@ if has("autocmd")
 endif
  
 " Switch buffers with tab
-:nnoremap <silent> <Tab> :call <SID>MyTab()<CR>
-:nnoremap <silent> <S-Tab> :bprevious<Bar>:set laststatus=0<Bar>:MiniBufExplorer<CR>
+nnoremap <silent> <Tab> :call <SID>MyTab()<CR>
+nnoremap <silent> <S-Tab> :bprevious<Bar>:set laststatus=0<Bar>:MiniBufExplorer<CR>
 
 function! <SID>MyTab()
     bnext
@@ -152,6 +152,9 @@ endfunction
 
 " <Tab> is C-I, so assign jump list navi to C-P
 noremap <C-P> <C-I>
+
+" ctrl-q deletes the buffer
+nmap <silent> <C-Q> :bd<CR>
 
 " Always split on right when vertical
 set splitright
