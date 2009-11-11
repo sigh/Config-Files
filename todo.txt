@@ -30,3 +30,5 @@ diff_changes:
     + save and reload yank register
     + diff update
     + load diff from running instance of vim
+
+	+ multiple windows fucks up... WTF
