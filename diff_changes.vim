@@ -145,12 +145,14 @@ function! <SID>DiffStart(close, execstring, remove)
 
     let l:filetype = &filetype
     let s:origbuf = bufnr('%')
+
 	" TODO: Save these as b:diff_changes_* vars
     let s:wrap = &wrap
     let s:foldmethod = &foldmethod
     let s:foldcolumn = &foldcolumn
     let s:foldenable = &foldenable
     let s:foldlevel  = &foldlevel
+    diffthis
 
     " create buffer to diff against
     exec "vsp " . s:bufname
@@ -175,18 +177,17 @@ function! <SID>DiffStart(close, execstring, remove)
         return
     endif
 
+    " link up the buffers
     diffthis
 
-    " return to original
+    " close the diff window if we were asked
     if a:close == "!"
         wincmd c
-    else
-        wincmd p
     endif
 
-    diffthis
-    redraw
-    echomsg ""
+    " return to original buffer
+    exec bufwinnr(s:origbuf) . " wincmd w"
+
 endfunction
 
 " Stop diff changes (close the window and remove the buffer)
@@ -197,21 +198,31 @@ function! <SID>DiffStop()
         exec "bwipeout! " . s:diffbuf
         let s:diffbuf = -1
 
+        let l:curwin = winnr()
+
         " reset settings in original buffer
-        exec "buffer " . s:origbuf
+        let l:winnr = bufwinnr(s:origbuf)
+        if l:winnr != -1
+            exec l:winnr . "wincmd w"
+        else
+            exec "buffer " . s:origbuf
+        endif
+
 		set nodiff
         let &wrap = s:wrap
         let &foldmethod = s:foldmethod 
         let &foldcolumn = s:foldcolumn 
         let &foldenable = s:foldenable
         let &foldlevel  = s:foldlevel
+
+        exec l:curwin . "wincmd w"
     endif   
 endfunction
 
 " Open the diff window again
 function! <SID>DiffOpen()
     " if it is already open we can finish
-    if bufwinnr(bufnr(s:bufname)) != -1
+    if bufwinnr(s:diffbuf) != -1
         return
     endif
 
@@ -220,27 +231,97 @@ function! <SID>DiffOpen()
         return
     endif
 
-    exec "buffer " . s:origbuf
-    exec "vsp #" . s:diffbuf
-    wincmd p
+    let l:curbuf = bufnr('%')
+
+    let l:winnr = bufwinnr(s:origbuf)
+    if l:winnr != -1
+        " we only do something if the buffer is visible
+        exec l:winnr . "wincmd w"
+        exec "vsp #" . s:diffbuf
+    endif
+
+    " return to original buffer
+    exec bufwinnr(l:curbuf) . " wincmd w"
 endfunction
 
 " Close the diff window (if it exists)
 function! <SID>DiffClose()
-    let l:winnr = bufwinnr(bufnr(s:bufname)) 
+    " save the current buffer
+    let l:curbuf = bufnr('%')
 
-    if l:winnr != -1
-        exec l:winnr.' wincmd w'
+    if s:diffbuf == l:curbuf
+        " if we are in the diff buf, just close it
         silent! close
-        wincmd p
+    else
+        " close the diff window if it's open
+        let l:winnr = bufwinnr(s:diffbuf) 
+        if l:winnr != -1
+            exec l:winnr.' wincmd w'
+            silent! close
+        endif
+
+        " return to current window
+        exec bufwinnr(l:curbuf) . "wincmd w"
     endif
 endfunction
 
 " Toggle diff buffer
 function! <SID>DiffToggle()
-    if bufwinnr(bufnr(s:bufname)) == -1
+    if bufwinnr(s:diffbuf) == -1
         call <SID>DiffOpen()
     else
         call <SID>DiffClose()
     endif
+endfunction
+
+""""
+" Here be unfinished dragons
+""""
+
+" Get diff window for bufnr ignoring window winignore
+function! <SID>GetDiffWindow(bufnr, winignore)
+    let l:curwin = winnr()
+
+    " first check if the window is visible
+    let l:winnr = <SID>GetVisibleDiffWindow(a:bufnr)
+    if l:winnr != -1 && l:winnr != a:winignore
+        return l:winnr
+    endif
+
+    " iterate through the windows and check if any match
+    let l:winnr = winnr('$')
+    while l:winnr > 0
+        if l:winnr != a:winignore
+            let l:curbuf = bufnr('%')
+
+            " for each window switch to the target buffer and check
+            " the diff value
+            exec l:winnr . "wincmd w"
+            exec "buffer " . a:bufnr
+
+            if &diff
+                " found it: reset everything and return
+                exec "buffer " . l:curbuf
+                exec l:curwin . "wincmd w"
+                return l:winnr
+            endif
+
+            exec "buffer " . l:curbuf
+            let l:winnr = l:winnr - 1
+        endif
+    endwhile
+
+    exec l:curwin . "wincmd w"
+    return -1
+endfunction
+
+" Return the diff window of bufnr (if visible)
+function! <SID>GetVisibleDiffWindow(bufnr)
+    let l:winnr = bufwinnr(a:bufnr)
+    if l:winnr != -1
+        if getwinvar(l:winnr, "&diff")
+            return l:winnr
+        endif
+    endif
+    return -1
 endfunction
