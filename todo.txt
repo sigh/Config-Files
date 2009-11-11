@@ -24,11 +24,10 @@ minifbuf:
 
 rcdist
     + load hosts and files from a config file
-    + Needs to handle directories
 
 diff_changes:
     + save and reload yank register
     + diff update
     + load diff from running instance of vim
-
+    + highlight +++ line
 	+ multiple windows fucks up... WTF
