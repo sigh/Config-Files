@@ -371,6 +371,7 @@ map ,df :FileDiffChanges<CR>
 map ,dF :FileDiffChanges!<CR>
 map ,dt :TDiffChanges<CR>
 map ,dd :ReturnDiffChanges!<CR>
+map ,du ,dd:VCSUpdateDiffChanges<CR>
 
 autocmd FileType diff call <SID>SetDiffMaps()
 
@@ -381,6 +382,7 @@ function! <SID>SetDiffMaps()
     map <buffer> ,df :DiffOpenFile<CR>
     map <buffer> ,dF :DiffOpenFile!<CR>
     map <buffer> ,dd ,df:NavPatchDiffChanges<CR>
+    map <buffer> ,du :VCSUpdateDiffChanges<CR>
 
     " TODO: when diff_changes can take patches:
     "  ,dd when there is no diff window should do a diff using VCS
