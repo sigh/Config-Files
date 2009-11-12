@@ -139,8 +139,8 @@ if has("autocmd")
 endif
  
 " Switch buffers with tab
-nnoremap <silent> <Tab> :call <SID>MyTab()<CR>
-nnoremap <silent> <S-Tab> :bprevious<Bar>:set laststatus=0<Bar>:MiniBufExplorer<CR>
+noremap <silent> <Tab> <Esc>:call <SID>MyTab()<CR>
+noremap <silent> <S-Tab> <Esc>:bprevious<Bar>:set laststatus=0<Bar>:MiniBufExplorer<CR>
 
 function! <SID>MyTab()
     bnext
@@ -154,7 +154,7 @@ endfunction
 noremap <C-P> <C-I>
 
 " ctrl-q deletes the buffer
-nmap <silent> <C-Q> :bd<CR>
+map <silent> <C-Q> <Esc>:bd<CR>
 
 " Always split on right when vertical
 set splitright
@@ -204,10 +204,10 @@ set incsearch
 
 " Press Space to turn off highlighting and clear any message already displayed.
 " Also turn off MBE
-nnoremap <silent> <Space> :call <SID>ResetSome()<Bar>:nohlsearch<Bar>:pwd<CR>
+noremap <silent> <Space> <Esc>:call <SID>ResetSome()<Bar>:nohlsearch<Bar>:pwd<CR>
 
 " Ctrl-Space
-nnoremap <silent> <Nul>   :call <SID>ResetAll()<Bar>:nohlsearch<Bar>:pwd<CR>
+noremap <silent> <Nul>   <Esc>:call <SID>ResetAll()<Bar>:nohlsearch<Bar>:pwd<CR>
 
 " Reset only somethings
 function! <SID>ResetSome()
@@ -248,8 +248,8 @@ set showmode
 
 " make C-u and C-d scroll more slowly
 " set scroll=3   " This keeps being reset so overwrite c-u c-d
-nnoremap <C-U> 3<C-Y>
-nnoremap <C-D> 3<C-E>
+noremap <C-U> 3<C-Y>
+noremap <C-D> 3<C-E>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Text Formatting/Layout
@@ -342,37 +342,6 @@ let g:explVertical=1
 let g:explWinSize=35
  
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Move around windows
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Move the cursor to the window left of the current one
-noremap <silent> ,h :wincmd h<cr>
-
-" Move the cursor to the window below the current one
-noremap <silent> ,j :wincmd j<cr>
-
-" Move the cursor to the window above the current one
-noremap <silent> ,k :wincmd k<cr>
-
-" Move the cursor to the window right of the current one
-noremap <silent> ,l :wincmd l<cr>
-
-" Close the current window
-noremap <silent> ,c :close<cr>
-
-" Move the current window to the right of the main Vim window
-noremap <silent> ,ml <C-W>L
-
-" Move the current window to the top of the main Vim window
-noremap <silent> ,mk <C-W>K
-
-" Move the current window to the left of the main Vim window
-noremap <silent> ,mh <C-W>H
-
-" Move the current window to the bottom of the main Vim window
-noremap <silent> ,mj <C-W>J
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Backup
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -384,7 +353,6 @@ silent ! mkdir -p ~/.vim/.swap
 set backup
 set backupdir=~/.vim/.backup
 set directory=~/.vim/.swap
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Diff
@@ -415,8 +383,6 @@ function! <SID>SetDiffMaps()
     map <buffer> ,dd ,df:NavPatchDiffChanges<CR>
 
     " TODO: when diff_changes can take patches:
-    "  ,dd opens the current file and applies current patch
-    "  ,dd then returns again from non-diff
     "  ,dd when there is no diff window should do a diff using VCS
 endfunction
 
