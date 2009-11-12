@@ -68,6 +68,10 @@ if ! exists(":VCSAllDiffChanges")
     command! VCSAllDiffChanges silent call <SID>VCSAll()
 endif
 
+if ! exists(":VCSUpdateDiffChanges")
+    command! VCSUpdateDiffChanges silent call <SID>VCSAllUpdate()
+endif
+
 " Return to the diff window (if we got here from diff nav)
 " if force is set then then open up a new diff if we can't find a current diff
 function! <SID>DiffReturn(force)
@@ -81,6 +85,16 @@ endfunction
 
 " Open a new buffer with the diff output from he current VCS
 function! <SID>VCSAll()
+    " create a new buffer
+    edit! -All-DiffChanges-
+    set noreadonly
+    set buftype=nofile
+
+    call <SID>VCSAllUpdate()
+endfunction
+
+" Update a diff window using VCS
+function! <SID>VCSAllUpdate()
     " first try to find the VCS program
     let l:prog = <SID>FindVCS()
     if l:prog == ""
@@ -88,22 +102,9 @@ function! <SID>VCSAll()
         return
     endif
 
-    " create a new buffer
-    edit! -- "-All-DiffChanges-"
-    set noreadonly
-    set buftype=nofile
-
     normal ggdG
     exec "silent read !" . l:prog . " diff"
     normal ggdd 
-
-    " error if diffbuf is empty
-    if line('$') == 1 && col('$') == 1
-        bdelete
-        redraw
-        echomsg "DiffChanges: Empty result (or error occured)"
-        return
-    endif
 
     set filetype=diff
     setlocal nomodified

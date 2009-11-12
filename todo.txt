@@ -27,8 +27,6 @@ rcdist
 
 diff_changes:
     + save and reload yank register
-    + diff update
-    + load diff from running instance of vim
     + highlight +++ line
 	+ multiple windows fucks up... WTF
     + create CleanUpDiffChanges to find any borked windows (run on DiffStop).
