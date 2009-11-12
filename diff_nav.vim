@@ -15,6 +15,12 @@ setlocal tabstop=8
 setlocal softtabstop=0
 setlocal noexpandtab
 
+if exists('g:diff_nav_loaded')
+    finish
+endif
+
+let g:diff_nav_loaded = 1
+
 function! DiffFoldLevel(linenum)
     let l:line = getline(a:linenum)
 

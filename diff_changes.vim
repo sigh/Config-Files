@@ -60,17 +60,55 @@ if !exists(':NavDiffChanges')
   command! -bang NavPatchDiffChanges call <SID>DiffStartNavPatch("<bang>")
 endif
 
-if ! exists(":DiffReturn")
-    command! DiffReturn silent call <SID>DiffReturn()
+if ! exists(":ReturnDiffChanges")
+    command! -bang ReturnDiffChanges silent call <SID>DiffReturn("<bang>")
 endif
 
+if ! exists(":VCSAllDiffChanges")
+    command! VCSAllDiffChanges silent call <SID>VCSAll()
+endif
 
 " Return to the diff window (if we got here from diff nav)
-function! <SID>DiffReturn()
+" if force is set then then open up a new diff if we can't find a current diff
+function! <SID>DiffReturn(force)
     CDiffChanges
-    if b:diff_nav_diff_buf
+    if exists("b:diff_nav_diff_buf") && bufloaded(b:diff_nav_diff_buf)
         exec 'buffer ' . b:diff_nav_diff_buf
+    elseif a:force != ""
+        call <SID>VCSAll()
     endif
+endfunction
+
+" Open a new buffer with the diff output from he current VCS
+function! <SID>VCSAll()
+    " first try to find the VCS program
+    let l:prog = <SID>FindVCS()
+    if l:prog == ""
+        echoerr "No Version Control System found"
+        return
+    endif
+
+    " create a new buffer
+    edit! -- "-All-DiffChanges-"
+    set noreadonly
+    set buftype=nofile
+
+    normal ggdG
+    exec "silent read !" . l:prog . " diff"
+    normal ggdd 
+
+    " error if diffbuf is empty
+    if line('$') == 1 && col('$') == 1
+        bdelete
+        redraw
+        echomsg "DiffChanges: Empty result (or error occured)"
+        return
+    endif
+
+    set filetype=diff
+    setlocal nomodified
+    setlocal readonly
+    filetype detect
 endfunction
 
 " Special DiffStart functions
@@ -86,9 +124,9 @@ function! <SID>DiffStartNavPatch(close)
 
     " yank the patch
     let l:yankstring = b:diff_nav_patch_start . "," . b:diff_nav_patch_end . "yank"
-    exec "buffer " . b:diff_nav_diff_buf
-    exec l:yankstring
-    exec "buffer " . l:curbuf
+    exec "silent buffer " . b:diff_nav_diff_buf
+    exec "silent " . l:yankstring
+    exec "silent buffer " . l:curbuf
 
     let l:command = 'put!'
     let l:command = l:command . ' | %!patch -s -R -o ' . s:tmpfile . ' ' . expand('%')
@@ -163,7 +201,7 @@ function! <SID>DiffStart(close, execstring, remove)
 
     " load the file
     let s:diffbuf = bufnr('%')
-    exec a:execstring
+    exec "silent " . a:execstring
     if a:remove
         normal ggdd " remove the empty first line
     endif
@@ -181,7 +219,7 @@ function! <SID>DiffStart(close, execstring, remove)
     diffthis
 
     " close the diff window if we were asked
-    if a:close == "!"
+    if a:close != ""
         wincmd c
     endif
 
