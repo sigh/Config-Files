@@ -370,7 +370,7 @@ map ,dV :VDiffChanges!<CR>
 map ,df :FileDiffChanges<CR>
 map ,dF :FileDiffChanges!<CR>
 map ,dt :TDiffChanges<CR>
-map ,dd :DiffReturn<CR>
+map ,dd :ReturnDiffChanges!<CR>
 
 autocmd FileType diff call <SID>SetDiffMaps()
 
