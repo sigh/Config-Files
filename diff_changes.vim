@@ -98,6 +98,7 @@ function! <SID>VCSAllUpdate()
     " first try to find the VCS program
     let l:prog = <SID>FindVCS()
     if l:prog == ""
+        bdelete
         echoerr "No Version Control System found"
         return
     endif
