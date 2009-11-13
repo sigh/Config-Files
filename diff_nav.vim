@@ -31,7 +31,7 @@ if ! exists('g:diff_nav_loaded')
 
         " TODO: set these appropriately
         " setlocal noreadonly
-        " setlocal modifiable
+        setlocal modifiable
     endfunction
 
     " Parse the diff and return the filename where the cursor is
@@ -233,4 +233,6 @@ setlocal foldlevel=0
 setlocal tabstop=8
 setlocal softtabstop=0
 setlocal noexpandtab
+setlocal readonly
+setlocal nomodifiable
 

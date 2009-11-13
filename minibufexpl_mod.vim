@@ -959,7 +959,7 @@ function! <SID>DisplayBuffers(delBufNum)
   
   " Prevent the buffer from being modified.
   setlocal nomodifiable
-  set nobuflisted
+  setlocal nobuflisted
 
 endfunction
 
