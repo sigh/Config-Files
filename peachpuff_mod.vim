@@ -42,7 +42,7 @@ hi WildMenu term=standout ctermfg=0 ctermbg=3 guifg=Black guibg=Yellow
 hi Folded term=standout ctermfg=4 ctermbg=7 guifg=Black guibg=#e3c1a5
 hi FoldColumn term=standout ctermfg=4 ctermbg=7 guifg=DarkBlue guibg=Gray80
 hi DiffAdd term=bold ctermbg=5 ctermfg=0 guibg=White
-hi DiffDelete term=bold cterm=NONE ctermfg=7 ctermbg=7 gui=bold guifg=LightBlue guibg=#f6e8d0
+hi DiffDelete term=bold cterm=NONE ctermfg=7 ctermbg=0 gui=bold guifg=LightBlue guibg=#f6e8d0
 hi DiffChange term=bold cterm=NONE ctermbg=3 ctermfg=0 guibg=#edb5cd
 hi DiffText term=reverse cterm=NONE ctermbg=2 ctermfg=0 gui=bold guibg=#ff8060
 hi Cursor guifg=bg guibg=fg
@@ -64,7 +64,7 @@ hi Todo term=standout ctermfg=4 ctermbg=7 guifg=Blue guibg=Yellow
 if &t_Co >= 16
     hi LineNr ctermfg=8
     hi DiffAdd ctermbg=13 ctermfg=0 
-    hi DiffDelete ctermfg=8 ctermbg=8  
+    hi DiffDelete ctermfg=8 ctermbg=0
     hi DiffChange ctermbg=3 ctermfg=0 
     hi DiffText ctermbg=11 ctermfg=0 
     hi IncSearch ctermfg=15

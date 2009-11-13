@@ -1,29 +1,25 @@
-" highlight 
-"	syntax clear
-"	syntax region DiffNavPlusLine start='^+++ ' end='[ \t]\|$'
-"	syntax match DiffNavPlusFile '[^ ]*' " containedin=DiffNavPlusLine
-"
-"	hi def link DiffNavPlusLine Normal
-"	hi def link DiffNavPlusFile Keyword
-
 function! DiffNav_DiffFoldLevel(linenum)
+    return DiffNav_DiffFoldLevelHelper(a:linenum, 0)
+endfunction
+
+function! DiffNav_DiffFoldLevelHelper(linenum, depth)
     let l:line = getline(a:linenum)
 
     if l:line =~ '^+++ ' || l:line =~ '^--- '
-        return 0
-    endif
-
-    " each individual diff section
-    if l:line =~ '^@@'
-        return 1
-    endif
-    if l:line =~ '^[\\\t +-]' || strlen(l:line) == 0
+        " pass
+    elseif l:line =~ '^@@'
+        " each individual diff section
+        return ">2"
+    elseif l:line =~ '^[\\\t +-]' || strlen(l:line) == 0
         return 2
     endif
-
-    return 0
+    
+    if a:depth > 0 || a:linenum == 1 || DiffNav_DiffFoldLevelHelper(a:linenum-1, 1) == 2
+        return ">1"
+    else
+        return "1"
+    endif
 endfunction
-
 
 " define folds
 setlocal foldenable

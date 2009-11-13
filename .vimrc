@@ -117,8 +117,8 @@ set report=0
 " don't make noise on error messages
 set noerrorbells
 
-" make the splitters between windows be blank
-set fillchars=vert:\ ,stl:\ ,stlnc:\
+" all filchars blank
+set fillchars=
 
 " all cursor to go anywhere
 set virtualedit=all
