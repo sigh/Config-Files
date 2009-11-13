@@ -6,22 +6,7 @@
 "	hi def link DiffNavPlusLine Normal
 "	hi def link DiffNavPlusFile Keyword
 
-" define folds
-setlocal foldenable
-setlocal foldmethod=expr
-setlocal foldexpr=DiffFoldLevel(v:lnum)
-setlocal foldlevel=0
-setlocal tabstop=8
-setlocal softtabstop=0
-setlocal noexpandtab
-
-if exists('g:diff_nav_loaded')
-    finish
-endif
-
-let g:diff_nav_loaded = 1
-
-function! DiffFoldLevel(linenum)
+function! DiffNav_DiffFoldLevel(linenum)
     let l:line = getline(a:linenum)
 
     if l:line =~ '^+++ ' || l:line =~ '^--- '
@@ -38,6 +23,22 @@ function! DiffFoldLevel(linenum)
 
     return 0
 endfunction
+
+
+" define folds
+setlocal foldenable
+setlocal foldmethod=expr
+setlocal foldexpr=DiffNav_DiffFoldLevel(v:lnum)
+setlocal foldlevel=0
+setlocal tabstop=8
+setlocal softtabstop=0
+setlocal noexpandtab
+
+if exists('g:diff_nav_loaded')
+    finish
+endif
+
+let g:diff_nav_loaded = 1
 
 " commands
 
