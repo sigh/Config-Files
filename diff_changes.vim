@@ -5,7 +5,6 @@
 " TODO: Autodetect VCS
 " TODO: Create AnyDiffChanges which takes any readwhat string (and expands it
 " first)
-" TODO: Use patch
 
 " Set up default globals
 

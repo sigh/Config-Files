@@ -118,7 +118,7 @@ set report=0
 set noerrorbells
 
 " all filchars blank
-set fillchars=
+set fillchars=vert:\ ,stl:\ ,stlnc:\ ,diff:\ ,fold:\ 
 
 " all cursor to go anywhere
 set virtualedit=all
@@ -370,8 +370,8 @@ map ,dV :VDiffChanges!<CR>
 map ,df :FileDiffChanges<CR>
 map ,dF :FileDiffChanges!<CR>
 map ,dt :TDiffChanges<CR>
-map ,dd :ReturnDiffChanges!<CR>
-map ,du ,dd:VCSUpdateDiffChanges<CR>
+map <silent> ,dd :ReturnDiffChanges!<CR>
+map <silent> ,du ,dd:VCSUpdateDiffChanges<CR>
 
 autocmd FileType diff call <SID>SetDiffMaps()
 

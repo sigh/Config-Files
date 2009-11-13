@@ -25,6 +25,9 @@ minifbuf:
 rcdist
     + load hosts and files from a config file
 
+diff_nav:
+    + handle "only file" lines etc (look in diff syntax file)
+
 diff_changes:
     + save and reload yank register
     + highlight +++ line
