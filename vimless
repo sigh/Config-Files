@@ -23,7 +23,7 @@ shift $(( $OPTIND - 1 ))
 # set filetype
 if [[ -n "$filetype" ]] ; then
     args=( "${args[@]}" -c "set ft=$filetype" )
-    if [[ "$filetype" == man ]] ; then
+    if [[ "$filetype" == man && 0 == ${#args[@]} ]] ; then
         filter=1
     fi
 fi
@@ -40,7 +40,7 @@ else
 fi
 
 # filter out terminal characters unless told otherwise
-if [[ -z "$filter" ]] ; then
+if [[ -z "$filter"  ]] ; then
     vim "${args[@]}"
 else
     col -b | vim "${args[@]}"
