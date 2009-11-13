@@ -223,6 +223,10 @@ function! <SID>DiffStart(close, execstring, remove)
     " link up the buffers
     diffthis
 
+    " set diff changes window to no be editable
+    setlocal readonly
+    setlocal nomodifiable
+
     " close the diff window if we were asked
     if a:close != ""
         wincmd c
