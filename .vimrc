@@ -286,8 +286,8 @@ set smarttab
 
 if executable("pbcopy")
     " ,p pastes when in normal mode, and copies in normal mode
-    vmap ,p :w !pbcopy<CR><CR>
-    nmap ,p :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
+    vmap <silent> ,p :w !pbcopy<CR><CR>
+    nmap <silent> ,p :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
 else
     " ,p enters insert mode with paste on and mouse off and line numbering
     "    changes are reverted when exiting insert mode
@@ -362,27 +362,27 @@ set directory=~/.vim/.swap
 set diffopt=filler,context:10
 
 " allow us to be able to "do" in visual mode
-vmap do :diffget<CR> 
+vmap <silent> do :diffget<CR> 
 
 " DiffChanges shortcuts :)
-map ,dv :VDiffChanges<CR>
-map ,dV :VDiffChanges!<CR>
-map ,df :FileDiffChanges<CR>
-map ,dF :FileDiffChanges!<CR>
-map ,dt :TDiffChanges<CR>
+map <silent> ,dv :VDiffChanges<CR>
+map <silent> ,dV :VDiffChanges!<CR>
+map <silent> ,df :FileDiffChanges<CR>
+map <silent> ,dF :FileDiffChanges!<CR>
+map <silent> ,dt :TDiffChanges<CR>
 map <silent> ,dd :ReturnDiffChanges!<CR>
 map <silent> ,du ,dd:VCSUpdateDiffChanges<CR>
 
 autocmd FileType diff call <SID>SetDiffMaps()
 
 function! <SID>SetDiffMaps()
-    map <buffer> ,dv ,df,dv
-    map <buffer> ,dV ,df,dV
-    map <buffer> ,dt <Nop>
-    map <buffer> ,df :DiffOpenFile<CR>
-    map <buffer> ,dF :DiffOpenFile!<CR>
-    map <buffer> ,dd ,df:NavPatchDiffChanges<CR>
-    map <buffer> ,du :VCSUpdateDiffChanges<CR>
+    map <silent> <buffer> ,dv ,df,dv
+    map <silent> <buffer> ,dV ,df,dV
+    map <silent> <buffer> ,dt <Nop>
+    map <silent> <buffer> ,df :DiffOpenFile<CR>
+    map <silent> <buffer> ,dF :DiffOpenFile!<CR>
+    map <silent> <buffer> ,dd ,df:NavPatchDiffChanges<CR>
+    map <silent> <buffer> ,du :VCSUpdateDiffChanges<CR>
 
     " TODO: when diff_changes can take patches:
     "  ,dd when there is no diff window should do a diff using VCS

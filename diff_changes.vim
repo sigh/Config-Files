@@ -84,10 +84,8 @@ endfunction
 
 " Open a new buffer with the diff output from he current VCS
 function! <SID>VCSAll()
-    " create a new buffer
+    " create a new buffer (if required)
     edit! -All-DiffChanges-
-    set noreadonly
-    set buftype=nofile
 
     call <SID>VCSAllUpdate()
 endfunction
@@ -102,11 +100,17 @@ function! <SID>VCSAllUpdate()
         return
     endif
 
+    " set settings so we can write
+    setlocal modifiable
+    setlocal noreadonly
+    setlocal buftype=nofile
+    setlocal nobuflisted
+
     normal ggdG
     exec "silent read !" . l:prog . " diff"
     normal ggdd 
 
-    set filetype=diff
+    setlocal filetype=diff
     setlocal nomodified
     setlocal readonly
     filetype detect
@@ -195,10 +199,10 @@ function! <SID>DiffStart(close, execstring, remove)
 
     " create buffer to diff against
     exec "vsp " . s:bufname
-    set buftype=nofile nobuflisted
-    set noreadonly
-    set modifiable
-    exec "set filetype=" . l:filetype
+    setlocal buftype=nofile nobuflisted
+    setlocal noreadonly
+    setlocal modifiable
+    exec "setlocal filetype=" . l:filetype
 
     " load the file
     let s:diffbuf = bufnr('%')
@@ -247,7 +251,7 @@ function! <SID>DiffStop()
             exec "buffer " . s:origbuf
         endif
 
-		set nodiff
+		setlocal nodiff
         let &wrap = s:wrap
         let &foldmethod = s:foldmethod 
         let &foldcolumn = s:foldcolumn 
