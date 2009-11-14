@@ -22,10 +22,10 @@ shift $(( $OPTIND - 1 ))
 
 # set filetype
 if [[ -n "$filetype" ]] ; then
-    args=( "${args[@]}" -c "set ft=$filetype" )
-    if [[ "$filetype" == man && 0 == ${#args[@]} ]] ; then
+    if [[ "$filetype" == man && 0 == $# ]] ; then
         filter=1
     fi
+    args=( "${args[@]}" -c "set ft=$filetype" )
 fi
 
 # set static options

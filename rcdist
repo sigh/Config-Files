@@ -28,6 +28,7 @@ files=(
     .vim/ftplugin/diff_nav.vim
     .vim/colors/peachpuff_mod.vim
     .vim/macros/my_less.vim
+    .vim/syntax/man.vim
 )
 
 # get options
