@@ -9,9 +9,7 @@
     + Quick way to pipe current history scrollback through less
 
 .vimrc
-    + display pwd in empty cmd area
     + mouse support for MBE
-    + shortcut deleting buffer
     + svn plugin
     + tagliist plugin
     + commentify: http://www.vim.org/scripts/script.php?script_id=23
@@ -30,6 +28,5 @@ diff_nav:
 
 diff_changes:
     + save and reload yank register
-    + highlight +++ line
 	+ multiple windows fucks up... WTF
     + create CleanUpDiffChanges to find any borked windows (run on DiffStop).
