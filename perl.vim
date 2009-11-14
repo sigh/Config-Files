@@ -29,5 +29,5 @@ setlocal errorformat+=%m\ at\ %f\ line\ %l.
 
 " set equalprg to use perltidy if available
 if executable("perltidy")
-    set equalprg=perltidy
+    setlocal formatprg=perltidy
 endif
