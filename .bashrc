@@ -73,6 +73,20 @@ shopt -s cdable_vars
 export FIGNORE='.swp:.svn:.0:~';
 
 # customise history
+
+# Change the location of HISTFILE
+# this way if .bashrc isn't run, our HISFILE isn't truncated
+hist_old=$HISTFILE
+export HISTFILE="$HOME/._bash_history"
+
+# if it doesn't exist, then initalise with 
+# current history
+if [[ -f "$hist_old" && ! -f "$HISTFILE" ]] ; then
+    cp "$hist_old" "$HISTFILE" 
+fi
+
+unset hist_old
+
 export HISTIGNORE='&:ls:fg:bg:ssh-fix:[ ]*'
 unset  HISTFILESIZE                 # never delete from history
 export HISTFILESIZE
