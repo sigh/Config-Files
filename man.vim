@@ -24,8 +24,8 @@ syn case ignore
 syn match  manReference       "\f\+([1-9][a-z]\=)"
 syn match  manTitle	      "^\f\+([0-9]\+[a-z]\=).*"
 syn match  manSectionHeading  "^[a-z][a-z ]*[a-z]$"
-syn match  manOptionArg       " [0-9a-z]\S*" contained
-syn region  manOptionDesc      start="^[ ]*[+-]" end="   \|$" contains=manOptionArg
+syn match  manOptionArg       " [0-9a-z_]\S*" contained
+syn region  manOptionDesc      start="^[ ]*[+-]" end="   \|\t\|$" contains=manOptionArg
 " syn match  manHistory		"^[a-z].*last change.*$"
 
 " Define the default highlighting.
