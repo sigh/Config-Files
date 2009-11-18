@@ -57,6 +57,9 @@ set ffs=unix,dos,mac
 " make vim smoother
 set ttyfast
 
+" Keyword lookup
+autocmd FileType * exec "setlocal keywordprg=vimdoc\\ -" . &ft
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Theme/Colors
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
