@@ -2,7 +2,6 @@
     + Fix lsd function so that it is more robust (no grep)
     + Complete logging
     + archive .bash_history
-    + show warning if bash_history has been truncated
     + make ssh-fix more secure
 
 .screen
@@ -25,8 +24,10 @@ rcdist
 
 diff_nav:
     + handle "only file" lines etc (look in diff syntax file)
+    + handle deleted files properly (jus open old version)
 
 diff_changes:
     + save and reload yank register
 	+ multiple windows fucks up... WTF
+        + focus screws up in All-Diffchanges
     + create CleanUpDiffChanges to find any borked windows (run on DiffStop).

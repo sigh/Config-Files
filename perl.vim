@@ -17,7 +17,6 @@ setlocal fo-=t fo+=croql
 setlocal include=\\<\\(use\\\|require\\)\\>
 setlocal includeexpr=substitute(substitute(v:fname,'::','/','g'),'$','.pm','')
 setlocal isfname=A-Z,a-z,:,48-57,_
-setlocal keywordprg=perldoc
 setlocal iskeyword=48-57,_,A-Z,a-z,: 
 setlocal isident=48-57,_,A-Z,a-z
 setlocal define=^\\s*sub

@@ -37,6 +37,11 @@ elseif line('$') == 1 && col('$') == 1
     qa
 endif
 
+" filter out any backspaces
+set noreadonly
+%!col -b
+set readonly
+
 set nocp
 set so=0
 set hlsearch

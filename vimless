@@ -5,7 +5,6 @@
 declare -a args
 
 filetype=
-filter=
 
 while getopts "c:f:" flag ; do
     case $flag in
@@ -22,9 +21,6 @@ shift $(( $OPTIND - 1 ))
 
 # set filetype
 if [[ -n "$filetype" ]] ; then
-    if [[ "$filetype" == man && 0 == $# ]] ; then
-        filter=1
-    fi
     args=( "${args[@]}" -c "set ft=$filetype" )
 fi
 
@@ -39,9 +35,4 @@ else
     args=( "${args[@]}" "$@" )
 fi
 
-# filter out terminal characters unless told otherwise
-if [[ -z "$filter"  ]] ; then
-    vim "${args[@]}"
-else
-    col -b | vim "${args[@]}"
-fi
+vim "${args[@]}"

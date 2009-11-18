@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+filetype=
+if [[ "${1:0:1}" == "-" ]] ; then
+    filetype=${1#-}
+    shift
+fi
+
+case "$filetype" in 
+    perl)   perldoc "$@" 2> /dev/null || perldoc -f "$@" ;;
+    python) pydoc "$@" | vimless -f man ;;
+    c)      man -s3 "$@" ;;
+    sh)     man "$@" ;;
+    man)    man "$@" ;;
+    *)      man "$@" ;;
+esac
