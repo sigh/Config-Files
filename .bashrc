@@ -230,5 +230,10 @@ else
     
     # revert titlebar if screen messes with it
     printf "\033];$USER@${HOSTNAME%%.*}\007"
+
+	# set title of first window to hostname
+	if (( "$WINDOW" == 0 )) ; then
+		title "$HOSTNAME"
+	fi
 fi
 
