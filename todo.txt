@@ -31,3 +31,4 @@ diff_changes:
 	+ multiple windows fucks up... WTF
         + focus screws up in All-Diffchanges
     + create CleanUpDiffChanges to find any borked windows (run on DiffStop).
+    + handle deleted file and new file.

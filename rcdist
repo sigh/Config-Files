@@ -17,6 +17,7 @@ files=(
     .bashrc
     .vimrc
     .bash_completion
+    .git-completion.bash
     .pystartup
     .inputrc
     .screenrc

@@ -60,7 +60,8 @@ shopt -u cdable_vars
 
 # turn on smart tab completetion
 shopt -s progcomp
-source "$HOME/.bash_completion"
+. "$HOME/.bash_completion"
+. "$HOME/.git-completion.bash"
 
 # allow us to cd to variables (turn on AFTER bash_completion)
 shopt -s cdable_vars
