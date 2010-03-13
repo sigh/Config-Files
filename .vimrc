@@ -300,13 +300,13 @@ else
     function! <SID>MyPasteMode()
         set paste nonumber mouse=
         
-        if v:version >= 700
-            augroup paste 
-                autocmd InsertLeave * :set nopaste number mouse=a | autocmd! paste
-            augroup end
-        else
+        " if v:version >= 700
+        "     augroup paste 
+        "         autocmd InsertLeave * :set nopaste number mouse=a | autocmd! paste
+        "     augroup end
+        " else
             map <silent> <Esc> :set nopaste number mouse=a<CR>:unmap <Char-60>Esc><CR>
-        endif
+        " endif
     endfunction                
 endif
 
