@@ -157,7 +157,14 @@ extract()
 less() { command less -R "$@" ; }
 
 # share directory on the web
-webshare() { python -c "import SimpleHTTPServer; SimpleHTTPServer.test()" "$@" ; }
+webshare() { python -m SimpleHTTPServer "$@" ; }
+
+# print short wikipedia lookup
+wiki() { 
+    dig +short txt "`echo $@`".wp.dg.cx \
+    | sed -e 's/" "//g' -e 's/^"//g' -e 's/"$//g' \
+    | fmt -w `tput cols`
+}
 
 # echo shortcut
 e() { echo "$@" ; }
@@ -172,14 +179,7 @@ fi
 
 # use vim as our pager for everything 
  
-export MANPAGER="vimless -f man"
-export MANWIDTH=80
-export PERLDOC_PAGER="vimless -f man"
-export PERLDOC="-otext"
-
 vless() { vimless "$@" ; }
-
-export PAGER="vimless"
  
 # shortcut vim and set it as our editor
 vi() { vim "$@" ; }
