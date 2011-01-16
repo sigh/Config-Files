@@ -10,14 +10,14 @@ if ! grep -q '^-et' .perltidyrc ; then
     echo '-et=4    # use tabs' >> .perltidyrc
 fi
 
-if grep -q '^# mailguard specific' .bashrc ; then  
+if grep -q '^# work specific' .bashrc ; then  
     exit 0  
 fi
 
-# add mailguard specific section to bashrc
+# add work specific section to bashrc
 (cat >> .bashrc) <<'EOF'
 
-# mailguard specific
+# work specific
 
 gsvn() {
     find . -name .svn -prune -o -exec egrep --color=always -H "$@" {} + 2> /dev/null
