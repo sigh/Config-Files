@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
                        
 # use tabs
-sed -i '' 's/^set expandtab " no/set noexpandtab " real/g' .vimrc
+sed -i '' 's/^set expandtab " no/set noexpandtab " real/g' home/.vimrc
 
 # os x doesn't kow about dircolors right away :(
-sed -i '' 's/^eval \$(dircolors)/eval $(dircolors  2> \/dev\/null || \/opt\/local\/bin\/dircolors)/' .bashrc
+sed -i '' 's/^eval \$(dircolors)/eval $(dircolors  2> \/dev\/null || \/opt\/local\/bin\/dircolors)/' home/.bashrc
 
-if ! grep -q '^-et' .perltidyrc ; then
-    echo '-et=4    # use tabs' >> .perltidyrc
+if ! grep -q '^-et' home/.perltidyrc ; then
+    echo '-et=4    # use tabs' >> home/.perltidyrc
 fi
 
-if grep -q '^# work specific' .bashrc ; then  
+if grep -q '^# work specific' home/.bashrc ; then  
     exit 0  
 fi
 
 # add work specific section to bashrc
-(cat >> .bashrc) <<'EOF'
+(cat >> home/.bashrc) <<'EOF'
 
 # work specific
 
