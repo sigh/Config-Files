@@ -1,48 +1,20 @@
 #!/usr/bin/env bash
 #
 # Distribute config files to $hosts
-# 
-# rcdist [-d] [base_dir]
-#
-#   -d       dry run
-#   base_dir base directory (default is home dir in this repo)
 
-declare -a hosts files dirs
+declare -a hosts
 
 hosts=(
     zim
 )
 
-# get options
-dry=
-
-while getopts "d" flag ; do
-    case $flag in
-        d)  dry=1
-            ;;
-        ?)  exit 1
-            ;;
-    esac
-done
-shift $(( $OPTIND-1 ))
-
-base="$1"
-if [[ -z "$base" ]] ; then
-    base="home"
-fi
-
-# change into base directory
-cd "$base"
+# change into home dir (which will be synced to $HOME)
+cd home
 
 options="--compress --stats --recursive --rsh=ssh"
 
-# add dry run option
-if [[ -n "$dry" ]] ; then
-    options="$options --dry-run"
-fi
-
 # sync with localhost
-rsync $options . ~
+rsync $options . "$HOME"
 
 # sync with remote hosts
 for host in "${hosts[@]}" ; do
