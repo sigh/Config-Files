@@ -1,35 +1,16 @@
 #!/usr/bin/env bash
 #
-# Distribute $files to $hosts
+# Distribute config files to $hosts
 # 
 # rcdist [-d] [base_dir]
 #
 #   -d       dry run
-#   base_dir base directory (default is $HOME)
+#   base_dir base directory (default is home dir in this repo)
 
 declare -a hosts files dirs
 
 hosts=(
     zim
-)
-
-files=( 
-    .bashrc
-    .vimrc
-    .bash_completion
-    .git-completion.bash
-    .pystartup
-    .inputrc
-    .screenrc
-    .perltidyrc
-    bin/vimless
-    .vim/plugin/minibufexpl_mod.vim
-    .vim/plugin/diff_changes.vim
-    .vim/ftplugin/perl.vim
-    .vim/ftplugin/diff_nav.vim
-    .vim/colors/peachpuff_mod.vim
-    .vim/macros/my_less.vim
-    .vim/syntax/man.vim
 )
 
 # get options
@@ -47,53 +28,25 @@ shift $(( $OPTIND-1 ))
 
 base="$1"
 if [[ -z "$base" ]] ; then
-    base="$HOME"
+    base="home"
 fi
 
-# change to base directory
+# change into base directory
 cd "$base"
 
-function elemExists() {
-    needle=$1
-    shift
+options="--compress --stats --recursive --rsh=ssh"
 
-    for i in "$@" ; do
-        [[ "$i" == "$needle" ]] && return 0
-    done
-    return 1
-}
+# add dry run option
+if [[ -n "$dry" ]] ; then
+    options="$options --dry-run"
+fi
 
-# find all the directories that need to be created
-for file in "${files[@]}" ; do
-    if [[ ! -r "$file" ]] ; then
-        echo "$0: Could not read file: $file" 1>&2
-        exit 1;
-    fi
-    dir=${file%/*}
+# sync with localhost
+rsync $options . ~
 
-    if [[ "$dir" != "$file" ]] && ! elemExists "$dir" "${dirs[@]}" ; then
-        dirs[${#dirs[@]}]="$dir"
-    fi
-done
-
+# sync with remote hosts
 for host in "${hosts[@]}" ; do
-    echo "Checking host: $host"
-    remote_cksum=$(ssh -C "$host" cksum "${files[@]}" ";" mkdir -p "${dirs[@]}" 2> /dev/null)
-                              
-    # check if error occurred connection to server
-    if [[ $? = 255 ]] ; then
-        echo "$0: Could not connect to $host" 1>&2
-        continue
-    fi
-
-    for file in "${files[@]}" ; do
-        if ! grep -qx "$(cksum "$file")" <<<"$remote_cksum" ; then
-            # if checksum matched, upload
-            if [[ -n $dry ]] ; then
-                echo "Copy $file"
-            else
-                scp -C "$file" "$host":"$file"
-            fi
-        fi
-    done
+    echo
+    echo "Updating host: $host"
+    rsync $options . "$host:~"
 done
