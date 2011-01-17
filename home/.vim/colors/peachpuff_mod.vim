@@ -8,7 +8,7 @@
 "
 " Note: Only GUI colors differ from default, on terminal it's just `light'.
 "
-" Modified by sigh
+" Modified by sigh <sigh.projects@gmail.com>
 
 " First remove all existing highlighting.
 set background=light
