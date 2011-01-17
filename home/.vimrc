@@ -34,7 +34,7 @@ filetype indent on
 "  % : saves and restores the buffer list
 "  n... : where to save the viminfo files
 " ! : save global variables
-set viminfo='1000,f1,\"1000,/1000,:1000,n~/.viminfo,!
+set viminfo='1000,f1,\"1000,/1000,:1000,!,n~/.vim/.viminfo
 
 " none of these should be word dividers, so make them not be
 set iskeyword+=_,$,@,%,#
