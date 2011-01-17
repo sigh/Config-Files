@@ -238,3 +238,8 @@ else
 	fi
 fi
 
+# Grep all files in the current directory recursively
+#   ignoring any files and folders that start with a .
+g.() {
+    find . -name '.?*' -prune -o -exec egrep --color=always -H "$@" {} \; 2> /dev/null
+}
