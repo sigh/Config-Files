@@ -254,6 +254,12 @@ set showmode
 noremap <C-U> 3<C-Y>
 noremap <C-D> 3<C-E>
 
+" Highlight whitespace at the end of the line
+" (source: http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html)
+autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl /\s\+\%#\@!$/
+autocmd InsertLeave * syn clear EOLWS | syn match EOLWS excludenl /\s\+$/
+highlight EOLWS ctermbg=red guibg=red
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Text Formatting/Layout
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
