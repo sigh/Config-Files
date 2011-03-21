@@ -60,6 +60,9 @@ set ttyfast
 " Keyword lookup
 autocmd FileType * exec "setlocal keywordprg=vimdoc\\ -" . &ft
 
+" Set leader to ","
+let mapleader = ","
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Theme/Colors
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -294,18 +297,18 @@ set nowrap
 set smarttab
 
 if executable("pbcopy")
-    " ,p pastes when in normal mode, and copies in normal mode
-    vmap <silent> ,p :w !pbcopy<CR><CR>
-    nmap <silent> ,p :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
+    " <Leader>p pastes when in normal mode, and copies in normal mode
+    vmap <silent> <Leader>p :w !pbcopy<CR><CR>
+    nmap <silent> <Leader>p :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
 else
-    " ,p enters insert mode with paste on and mouse off and line numbering
+    " <Leader>p enters insert mode with paste on and mouse off and line numbering
     "    changes are reverted when exiting insert mode
     "    In older versions of vim, you must press <Esc> again to revert
-    nmap <silent> ,p :call <SID>MyPasteMode()<CR>i
+    nmap <silent> <Leader>p :call <SID>MyPasteMode()<CR>i
 
     function! <SID>MyPasteMode()
         set paste nonumber mouse=
-        
+
         " if v:version >= 700
         "     augroup paste 
         "         autocmd InsertLeave * :set nopaste number mouse=a | autocmd! paste
@@ -313,11 +316,11 @@ else
         " else
             map <silent> <Esc> :set nopaste number mouse=a<CR>:unmap <Char-60>Esc><CR>
         " endif
-    endfunction                
+    endfunction
 endif
 
 " Set text wrapping toggles
-nmap <silent> ,w :set invwrap wrap?<CR>
+nmap <silent> <Leader>w :set invwrap wrap?<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Folding
@@ -349,7 +352,7 @@ let g:explVertical=1
 
 " width of 35 pixels
 let g:explWinSize=35
- 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Backup
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -374,27 +377,27 @@ set diffopt=filler,context:10
 vmap <silent> do :diffget<CR> 
 
 " DiffChanges shortcuts :)
-map <silent> ,dv :VDiffChanges<CR>
-map <silent> ,dV :VDiffChanges!<CR>
-map <silent> ,df :FileDiffChanges<CR>
-map <silent> ,dF :FileDiffChanges!<CR>
-map <silent> ,dt :TDiffChanges<CR>
-map <silent> ,dd :ReturnDiffChanges!<CR>
-map <silent> ,du ,dd:VCSUpdateDiffChanges<CR>
+map <silent> <Leader>dv :VDiffChanges<CR>
+map <silent> <Leader>dV :VDiffChanges!<CR>
+map <silent> <Leader>df :FileDiffChanges<CR>
+map <silent> <Leader>dF :FileDiffChanges!<CR>
+map <silent> <Leader>dt :TDiffChanges<CR>
+map <silent> <Leader>dd :ReturnDiffChanges!<CR>
+map <silent> <Leader>du <Leader>dd:VCSUpdateDiffChanges<CR>
 
 autocmd FileType diff call <SID>SetDiffMaps()
 
 function! <SID>SetDiffMaps()
-    map <silent> <buffer> ,dv ,df,dv
-    map <silent> <buffer> ,dV ,df,dV
-    map <silent> <buffer> ,dt <Nop>
-    map <silent> <buffer> ,df :DiffOpenFile<CR>
-    map <silent> <buffer> ,dF :DiffOpenFile!<CR>
-    map <silent> <buffer> ,dd ,df:NavPatchDiffChanges<CR>
-    map <silent> <buffer> ,du :VCSUpdateDiffChanges<CR>
+    map <silent> <buffer> <Leader>dv <Leader>df<Leader>dv
+    map <silent> <buffer> <Leader>dV <Leader>df<Leader>dV
+    map <silent> <buffer> <Leader>dt <Nop>
+    map <silent> <buffer> <Leader>df :DiffOpenFile<CR>
+    map <silent> <buffer> <Leader>dF :DiffOpenFile!<CR>
+    map <silent> <buffer> <Leader>dd <Leader>df:NavPatchDiffChanges<CR>
+    map <silent> <buffer> <Leader>du :VCSUpdateDiffChanges<CR>
 
     " TODO: when diff_changes can take patches:
-    "  ,dd when there is no diff window should do a diff using VCS
+    "  <Leader>dd when there is no diff window should do a diff using VCS
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
