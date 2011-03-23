@@ -1,0 +1,12 @@
+[user]
+	name = sigh
+	email = dilshan.a@gmail.com
+[core]
+	editor = vim
+[merge]
+	tool = vimdiff
+[alias]
+	stat = status
+	ci = commit
+[color]
+	ui = true
