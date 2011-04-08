@@ -23,7 +23,9 @@ else
     TITLEBAR=
 fi
 
-export PS1="$TITLEBAR$PROMPT_COLOR[\A] [\j] \u@\h:\w\n$PROMPT_COLOR\! \$$NONE "
+export PS1="$TITLEBAR$PROMPT_COLOR[\A] [\j] \u@\h:\w\$(__git_ps1)\n$PROMPT_COLOR\! \$$NONE "
+# tell __git_ps1 to show us when we've modified the state
+export GIT_PS1_SHOWDIRTYSTATE=true
 
 # set other prompts
 export PS2="$PROMPT_COLOR>$NONE "
