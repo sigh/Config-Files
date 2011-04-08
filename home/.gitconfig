@@ -6,7 +6,15 @@
 [merge]
 	tool = vimdiff
 [alias]
-	stat = status
+	d = diff
+	h = help
+
+	st = status
 	ci = commit
+	co = checkout
+	br = branch
+	ls = ls-files
+
+	stat = status
 [color]
 	ui = true
