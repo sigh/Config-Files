@@ -18,3 +18,5 @@
 	stat = status
 [color]
 	ui = true
+[branch]
+	autosetupmerge = true
