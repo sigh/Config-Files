@@ -7,39 +7,6 @@ export PATH="${PATH}:$HOME/bin"
 # remove all aliases so that we can redfine them without errors
 unalias -a
 
-# make a colorful prompt
-NONE="\[$(tput sgr0)\]"    # reset formatting to default
-
-if [ "$USER" = 'root' ] ; then
-    RAW_PROMPT_COLOR="$(tput setf 4)" # red for root
-else
-    RAW_PROMPT_COLOR="$(tput setf 2)" # green for other
-fi
-PROMPT_COLOR="\[$RAW_PROMPT_COLOR\]"
-
-if [[ "$TERM" == xterm* ]] ; then
-    TITLEBAR='\[\033]0;\u@\h\007\]'
-else
-    TITLEBAR=
-fi
-
-export PS1="$TITLEBAR$PROMPT_COLOR[\A] [\j] \u@\h:\w\$(__git_ps1)\n$PROMPT_COLOR\! \$$NONE "
-# tell __git_ps1 to show us when we've modified the state
-export GIT_PS1_SHOWDIRTYSTATE=true
-
-# set other prompts
-export PS2="$PROMPT_COLOR>$NONE "
-export PS4="\[$(tput setf 5)\]+$NONE "
-
-# mysql prompt
-export MYSQL_PS1="$RAW_PROMPT_COLOR[\R:\m] \U:\d$(tput setf 0)\nmysql> "
-
-unset NONE
-unset PROMPT_COLOR
-unset RAW_PROMPT_COLOR
-unset PARENT_NAME
-unset TITLEBAR
-
 # disable flow control (C-s, C-r)
 stty -ixon
 
@@ -74,6 +41,41 @@ shopt -s cdable_vars
 
 # ignore files with the following suffixes for tab completion
 export FIGNORE='.swp:.svn:.0:~';
+
+# make a colorful prompt
+# (this must be done after git-completion has been initialised)
+
+NONE="\[$(tput sgr0)\]"    # reset formatting to default
+
+if [ "$USER" = 'root' ] ; then
+    RAW_PROMPT_COLOR="$(tput setf 4)" # red for root
+else
+    RAW_PROMPT_COLOR="$(tput setf 2)" # green for other
+fi
+PROMPT_COLOR="\[$RAW_PROMPT_COLOR\]"
+
+if [[ "$TERM" == xterm* ]] ; then
+    TITLEBAR='\[\033]0;\u@\h\007\]'
+else
+    TITLEBAR=
+fi
+
+export PS1="$TITLEBAR$PROMPT_COLOR[\A] [\j] \u@\h:\w\$(__git_ps1)\n$PROMPT_COLOR\! \$$NONE "
+# tell __git_ps1 to show us when we've modified the state
+export GIT_PS1_SHOWDIRTYSTATE=true
+
+# set other prompts
+export PS2="$PROMPT_COLOR>$NONE "
+export PS4="\[$(tput setf 5)\]+$NONE "
+
+# mysql prompt
+export MYSQL_PS1="$RAW_PROMPT_COLOR[\R:\m] \U:\d$(tput setf 0)\nmysql> "
+
+unset NONE
+unset PROMPT_COLOR
+unset RAW_PROMPT_COLOR
+unset PARENT_NAME
+unset TITLEBAR
 
 # customise history
 
