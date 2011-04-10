@@ -140,6 +140,10 @@ g.() {
     find . -name '.?*' -prune -o -exec egrep --color=always -H "$@" {} \; 2> /dev/null
 }
 
+# make git easier to type :)
+g() { git "$@"; }
+complete -o default -o nospace -F _git g
+
 # Handy Extract Program.
 extract()      
 {
