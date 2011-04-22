@@ -18,7 +18,7 @@ cd..() { cd "$@" .. ; }
 ..()   { cd "$@" .. ; }
 d()    { dirs -v "$@" ; }
 
-mkdcd() { mkdir -p "$@" && cd "${!#}" ; }
+mcd() { mkdir -p "$@" && cd "${!#}" ; }
 
 # allow for correction of inaccurate cd commands
 shopt -s cdspell
