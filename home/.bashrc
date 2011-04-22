@@ -37,7 +37,6 @@ shopt -s cdable_vars
 
 # allow for correction of inaccurate cd commands
 shopt -s cdspell
-shopt -s cdable_vars
 
 # ignore files with the following suffixes for tab completion
 export FIGNORE='.swp:.svn:.0:~';
@@ -47,7 +46,7 @@ export FIGNORE='.swp:.svn:.0:~';
 
 NONE="\[$(tput sgr0)\]"    # reset formatting to default
 
-if [ "$USER" = 'root' ] ; then
+if [[ "$USER" == root ]] ; then
     RAW_PROMPT_COLOR="$(tput setf 4)" # red for root
 else
     RAW_PROMPT_COLOR="$(tput setf 2)" # green for other
@@ -84,10 +83,10 @@ unset TITLEBAR
 hist_old=$HISTFILE
 export HISTFILE="$HOME/._bash_history"
 
-# if it doesn't exist, then initalise with 
+# if it doesn't exist, then initalise with
 # current history
 if [[ -f "$hist_old" && ! -f "$HISTFILE" ]] ; then
-    cp "$hist_old" "$HISTFILE" 
+    cp "$hist_old" "$HISTFILE"
 fi
 
 unset hist_old
@@ -104,7 +103,7 @@ shopt -s cmdhist
 # make sure we don't leave accidentally
 export IGNOREEOF=1
 
-# customise ls 
+# customise ls
 eval $(dircolors)
 ls()  { command ls --color=tty -hF "$@" ; }
 l.()  { ls  -d "$@" .* ; }
@@ -145,9 +144,9 @@ g() { git "$@"; }
 complete -o default -o nospace -F _git g
 
 # Handy Extract Program.
-extract()      
+extract()
 {
-     if [ -f "$1" ] ; then
+     if [[ -f "$1" ]] ; then
          case "$1" in
              *.tar.bz2)   tar xvjf "$1"     ;;
              *.tar.gz)    tar xvzf "$1"     ;;
@@ -174,7 +173,7 @@ less() { command less -R "$@" ; }
 webshare() { python -m SimpleHTTPServer "$@" ; }
 
 # print short wikipedia lookup
-wiki() { 
+wiki() {
     dig +short txt "`echo $@`".wp.dg.cx \
     | sed -e 's/" "//g' -e 's/^"//g' -e 's/"$//g' \
     | fmt -w `tput cols`
@@ -191,10 +190,9 @@ if [[ -d /Applications/Preview.app ]] ; then
     pman() { command man -t "$@" | open -f -a /Applications/Preview.app; }
 fi
 
-# use vim as our pager for everything 
- 
+# make it easy to use vim as our pager
 vless() { vimless "$@" ; }
- 
+
 # shortcut vim and set it as our editor
 vi() { vim "$@" ; }
 export EDITOR=vim
