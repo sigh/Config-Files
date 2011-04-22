@@ -24,6 +24,8 @@
 
     #open a github url for the current git repo
     hub = !git remote -v|sed "'s|.*git[:@]\\(.*\\).git.*|http://\\1|;s|m:|m/|'"|uniq|xargs open
+
+	staged = diff --cached
 [color]
 	ui = true
 [branch]
