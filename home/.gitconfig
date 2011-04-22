@@ -8,6 +8,8 @@
 [alias]
 	d = diff
 	h = help
+	b = branch
+	a = add
 
 	st = status
 	ci = commit
