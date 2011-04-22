@@ -296,27 +296,21 @@ set nowrap
 " use tabs at the start of a line, spaces elsewhere
 set smarttab
 
+" <Leader>p enters insert mode with paste on and mouse off and line numbering
+"    changes are reverted when exiting insert mode
+"    In older versions of vim, you must press <Esc> again to revert
+nmap <silent> <Leader>p :call <SID>MyPasteMode()<CR>i
+vmap <silent> <Leader>p :call <SID>MyPasteMode()<CR>i
+
+function! <SID>MyPasteMode()
+    set paste nonumber mouse=
+    map <silent> <Esc> :set nopaste number mouse=a<CR>:unmap <Char-60>Esc><CR>
+endfunction
+
 if executable("pbcopy")
-    " <Leader>p pastes when in normal mode, and copies in normal mode
-    vmap <silent> <Leader>p :w !pbcopy<CR><CR>
-    nmap <silent> <Leader>p :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
-else
-    " <Leader>p enters insert mode with paste on and mouse off and line numbering
-    "    changes are reverted when exiting insert mode
-    "    In older versions of vim, you must press <Esc> again to revert
-    nmap <silent> <Leader>p :call <SID>MyPasteMode()<CR>i
-
-    function! <SID>MyPasteMode()
-        set paste nonumber mouse=
-
-        " if v:version >= 700
-        "     augroup paste 
-        "         autocmd InsertLeave * :set nopaste number mouse=a | autocmd! paste
-        "     augroup end
-        " else
-            map <silent> <Esc> :set nopaste number mouse=a<CR>:unmap <Char-60>Esc><CR>
-        " endif
-    endfunction
+    " <Leader>sp (smart paste) pastes when in normal mode, and copies in normal mode
+    vmap <silent> <Leader>sp :w !pbcopy<CR><CR>
+    nmap <silent> <Leader>sp :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
 endif
 
 " Set text wrapping toggles
