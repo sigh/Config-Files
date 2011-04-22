@@ -16,6 +16,8 @@
 	ls = ls-files
 
 	stat = status
+
+	staged = diff --cached
 [color]
 	ui = true
 [branch]
