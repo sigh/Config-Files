@@ -202,7 +202,7 @@ export SVNEDITOR=vim
 export PYTHONSTARTUP="$HOME/.pystartup"
 
 # screen commands
-export SCREENDIR=/tmp/screens
+export SCREENDIR="/tmp/screens/S-$USER"
 
 if [[ -z "$STY" ]] ; then
     # commands for outside screen
