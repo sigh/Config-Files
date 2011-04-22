@@ -16,7 +16,17 @@
 	ls = ls-files
 
 	stat = status
+
+    log = log --graph
+
+    # display all commits in all branches
+    rl = rev-list --pretty=oneline --all --graph --abbrev-commit -n 100
+
+    #open a github url for the current git repo
+    hub = !git remote -v|sed "'s|.*git[:@]\\(.*\\).git.*|http://\\1|;s|m:|m/|'"|uniq|xargs open
 [color]
 	ui = true
 [branch]
 	autosetupmerge = true
+[diff]
+    mnemonicprefix = true
