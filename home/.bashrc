@@ -202,6 +202,7 @@ export SVNEDITOR=vim
 export PYTHONSTARTUP="$HOME/.pystartup"
 
 # screen commands
+export SCREENDIR=/tmp/screens
 
 if [[ -z "$STY" ]] ; then
     # commands for outside screen
@@ -296,7 +297,7 @@ else
 
     # fix the STY variable which gets messed up if we change the session name
     sty-fix() {
-        export STY=$(basename $TMPDIR/.screen/${STY%%.*}.*)
+        export STY=$(basename $SCREENDIR/${STY%%.*}.*)
     }
 
     # ensure that $STY is correct before running any screen commands
