@@ -206,10 +206,12 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 if [[ -z "$STY" ]] ; then
     # commands for outside screen
 
-    # attach to an existing screen session or create one if it doesn't exist
-    attach() {
-        # store ssh session data in screen variables
-        if [ -n "$SSH_CLIENT" ]; then
+    # store ssh session data in screen variables
+    # only required if we are accessing an existing screen session
+    # if the session doesn't exist then this command does nothing
+    #   and that is OK.
+    setup-ssh-fix() {
+        if [[ -n "$SSH_CLIENT" ]]; then
             # Variables to save
             SSHVARS="SSH_CLIENT SSH_TTY SSH_AUTH_SOCK SSH_CONNECTION DISPLAY"
 
@@ -217,36 +219,120 @@ if [[ -z "$STY" ]] ; then
             for x in ${SSHVARS} ; do
                 string="$string export $x='$(eval echo \$$x)' ; "
             done
-            string="$string
-"           # intentional newline
+            string="$string"$'\n'
 
+            # screenname is an optional argument
             opt=
-            if [[ -n "$1" ]] ; then
+            if [[ -n "$1" ]]; then
                 opt="-S $1"
             fi
 
             screen $opt -X register z "$string" > /dev/null 2>&1
         fi
-
-        # run screen
-        screen -d -R $1
     }
+
+    # default sessionname is the first part of the $HOSTNAME
+    default-sessionname() {
+        echo -n ${HOSTNAME%%.*}
+    }
+
+    # attach to an existing screen session or create one if it doesn't exist
+    attach() {
+        session_name=${1:-$(default-sessionname)}
+        setup-ssh-fix "$session_name"
+        screen -D -R "$session_name"
+    }
+
+    # attach to an existing screen session or create one if it doesn't exist
+    attach-again() {
+        session_name=${1:-$(default-sessionname)}
+        setup-ssh-fix "$session_name"
+        screen -x -S "$session_name"
+    }
+
+    # completion for attach* commands
+    _attach() {
+        # attach only takes one argument, so don't complete any more
+        if [[ $COMP_CWORD -ne 1 ]] ; then
+            return
+        fi
+
+        local cur
+        cur=${COMP_WORDS[COMP_CWORD]}
+
+        if [[ -n "$cur" ]]; then
+            # if the user has already started typing then show all matches
+            #   (both long and short names)
+            COMPREPLY=( \
+                $( command screen -ls | \
+                    sed -ne 's|^['$'\t'']\+\('$cur'[0-9]\+\.[^'$'\t'']\+\).*$|\1|p' ) \
+                $( command screen -ls | \
+                    sed -ne 's|^['$'\t'']\+[0-9]\+\.\('$cur'[^'$'\t'']\+\).*$|\1|p' | \
+                    sort | uniq -u ) )
+        else
+            # otherwise we don't want to show duplicate matches and stuff
+            COMPREPLY=( $( command screen -ls | \
+                sed -ne 's|^['$'\t'']\+\([0-9]\+\.[^'$'\t'']\+\).*$|\1|p' | \
+                perl -e '
+                    my @names = <STDIN>; my %counts;
+                    map { my $n=$_; $n=~s/^[0-9]+\.//; $counts{$n}+=1 } @names;
+                    while (my($value,$count) = each(%counts)) {
+                        if ( $count == 1 ) {
+                            # name is unique, so use short name
+                            print "$value\n";
+                        } else {
+                            # name is not unique so show all matching full names
+                            print "$_\n" foreach grep { /^[0-9]+\.$value$/ } @names;
+                        }
+                    }
+                ' ) )
+        fi
+    }
+
+    complete -F _attach attach
+    complete -F _attach attach-again
 else
     # commands for use inside screen
 
-    title() { screen -X title "$@" ; }
+    # fix the STY variable which gets messed up if we change the session name
+    sty-fix() {
+        export STY=$(basename $TMPDIR/.screen/${STY%%.*}.*)
+    }
+
+    # ensure that $STY is correct before running any screen commands
+    screen() {
+        sty-fix
+        command screen "$@"
+    }
+
+    # update the status to display the sessionname
+    update-status() {
+        sty-fix
+        screen -X hardstatus string '%{= kG}'${STY#*.}' %{= kW}%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<%{= kW} %='
+    }
+
+    # change the session name
+    sessionname() {
+        screen -X sessionname $1
+        update-status
+    }
+
+    # set title for current session
+    #   new title can contain spaces
+    title() {
+        screen -X title "$*"
+    }
 
     # import ssh session
     ssh-fix() {
         screen -X process z
     }
-    
+
     # revert titlebar if screen messes with it
     printf "\033];$USER@${HOSTNAME%%.*}\007"
 
-	# set title of first window to hostname
-	if (( "$WINDOW" == 0 )) ; then
-		title "$HOSTNAME"
-	fi
+    # ensure that the status is up-to-date
+    #   in particular if this the start of the session
+    update-status
 fi
 
