@@ -5,7 +5,6 @@
 declare -a hosts
 
 hosts=(
-    zim
 )
 
 # change into home dir (which will be synced to $HOME)
