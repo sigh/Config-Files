@@ -1,38 +1,39 @@
 [user]
-	name = sigh
-	email = dilshan.a@gmail.com
+    name = sigh
+    email = dilshan.a@gmail.com
 [core]
-	editor = vim
+    editor = vim
 [merge]
-	tool = vimdiff
+    tool = vimdiff
 [alias]
-	d = diff
-	h = help
-	b = branch
-	a = add
-        m = merge
+    d = diff
+    h = help
+    b = branch
+    a = add
+    m = merge
 
-	st = status
-	ci = commit
-        ca = commit -a
-	co = checkout
-	br = branch
-	ls = ls-files
+    st = status
+    ci = commit
+    ca = commit -a
+    co = checkout
+    br = branch
+    ls = ls-files
 
-	stat = status
+    stat = status
 
     log = log --graph
 
     # display all commits in all branches
     rl = rev-list --pretty=oneline --all --graph --abbrev-commit -n 100
 
-    #open a github url for the current git repo
+    # open a github url for the current git repo
     hub = !git remote -v|sed "'s|.*git[:@]\\(.*\\).git.*|http://\\1|;s|m:|m/|'"|uniq|xargs open
 
-	staged = diff --cached
+    # view the staged changes
+    staged = diff --cached
 [color]
-	ui = true
+    ui = true
 [branch]
-	autosetupmerge = true
+    autosetupmerge = true
 [diff]
     mnemonicprefix = true
