@@ -10,6 +10,7 @@
 	h = help
 	b = branch
 	a = add
+        m = merge
 
 	st = status
 	ci = commit
