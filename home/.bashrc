@@ -202,7 +202,10 @@ export SVNEDITOR=vim
 export PYTHONSTARTUP="$HOME/.pystartup"
 
 # screen commands
-export SCREENDIR="/tmp/screens/S-$USER"
+
+# ensure screendir is populated with the directory
+#   that screen is actually using
+SCREENDIR=$(screen -ls | tail -2 | sed -ne 's/^.* in \(\S\+\).$/\1/p')
 
 if [[ -z "$STY" ]] ; then
     # commands for outside screen
