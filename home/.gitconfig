@@ -13,6 +13,7 @@
 
 	st = status
 	ci = commit
+        ca = commit -a
 	co = checkout
 	br = branch
 	ls = ls-files
