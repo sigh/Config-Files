@@ -207,6 +207,10 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 #   that screen is actually using
 SCREENDIR=$(screen -ls | tail -2 | sed -ne 's/^.* in \(\S\+\).$/\1/p')
 
+# easy way to list screens
+#   (and no risk of starting a new screen if we make a typo)
+screens() { screen -ls ; }
+
 if [[ -z "$STY" ]] ; then
     # commands for outside screen
 
