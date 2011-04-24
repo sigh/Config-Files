@@ -10,16 +10,6 @@ unalias -a
 # disable flow control (C-s, C-r)
 stty -ixon
 
-# customise cd
-
-cd()   { pushd "$@" > /dev/null; }
-
-cd..() { cd "$@" .. ; }
-..()   { cd "$@" .. ; }
-d()    { dirs -v "$@" ; }
-
-mcd() { mkdir -p "$@" && cd "${!#}" ; }
-
 # allow for correction of inaccurate cd commands
 shopt -s cdspell
 
@@ -37,6 +27,17 @@ shopt -s cdable_vars
 
 # allow for correction of inaccurate cd commands
 shopt -s cdspell
+
+# customise cd
+
+cd()   { pushd "$@" > /dev/null; }
+
+cd..() { cd "$@" .. ; }
+..()   { cd "$@" .. ; }
+d()    { dirs -v "$@" ; }
+
+mcd() { mkdir -p "$@" && cd "${!#}" ; }
+complete -F _cd -o filenames -o nospace mcd
 
 # ignore files with the following suffixes for tab completion
 export FIGNORE='.swp:.svn:.0:~';
@@ -188,6 +189,7 @@ shopt -s checkwinsize
 # open man page as a PDF in preview
 if [[ -d /Applications/Preview.app ]] ; then
     pman() { command man -t "$@" | open -f -a /Applications/Preview.app; }
+    complete -F _man -o filenames pman
 fi
 
 # unmount an OSX volume
@@ -352,6 +354,7 @@ else
             echo "chdir: $1: No such directory"
         fi
     }
+    complete -F _cd -o nospace -o filenames chdir
 
     # import ssh session
     ssh-fix() {
