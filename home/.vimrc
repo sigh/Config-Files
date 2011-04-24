@@ -420,6 +420,36 @@ let g:miniBufExplorerMoreThanOne = 1
 let g:miniBufExplSplitBelow = 1  
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Spelling
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Language is always en_au
+set spelllang=en_au
+
+" Helper to toggle spelling
+function s:spell()
+	if ! &l:spell
+		echo  "Spell check on"
+		setlocal spell
+	else
+		echo "Spell check off"
+		setlocal nospell
+	endif
+endfunction
+
+" <Leader>s toggles spelling on and off
+map  <Leader>s :call <SID>spell()<CR>
+imap <Leader>s <Esc>:call <SID>spell()<CR>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Helpful commands
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Calculator
+command! -nargs=+ Calc :r! python -c "from math import *; print <args>"
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Finally
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
