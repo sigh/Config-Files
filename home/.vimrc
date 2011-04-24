@@ -419,6 +419,18 @@ let g:miniBufExplUseSingleClick = 1
 let g:miniBufExplorerMoreThanOne = 1
 let g:miniBufExplSplitBelow = 1
 
+" NERD_commenter
+
+let g:NERDCreateDefaultMappings = 0
+let g:NERDSpaceDelims = 1
+map  <silent> <Leader>cc <plug>NERDCommenterAlignBoth
+map  <silent> <Leader>cu <plug>NERDCommenterUncomment
+map  <silent> <Leader>c<space> <plug>NERDCommenterToggle
+nmap <silent> <Leader>c$ <plug>NERDCommenterToEOL
+nmap <silent> <Leader>ca <plug>NERDCommenterAppend
+map  <silent> <C-c> <plug>NERDCommenterToggle j
+imap <silent> <C-c> <plug>NERDCommenterInInsert
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spelling
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
