@@ -115,7 +115,7 @@ lth() { lla -t "$@" | head ; }
 lsd() { ls     "$@" | grep '/$' ; }
 
 # display full paths
-realpath() { readlink -f "$@" ; }
+realpath() { readlink --verbose -e "${1:-.}" ; }
 rp() { realpath "$@" ; }
 
 # make disk usage display nicer
