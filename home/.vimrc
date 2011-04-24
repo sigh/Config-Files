@@ -428,7 +428,7 @@ map  <silent> <Leader>cu <plug>NERDCommenterUncomment
 map  <silent> <Leader>c<space> <plug>NERDCommenterToggle
 nmap <silent> <Leader>c$ <plug>NERDCommenterToEOL
 nmap <silent> <Leader>ca <plug>NERDCommenterAppend
-nmap <silent> <C-c> <plug>NERDCommenterToggle j
+nmap <silent> <C-c> <plug>NERDCommenterTogglej
 vmap <silent> <C-c> <plug>NERDCommenterToggle
 imap <silent> <C-c> <plug>NERDCommenterInInsert
 
