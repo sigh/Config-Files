@@ -220,11 +220,8 @@ if [[ -z "$STY" ]] ; then
     #   and that is OK.
     setup-ssh-fix() {
         if [[ -n "$SSH_CLIENT" ]]; then
-            # Variables to save
-            SSHVARS="SSH_CLIENT SSH_TTY SSH_AUTH_SOCK SSH_CONNECTION DISPLAY"
-
-            string=' ' # start with a space so it is ignored by history
-            for x in ${SSHVARS} ; do
+            local string=' ' # start with a space so it is ignored by history
+            for x in SSH_CLIENT SSH_TTY SSH_AUTH_SOCK SSH_CONNECTION DISPLAY; do
                 string="$string export $x='$(eval echo \$$x)' ; "
             done
             string="$string"$'\n'
@@ -246,14 +243,14 @@ if [[ -z "$STY" ]] ; then
 
     # attach to an existing screen session or create one if it doesn't exist
     attach() {
-        session_name=${1:-$(default-sessionname)}
+        local session_name=${1:-$(default-sessionname)}
         setup-ssh-fix "$session_name"
         screen -D -R "$session_name"
     }
 
     # attach to an existing screen session or create one if it doesn't exist
     attach-again() {
-        session_name=${1:-$(default-sessionname)}
+        local session_name=${1:-$(default-sessionname)}
         setup-ssh-fix "$session_name"
         screen -x -S "$session_name"
     }
@@ -265,8 +262,7 @@ if [[ -z "$STY" ]] ; then
             return
         fi
 
-        local cur
-        cur=${COMP_WORDS[COMP_CWORD]}
+        local cur=${COMP_WORDS[COMP_CWORD]}
 
         if [[ -n "$cur" ]]; then
             # if the user has already started typing then show all matches
