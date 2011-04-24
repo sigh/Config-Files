@@ -31,9 +31,17 @@
 
     # view the staged changes
     staged = diff --cached
+
+    # commit all with an message (which need not be quoted)
+    cam = "!f() { git commit -a -m \"$*\" ; }; f"
+
+    # force an action on a dirty working set
+    #  if there are local changes then we stash them first
+    force = "!f() { [ $(git stash create) ] && ( git stash save forcing; git \"$@\" ; git stash pop; ) || git \"$@\"; }; f"
 [color]
     ui = true
 [branch]
     autosetupmerge = true
 [diff]
+    renames = copies
     mnemonicprefix = true
