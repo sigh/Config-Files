@@ -73,7 +73,7 @@ syntax on
 " Makes colours not fugly
 if ! has("gui_running")
     set t_Co=16
-endif 
+endif
 
 colorscheme peachpuff_mod
 
@@ -140,16 +140,16 @@ nmap j gj
 nmap k gk
 
 " set history to something large
-set history=1000 
+set history=1000
 
 " Restore cursor position when we load up the file
 if has("autocmd")
-    autocmd BufReadPost * 
+    autocmd BufReadPost *
     \ if line("'\"") > 0 && line("'\"") <= line("$") |
     \ exe "normal g`\"" |
-    \ endif 
+    \ endif
 endif
- 
+
 " Switch buffers with tab
 noremap <silent> <Tab> <Esc>:call <SID>MyTab()<CR>
 noremap <silent> <S-Tab> <Esc>:bprevious<Bar>:set laststatus=0<Bar>:MiniBufExplorer<CR>
@@ -214,7 +214,7 @@ set matchtime=5
 set hlsearch
 
 " highlight as you type you search phrase
-set incsearch           
+set incsearch
 
 " Press Space to turn off highlighting and clear any message already displayed.
 " Also turn off MBE
@@ -376,7 +376,7 @@ set directory=~/.vim/.swap
 set diffopt=filler,context:10
 
 " allow us to be able to "do" in visual mode
-vmap <silent> do :diffget<CR> 
+vmap <silent> do :diffget<CR>
 
 " DiffChanges shortcuts :)
 map <silent> <Leader>dv :VDiffChanges<CR>
@@ -414,10 +414,10 @@ autocmd FileType python,haskell,lisp setlocal expandtab nocindent
 " Mini-buffer explorer
 
 let g:miniBufExplMaxSize = 1
-let g:miniBufExplModSelTarget = 1 
+let g:miniBufExplModSelTarget = 1
 let g:miniBufExplUseSingleClick = 1
 let g:miniBufExplorerMoreThanOne = 1
-let g:miniBufExplSplitBelow = 1  
+let g:miniBufExplSplitBelow = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spelling
@@ -457,4 +457,3 @@ command! -nargs=+ Calc :r! python -c "from math import *; print <args>"
 " this must always be LAST (not working :( )
 " set shellcmdflag=-ic
 
- 
