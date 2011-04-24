@@ -200,12 +200,10 @@ _unmount() {
         return
     fi
 
-    local cur=${COMP_WORDS[COMP_CWORD]}
-    IFS=$'\n'
-    COMPREPLY=( $(command cd /Volumes; command ls -1d "$cur"* | sed -e 's/ /\\ /' 2>/dev/null) )
-    unset IFS
+    local IFS=$'\t\n' cur=${COMP_WORDS[COMP_CWORD]}
+    COMPREPLY=( $(command cd /Volumes; compgen -d -- $cur ) )
 }
-complete -F _unmount unmount
+complete -F _unmount -o filenames unmount
 
 # make it easy to use vim as our pager
 vless() { vimless "$@" ; }
