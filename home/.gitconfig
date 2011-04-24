@@ -33,7 +33,7 @@
     staged = diff --cached
 
     # commit all with an message (which need not be quoted)
-    cam = "!f() { git commit -a -m \"$*\" ; }; f"
+    cm = "!f() { git commit -a -m \"$*\" ; }; f"
 
     # force an action on a dirty working set
     #  if there are local changes then we stash them first
