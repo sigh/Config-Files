@@ -201,7 +201,9 @@ _unmount() {
     fi
 
     local cur=${COMP_WORDS[COMP_CWORD]}
-    COMPREPLY=( $(command cd /Volumes; command ls -d "$cur"*) )
+    IFS=$'\n'
+    COMPREPLY=( $(command cd /Volumes; command ls -1d "$cur"* | sed -e 's/ /\\ /' 2>/dev/null) )
+    unset IFS
 }
 complete -F _unmount unmount
 
