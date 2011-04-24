@@ -73,7 +73,7 @@ syntax on
 " Makes colours not fugly
 if ! has("gui_running")
     set t_Co=16
-endif 
+endif
 
 colorscheme peachpuff_mod
 
@@ -87,6 +87,12 @@ set linespace=0
 " command-line completion operates in an enhanced mode
 set wildmenu
 set wildmode=list:longest,full
+
+" Display as much as possible of the last line of text
+set display+=lastline
+
+" don't split words if word wrap is on
+set linebreak
 
 " Show the line and column number of the cursor position
 set ruler
@@ -134,16 +140,16 @@ nmap j gj
 nmap k gk
 
 " set history to something large
-set history=1000 
+set history=1000
 
 " Restore cursor position when we load up the file
 if has("autocmd")
-    autocmd BufReadPost * 
+    autocmd BufReadPost *
     \ if line("'\"") > 0 && line("'\"") <= line("$") |
     \ exe "normal g`\"" |
-    \ endif 
+    \ endif
 endif
- 
+
 " Switch buffers with tab
 noremap <silent> <Tab> <Esc>:call <SID>MyTab()<CR>
 noremap <silent> <S-Tab> <Esc>:bprevious<Bar>:set laststatus=0<Bar>:MiniBufExplorer<CR>
@@ -164,6 +170,8 @@ map <silent> <C-Q> <Esc>:bd<CR>
 
 " Always split on right when vertical
 set splitright
+
+noremap Y y$
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swith buffer with alt keys
@@ -206,7 +214,7 @@ set matchtime=5
 set hlsearch
 
 " highlight as you type you search phrase
-set incsearch           
+set incsearch
 
 " Press Space to turn off highlighting and clear any message already displayed.
 " Also turn off MBE
@@ -273,8 +281,8 @@ set formatoptions=crqn
 " take indent for new line from previous line
 set autoindent
 
-" smart autoindenting for C programs
-set smartindent
+" keep the existing indent structure when autoindenting
+set copyindent
 
 " do c-style indenting
 set cindent
@@ -368,7 +376,7 @@ set directory=~/.vim/.swap
 set diffopt=filler,context:10
 
 " allow us to be able to "do" in visual mode
-vmap <silent> do :diffget<CR> 
+vmap <silent> do :diffget<CR>
 
 " DiffChanges shortcuts :)
 map <silent> <Leader>dv :VDiffChanges<CR>
@@ -406,10 +414,40 @@ autocmd FileType python,haskell,lisp setlocal expandtab nocindent
 " Mini-buffer explorer
 
 let g:miniBufExplMaxSize = 1
-let g:miniBufExplModSelTarget = 1 
+let g:miniBufExplModSelTarget = 1
 let g:miniBufExplUseSingleClick = 1
 let g:miniBufExplorerMoreThanOne = 1
-let g:miniBufExplSplitBelow = 1  
+let g:miniBufExplSplitBelow = 1
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Spelling
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Language is always en_au
+set spelllang=en_au
+
+" Helper to toggle spelling
+function s:spell()
+	if ! &l:spell
+		echo  "Spell check on"
+		setlocal spell
+	else
+		echo "Spell check off"
+		setlocal nospell
+	endif
+endfunction
+
+" <Leader>s toggles spelling on and off
+map  <Leader>s :call <SID>spell()<CR>
+imap <Leader>s <Esc>:call <SID>spell()<CR>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Helpful commands
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Calculator
+command! -nargs=+ Calc :r! python -c "from math import *; print <args>"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Finally
@@ -419,4 +457,3 @@ let g:miniBufExplSplitBelow = 1
 " this must always be LAST (not working :( )
 " set shellcmdflag=-ic
 
- 
