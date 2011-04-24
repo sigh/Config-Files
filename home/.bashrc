@@ -331,6 +331,17 @@ else
         screen -X title "$*"
     }
 
+    # change the default directory that screens open in 
+    #   screen -X chdir doesn't seem to work
+    chdir() {
+        local abs_path=$(cd "${1:-.}" 2> /dev/null && pwd)
+        if [[ -n "$abs_path" ]] ; then
+            screen -X setenv SCREEN_SHELLDIR "$abs_path"
+        else
+            echo "chdir: $1: No such directory"
+        fi
+    }
+
     # import ssh session
     ssh-fix() {
         screen -X process z
@@ -342,5 +353,10 @@ else
     # ensure that the status is up-to-date
     #   in particular if this the start of the session
     update-status
+
+    # change the directory we start in if it has been specified
+    if [ -n "$SCREEN_SHELLDIR" ]; then
+        cd "$SCREEN_SHELLDIR"
+    fi
 fi
 
