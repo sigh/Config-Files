@@ -88,6 +88,12 @@ set linespace=0
 set wildmenu
 set wildmode=list:longest,full
 
+" Display as much as possible of the last line of text
+set display+=lastline
+
+" don't split words if word wrap is on
+set linebreak
+
 " Show the line and column number of the cursor position
 set ruler
 
@@ -164,6 +170,8 @@ map <silent> <C-Q> <Esc>:bd<CR>
 
 " Always split on right when vertical
 set splitright
+
+noremap Y y$
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swith buffer with alt keys
@@ -273,8 +281,8 @@ set formatoptions=crqn
 " take indent for new line from previous line
 set autoindent
 
-" smart autoindenting for C programs
-set smartindent
+" keep the existing indent structure when autoindenting
+set copyindent
 
 " do c-style indenting
 set cindent
