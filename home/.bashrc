@@ -115,7 +115,7 @@ lth() { lla -t "$@" | head ; }
 lsd() { ls     "$@" | grep '/$' ; }
 
 # display full paths
-realpath() { readlink -f "$@" ; }
+realpath() { readlink --verbose -e "${1:-.}" ; }
 rp() { realpath "$@" ; }
 
 # make disk usage display nicer
@@ -190,6 +190,21 @@ if [[ -d /Applications/Preview.app ]] ; then
     pman() { command man -t "$@" | open -f -a /Applications/Preview.app; }
 fi
 
+# unmount an OSX volume
+unmount() {
+    diskutil unmount "/Volumes/$1"
+}
+_unmount() {
+    # unmount only takes one argument, so don't complete any more
+    if [[ $COMP_CWORD -ne 1 ]] ; then
+        return
+    fi
+
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    COMPREPLY=( $(command cd /Volumes; command ls -d "$cur"*) )
+}
+complete -F _unmount unmount
+
 # make it easy to use vim as our pager
 vless() { vimless "$@" ; }
 
@@ -220,11 +235,8 @@ if [[ -z "$STY" ]] ; then
     #   and that is OK.
     setup-ssh-fix() {
         if [[ -n "$SSH_CLIENT" ]]; then
-            # Variables to save
-            SSHVARS="SSH_CLIENT SSH_TTY SSH_AUTH_SOCK SSH_CONNECTION DISPLAY"
-
-            string=' ' # start with a space so it is ignored by history
-            for x in ${SSHVARS} ; do
+            local string=' ' # start with a space so it is ignored by history
+            for x in SSH_CLIENT SSH_TTY SSH_AUTH_SOCK SSH_CONNECTION DISPLAY; do
                 string="$string export $x='$(eval echo \$$x)' ; "
             done
             string="$string"$'\n'
@@ -246,14 +258,14 @@ if [[ -z "$STY" ]] ; then
 
     # attach to an existing screen session or create one if it doesn't exist
     attach() {
-        session_name=${1:-$(default-sessionname)}
+        local session_name=${1:-$(default-sessionname)}
         setup-ssh-fix "$session_name"
         screen -D -R "$session_name"
     }
 
     # attach to an existing screen session or create one if it doesn't exist
     attach-again() {
-        session_name=${1:-$(default-sessionname)}
+        local session_name=${1:-$(default-sessionname)}
         setup-ssh-fix "$session_name"
         screen -x -S "$session_name"
     }
@@ -265,8 +277,7 @@ if [[ -z "$STY" ]] ; then
             return
         fi
 
-        local cur
-        cur=${COMP_WORDS[COMP_CWORD]}
+        local cur=${COMP_WORDS[COMP_CWORD]}
 
         if [[ -n "$cur" ]]; then
             # if the user has already started typing then show all matches
@@ -331,6 +342,17 @@ else
         screen -X title "$*"
     }
 
+    # change the default directory that screens open in 
+    #   screen -X chdir doesn't seem to work
+    chdir() {
+        local abs_path=$(cd "${1:-.}" 2> /dev/null && pwd)
+        if [[ -n "$abs_path" ]] ; then
+            screen -X setenv SCREEN_SHELLDIR "$abs_path"
+        else
+            echo "chdir: $1: No such directory"
+        fi
+    }
+
     # import ssh session
     ssh-fix() {
         screen -X process z
@@ -342,5 +364,10 @@ else
     # ensure that the status is up-to-date
     #   in particular if this the start of the session
     update-status
+
+    # change the directory we start in if it has been specified
+    if [ -n "$SCREEN_SHELLDIR" ]; then
+        cd "$SCREEN_SHELLDIR"
+    fi
 fi
 
