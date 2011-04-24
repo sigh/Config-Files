@@ -1376,7 +1376,7 @@ function! NERDComment(isVisual, type) range
         if s:IsInSexyComment(firstLine) || s:IsCommentedFromStartOfLine(b:NERDLeft, theLine) || s:IsCommentedFromStartOfLine(b:NERDLeftAlt, theLine)
             call s:UncommentLines(firstLine, lastLine)
         else
-            call s:CommentLinesToggle(forceNested, firstLine, lastLine)
+            call s:CommentLines(forceNested, "both", firstLine, lastLine)
         endif
 
     elseif a:type == 'minimal'
