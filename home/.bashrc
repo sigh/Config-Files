@@ -190,6 +190,21 @@ if [[ -d /Applications/Preview.app ]] ; then
     pman() { command man -t "$@" | open -f -a /Applications/Preview.app; }
 fi
 
+# unmount an OSX volume
+unmount() {
+    diskutil unmount "/Volumes/$1"
+}
+_unmount() {
+    # unmount only takes one argument, so don't complete any more
+    if [[ $COMP_CWORD -ne 1 ]] ; then
+        return
+    fi
+
+    local cur=${COMP_WORDS[COMP_CWORD]}
+    COMPREPLY=( $(command cd /Volumes; command ls -d "$cur"*) )
+}
+complete -F _unmount unmount
+
 # make it easy to use vim as our pager
 vless() { vimless "$@" ; }
 
