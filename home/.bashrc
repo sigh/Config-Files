@@ -39,6 +39,19 @@ d()    { dirs -v "$@" ; }
 mcd() { mkdir -p "$@" && cd "${!#}" ; }
 complete -F _cd -o filenames -o nospace mcd
 
+# job control
+
+j() { jobs -l "$@"; }
+
+_fg() {
+    local IFS=$'\n\t' cur=${COMP_WORDS[COMP_CWORD]}
+    COMPREPLY=( $(jobs | \
+        perl -ne 's/\(.*\)$//; split; $c="@_[2..$#_]\n"; $c=~s/ /\\ /g; print $c if $c =~ /^\Q'$cur'\E/' \
+    ) )
+}
+# Note: This works better than `complete -A jobs fg` because it shows the full command
+complete -F _fg fg
+
 # ignore files with the following suffixes for tab completion
 export FIGNORE='.swp:.svn:.0:~';
 
