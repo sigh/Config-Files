@@ -23,3 +23,17 @@ caption         string '%?%F%{.B.}%?%3n%f %t'
 # force new shells to be login shells
 shell			-bash
 shelltitle		bash
+
+# Bindings for fast switching to windows 10 to 19. 
+#   ( C-a - 0 selects window 10 )
+bind -c window 0 select 10
+bind -c window 1 select 11
+bind -c window 2 select 12
+bind -c window 3 select 13
+bind -c window 4 select 14
+bind -c window 5 select 15
+bind -c window 6 select 16
+bind -c window 7 select 17
+bind -c window 8 select 18
+bind -c window 9 select 19
+bind - command -c window
