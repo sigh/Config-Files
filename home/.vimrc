@@ -454,6 +454,26 @@ endfunction
 map  <Leader>s :call <SID>spell()<CR>
 imap <Leader>s <Esc>:call <SID>spell()<CR>
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Filetype switching
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+nmap <Bslash>c   :call <SID>fileswitch('c')<CR>
+nmap <Bslash>cc  :call <SID>fileswitch('cc')<CR>
+nmap <Bslash>ccp :call <SID>fileswitch('cc')<CR>
+nmap <Bslash>h   :call <SID>fileswitch('h')<CR>
+nmap <Bslash>\   :call <SID>fileswitch('')<CR>
+
+function s:fileswitch(ext)
+    let l:fileswitch_prev = expand('%')
+    if a:ext != ""
+        exec "find %:t:r." . a:ext
+    elseif exists("b:fileswitch_prev")
+        exec "find " . b:fileswitch_prev
+    endif
+    let b:fileswitch_prev = l:fileswitch_prev
+endfunction
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Helpful commands
