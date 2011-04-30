@@ -214,7 +214,7 @@ inoremap <unique> <script> 6 <esc>:b! 6<CR>
 inoremap <unique> <script> 7 <esc>:b! 7<CR>
 inoremap <unique> <script> 8 <esc>:b! 8<CR>
 inoremap <unique> <script> 9 <esc>:b! 9<CR>
-inoremap <unique> <script> - <esc>:b! "<count>"<CR>
+inoremap <unique> <script> 0 <esc>:b! 10<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Visual Cues
@@ -302,6 +302,10 @@ set copyindent
 
 " do c-style indenting
 set cindent
+
+" Tab and Shift-Tab indent in visual mode
+vnoremap <Tab> >gv
+vnoremap <S-Tab> <gv
 
 " tab spacing (settings below are just to unify it)
 set tabstop=4
