@@ -174,7 +174,7 @@ endfunction
 noremap <C-P> <C-I>
 
 " ctrl-q deletes the buffer
-map <silent> <C-Q> <Esc>:bd<CR>
+map <silent> <C-Q> <Esc>:BD<CR>
 
 " Always split on right when vertical
 set splitright
