@@ -3,6 +3,7 @@
     email = dilshan.a@gmail.com
 [core]
     editor = vim
+    excludesfile = ~/.gitignore
 [merge]
     tool = vimdiff
 [alias]

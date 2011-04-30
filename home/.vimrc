@@ -150,6 +150,9 @@ if has("autocmd")
     \ endif
 endif
 
+" look up the entire directory stack for tags
+set tags=./tags;/
+
 " Switch buffers with tab
 nnoremap <silent> <Tab> :call <SID>NextBuffer()<CR>
 nnoremap <silent> <S-Tab> :call <SID>PrevBuffer()<CR>
