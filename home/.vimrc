@@ -151,27 +151,19 @@ if has("autocmd")
 endif
 
 " Switch buffers with tab
-nnoremap <silent> <Tab> :call <SID>NextBuffer("<count>")<CR>
-nnoremap <silent> <S-Tab> :call <SID>PrevBuffer("<count>")<CR>
+nnoremap <silent> <Tab> :call <SID>NextBuffer()<CR>
+nnoremap <silent> <S-Tab> :call <SID>PrevBuffer()<CR>
 
-function! <SID>NextBuffer(count)
-    let l:count = a:count
-    if l:count == "<count>"
-        let l:count = 1
-    endif
-    exec l:count . "bnext"
+function! <SID>NextBuffer()
+    bnext
     if MBEIsOpen() != 1
         set laststatus=0
         MiniBufExplorer
     endif
 endfunction
 
-function! <SID>PrevBuffer(count)
-    let l:count = a:count
-    if l:count == "<count>"
-        let l:count = 1
-    endif
-    exec l:count . "bprevious"
+function! <SID>PrevBuffer()
+    bprevious
     if MBEIsOpen() != 1
         set laststatus=0
         MiniBufExplorer
