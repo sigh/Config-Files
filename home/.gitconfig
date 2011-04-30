@@ -3,6 +3,7 @@
     email = sigh.projects@gmail.com
 [core]
     editor = vim
+    excludesfile = ~/.gitignore
 [merge]
     tool = vimdiff
 [alias]
