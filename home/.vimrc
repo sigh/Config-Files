@@ -513,3 +513,7 @@ command! -nargs=+ Calc :r! python -c "from math import *; print <args>"
 " this must always be LAST (not working :( )
 " set shellcmdflag=-ic
 
+" Keep select mode free of mapping so that things like snipMate will work
+" correctly
+smapclear
+
