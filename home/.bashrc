@@ -116,11 +116,10 @@ fi
 unset hist_old
 
 export HISTIGNORE='&:ls:fg:bg:ssh-fix:[ ]*'
-unset  HISTFILESIZE                 # never delete from history
+unset  HISTFILESIZE            # never delete from history
 export HISTFILESIZE
 export HISTSIZE=10000
 export HISTTIMEFORMAT='%FT%T ' # save timestamps (and display in ISO format)
-export PROMPT_COMMAND='history -a'  # update history file after each command
 
 shopt -s histappend
 shopt -s cmdhist
@@ -398,3 +397,8 @@ else
     fi
 fi
 
+# Full log and history updating
+# This must go after everything else
+unset PROMPT_COMMAND
+cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL STY=$STY SHELL=$SHELL BASH_VERSION=$BASH_VERSION" >> ~/._full_bash_history
+trap 'awk -v prefix="$$ $LINENO $(date +%FT%T) $PWD \$" "{ print prefix, \$0 }" <<<"$BASH_COMMAND" >> ~/._full_bash_history; history -a' DEBUG
