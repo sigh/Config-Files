@@ -119,6 +119,7 @@ export HISTIGNORE='&:ls:fg:bg:ssh-fix:[ ]*'
 unset  HISTFILESIZE                 # never delete from history
 export HISTFILESIZE
 export HISTSIZE=10000
+export HISTTIMEFORMAT='%FT%T ' # save timestamps (and display in ISO format)
 export PROMPT_COMMAND='history -a'  # update history file after each command
 
 shopt -s histappend
