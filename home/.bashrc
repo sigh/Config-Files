@@ -413,7 +413,7 @@ reload-all() {
     ps xwwo pid,command | while read pid command; do
         if echo $command | egrep -- "^-bash$" >/dev/null; then
             if [[ $pid != $$ ]]; then
-                echo kill -USR2 $pid
+                echo Sending SIGCONT to $pid $command
                 kill -CONT $pid
             fi
         fi
