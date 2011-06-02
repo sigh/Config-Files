@@ -395,6 +395,16 @@ else
     if [ -n "$SCREEN_SHELLDIR" ]; then
         cd "$SCREEN_SHELLDIR"
     fi
+
+    if [ -n $(which gnome-terminal) ]; then
+        # open the current screen session on the local machine
+        # the command is executed in a subshell so that the DISPLAY variable
+        # in the current environment is not changed
+        clone() {(
+            export DISPLAY=:0.0
+            gnome-terminal --command "screen -x -S $STY" --full-screen
+        );}
+    fi
 fi
 
 # Full log and history updating
