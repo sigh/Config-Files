@@ -379,6 +379,15 @@ else
     }
     complete -F _cd -o nospace -o filenames chdir
 
+    # print entire scrollback to stdout 
+    scrollback() {
+        local filename="/tmp/screen-$STY.$WINDOW"
+        screen -X hardcopy -h "$filename"
+        # output file with blank line deleted from the top
+        sed '/./,$!d' "$filename"
+        rm "$filename"
+    }
+
     # import ssh session
     ssh-fix() {
         screen -X process z
