@@ -207,21 +207,42 @@ if ! exists('g:diff_nav_loaded')
 
         " file fold
         let l:linenum = v:foldstart
-        let l:lastline = line('$')
+        let l:lastline = v:foldend
 
-        " go down until we find a +++ line
-        while getline(l:linenum) !~ '^+++ ' && l:linenum < l:lastline
+        let l:plusfile = ''
+        let l:minusfile = ''
+
+        " detemine the names of the +++ file and the --- file
+        while (l:plusfile == '' || l:minusfile == '') && l:linenum <= l:lastline
+            let l:currentline = getline(l:linenum)
+            if l:currentline =~ '^--- '
+                let l:minusfile = substitute(l:currentline, '^--- ', '', '')
+            elseif l:currentline =~ '^+++ '
+                let l:plusfile = substitute(l:currentline, '^+++ ', '', '')
+            endif
             let l:linenum = l:linenum + 1
         endwhile
 
-        if l:linenum == l:lastline
-            " no +++ line found: just print the line
+        " If no +++ or --- line found then just print the line
+        if l:plusfile == '' && l:minusfile == ''
             return l:line
         endif
 
-        let l:text = substitute(getline(l:linenum), '^+++ ', '', '')
-        let l:difflines = v:foldend - l:linenum
-        return l:text . ' (' . l:difflines . ' line diff)'
+        " Determine the edit type ([A]dded, [D]eleted, [M]odified)
+        let l:filename = l:plusfile
+        let l:mode = 'M'
+
+        if l:minusfile == '' || l:minusfile == '/dev/null'
+            " added file
+            let l:mode = 'A'
+        elseif l:plusfile == '' || l:plusfile == '/dev/null'
+            " deleted file
+            let l:mode = 'D'
+            let l:filename = l:minusfile
+        endif
+
+        let l:difflines = v:foldend - l:linenum + 1
+        return l:mode . ' ' . l:filename . ' (' . l:difflines . ' line diff)'
     endfunction
 endif
 
