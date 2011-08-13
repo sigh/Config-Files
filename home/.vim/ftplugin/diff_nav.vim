@@ -93,29 +93,39 @@ if ! exists('g:diff_nav_loaded')
     endfunction
 
     " Given a - filename and a + filename return what the actual filename is
+    " modes ([A]dded, [D]eleted, [M]odified, [R]enamed [?] unknown)
     function! <SID>GetFilenameAndMode(minusfile, plusfile)
         let l:mode = ''
         let l:filename = ''
 
-        if a:plusfile == '' && a:minusfile == ''
+        " Remove the first part of the path (which git puts there)
+        " This can break normals diffs for one letter paths, but that's less
+        " common than git.
+        let l:plusfile = substitute(a:plusfile, '^./', '', '')
+        let l:minusfile = substitute(a:minusfile, '^./', '', '')
+
+        " Remove everything after a tab (will break some files with tabs)
+        let l:plusfile = substitute(l:plusfile, '\t\+[^\t]\+$', '', '')
+        let l:minusfile = substitute(l:minusfile, '\t\+[^\t]\+$', '', '')
+
+        if l:plusfile == '' && l:minusfile == ''
             " pass
-        elseif a:minusfile == '' || a:minusfile == '/dev/null'
+        elseif l:minusfile == '' || l:minusfile == '/dev/null'
             " added file
             let l:mode = 'A'
-            let l:filename = a:plusfile
-        elseif a:plusfile == '' || a:plusfile == '/dev/null'
+            let l:filename = l:plusfile
+        elseif l:plusfile == '' || l:plusfile == '/dev/null'
             " deleted file
             let l:mode = 'D'
-            let l:filename = a:minusfile
+            let l:filename = l:minusfile
+        elseif l:plusfile != l:minusfile
+            let l:mode = 'R ' . l:minusfile . ' =>'
+            let l:filename = l:plusfile
         else
             " modified file
             let l:mode = 'M'
-            let l:filename = a:plusfile
+            let l:filename = l:plusfile
         endif
-
-        " Remove the first part of the path (which is an identifier for the
-        " patch)
-        let l:filename = substitute(l:filename, '^./', '', '')
 
         return [l:filename, l:mode]
     endfunction
@@ -244,7 +254,6 @@ if ! exists('g:diff_nav_loaded')
         let l:plusfile = ''
         let l:minusfile = ''
 
-        " The edit type ([A]dded, [D]eleted, [M]odified, [?] unknown)
         let l:mode = 'M'
 
         " detemine the names of the +++ file and the --- file
