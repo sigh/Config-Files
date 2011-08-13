@@ -36,7 +36,7 @@ if ! exists('g:diff_nav_loaded')
     " but patch_start, patch_end and file_line into script variables
     function! <SID>ParseDiff()
         let l:curline = line('.')
-        let l:line = 1    
+        let l:line = 1
         let l:lastline = line('$')
 
         let l:curfile = ''
@@ -47,7 +47,7 @@ if ! exists('g:diff_nav_loaded')
             while getline(l:line) !~ '^+++ ' && l:line < l:lastline
                 let l:line = l:line + 1
             endwhile
-                    
+
             " return empty string on error
             if l:line == l:lastline
                 return ''
@@ -156,19 +156,21 @@ if ! exists('g:diff_nav_loaded')
         while l:filename != '' && ! filereadable(l:filename)
             let l:filename = substitute(l:filename, '^[^/]*/*\(.*\)$', '\1', '')
         endwhile
-        
+
         return l:filename
     endfunction
 
-    " define fold levels
-
+    " For a given line number, determine the fold level
     function! DiffNav_DiffFoldLevel(linenum)
         return <SID>DiffNav_DiffFoldLevelHelper(a:linenum, 0)
     endfunction
 
+    " For a given line number, determine the fold level
+    " If depth is non-zero then this function has been called recursively.
     function! <SID>DiffNav_DiffFoldLevelHelper(linenum, depth)
         let l:line = getline(a:linenum)
 
+        " Lines that are part of the diff start with +,,-,@,\,tab,space
         if l:line =~ '^+++ ' || l:line =~ '^--- '
             " pass
         elseif l:line =~ '^@@ '
@@ -177,7 +179,9 @@ if ! exists('g:diff_nav_loaded')
         elseif l:line =~ '^[\\\t +-]' || strlen(l:line) == 0
             return 2
         endif
-        
+
+        " If we reach here the line is part of the diff header. Determine if
+        " it is the start of the header or not.
         if a:depth > 0 || a:linenum == 1 || <SID>DiffNav_DiffFoldLevelHelper(a:linenum-1, 1) == 2
             return ">1"
         else
@@ -186,10 +190,9 @@ if ! exists('g:diff_nav_loaded')
     endfunction
 
     " define fold text
-
     function! DiffNav_DiffFoldText()
         let l:line = getline(v:foldstart)
-        
+
         if v:foldlevel == 2
             "  @@ lines
             let l:difflines = v:foldend - v:foldstart
@@ -199,7 +202,7 @@ if ! exists('g:diff_nav_loaded')
 
             let l:range = 'line ' . l:start . '-' . l:end
             let l:diffsize = '(' . l:difflines . ' line diff)'
-            return '      '. l:range . ' ' . l:diffsize . l:trailing 
+            return '      '. l:range . ' ' . l:diffsize . l:trailing
         endif
 
         " file fold
