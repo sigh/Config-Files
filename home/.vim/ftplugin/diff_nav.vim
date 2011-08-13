@@ -29,9 +29,7 @@ if ! exists('g:diff_nav_loaded')
         let b:diff_nav_patch_end   = s:ParseDiff_patch_end
         let b:diff_nav_diff_buf    = l:buf
 
-        " TODO: set these appropriately
-        " setlocal noreadonly
-        setlocal modifiable
+        setlocal noreadonly
     endfunction
 
     " Parse the diff and return the filename where the cursor is
