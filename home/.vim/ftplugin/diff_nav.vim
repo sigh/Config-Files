@@ -19,13 +19,13 @@ if ! exists('g:diff_nav_loaded')
         let l:buf = bufnr('%')
         let l:line = line('.')
 
-        let l:patchstart = <SID>FindStartOfFileDiff(l:line)
+        let l:patchstart = <SID>FindStartOfPatch(l:line)
         if l:patchstart < 0
             return ''
         endif
 
-        let l:filename = <SID>GetDiffFilename(l:patchstart)
-        let l:patchend = <SID>FindEndOfFileDiff(l:patchstart)
+        let l:filename = <SID>GetPatchFilename(l:patchstart)
+        let l:patchend = <SID>FindEndOfPatch(l:patchstart)
 
         let l:fileposition = 0
         if l:line >= l:patchstart + 2
@@ -42,8 +42,8 @@ if ! exists('g:diff_nav_loaded')
         setlocal noreadonly
     endfunction
 
-    " Find the --- line for the diff containing a:linenum
-    function! <SID>FindStartOfFileDiff(linenum)
+    " Find the --- line for the patch containing a:linenum
+    function! <SID>FindStartOfPatch(linenum)
         let l:line = a:linenum
         let l:lastline = line('$')
         if getline(l:line) !~ s:diff_regex
@@ -61,7 +61,7 @@ if ! exists('g:diff_nav_loaded')
             " We are on the +++ line, go up one
             let l:line = l:line - 1
         else
-            " We are in the body of the diff, move up until the --- line
+            " We are in the body of the patch, move up until the --- line
             let l:line = l:line - 1
             while l:line >= 1 && ! (getline(l:line) =~ '^--- ' && getline(l:line + 2) =~ '^@@ ')
                 let l:line = l:line - 1
@@ -73,9 +73,9 @@ if ! exists('g:diff_nav_loaded')
         return l:line
     endfunction
 
-    " Find the last line of a file diff given the first line
-    function! <SID>FindEndOfFileDiff(diffstart)
-        let l:line = a:diffstart
+    " Find the last line of a patch given the first line
+    function! <SID>FindEndOfPatch(patchstart)
+        let l:line = a:patchstart
         let l:lastline = line('$')
         while l:line <= l:lastline && getline(l:line) =~ s:diff_regex
             let l:line = l:line + 1
@@ -84,9 +84,9 @@ if ! exists('g:diff_nav_loaded')
     endfunction
 
     " Given the location of the --- line return the filename
-    function! <SID>GetDiffFilename(diffstart)
-        let l:minusfile = substitute(getline(a:diffstart), '^--- ', '', '')
-        let l:plusfile = substitute(getline(a:diffstart + 1), '^+++ ', '', '')
+    function! <SID>GetPatchFilename(patchstart)
+        let l:minusfile = substitute(getline(a:patchstart), '^--- ', '', '')
+        let l:plusfile = substitute(getline(a:patchstart + 1), '^+++ ', '', '')
         let [l:filename, l:mode] = <SID>GetFilenameAndMode(l:minusfile, l:plusfile)
         return l:filename
     endfunction
@@ -113,14 +113,14 @@ if ! exists('g:diff_nav_loaded')
         endif
 
         " Remove the first part of the path (which is an identifier for the
-        " diff)
+        " patch)
         let l:filename = substitute(l:filename, '^./', '', '')
 
         return [l:filename, l:mode]
     endfunction
 
     " Find the line number in the + file that corresponds to the line a:line
-    " in the diff
+    " in the patch
     function! <SID>FindPositionInFile(line)
         let l:linetext = getline(a:line)
 
@@ -135,7 +135,7 @@ if ! exists('g:diff_nav_loaded')
             return 1
         endif
 
-        " We are in the body of a diff, look up until we find the start of the
+        " We are in the body of a patch, look up until we find the start of the
         " hunk
 
         let l:curline = a:line
@@ -201,13 +201,13 @@ if ! exists('g:diff_nav_loaded')
         elseif l:line =~ '^--- ' && getline(a:linenum + 2) =~ '^@@ '
             " pass
         elseif l:line =~ '^@@ '
-            " each individual diff section
+            " each individual hunk
             return '>2'
         elseif l:line =~ s:diff_regex
             return '2'
         endif
 
-        " If we reach here the line is part of the diff header. Determine if
+        " If we reach here the line is part of the patch header. Determine if
         " it is the start of the header or not.
         " The '^diff --git' check is for diffs output by git, when only
         " permissons changes there is no ---/+++ lines in the header
@@ -226,13 +226,13 @@ if ! exists('g:diff_nav_loaded')
 
         if v:foldlevel == 2
             "  @@ lines
-            let l:difflines = v:foldend - v:foldstart
+            let l:hunksize = v:foldend - v:foldstart
             let [l:start, l:size, l:trailing]  = <SID>ParseHunkStart(l:line)
             let l:end = l:start + l:size
 
             let l:range = 'line ' . l:start . '-' . l:end
-            let l:diffsize = '(' . l:difflines . ' line diff)'
-            return '      '. l:range . ' ' . l:diffsize . l:trailing
+            let l:sizedesc = '(' . l:hunksize . ' lines)'
+            return '      '. l:range . ' ' . l:sizedesc . l:trailing
         endif
 
         " We are at a top-level (file) fold
@@ -269,8 +269,8 @@ if ! exists('g:diff_nav_loaded')
             let l:mode = l:tmpmode
         endif
 
-        let l:difflines = v:foldend - l:linenum + 1
-        return l:mode . ' ' . l:filename . ' (' . l:difflines . ' line diff)'
+        let l:patchsize = v:foldend - l:linenum + 1
+        return l:mode . ' ' . l:filename . ' (' . l:patchsize . ' lines)'
     endfunction
 endif
 
