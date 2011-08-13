@@ -3,6 +3,9 @@
 if ! exists('g:diff_nav_loaded')
     let g:diff_nav_loaded = 1
 
+    " Any line that matches this regex is part of the diff proper
+    let s:diff_regex = '^$\|^[@\\\t +-]'
+
     " commands
 
     if ! exists(":DiffOpenFile")
@@ -11,153 +14,175 @@ if ! exists('g:diff_nav_loaded')
 
     " helper functions
 
-    " open the +++ file for the current section
-    " if whichfile is set to "!" open the --- file
+    " open file for the current patch
     function! <SID>DiffOpenCurrentFile()
         let l:buf = bufnr('%')
-        let l:filename = <SID>ParseDiff()
+        let l:line = line('.')
 
-        " return empty string on error
-        if l:filename == ''
-            return
+        let l:patchstart = <SID>FindStartOfFileDiff(l:line)
+        if l:patchstart < 0
+            return ''
+        endif
+
+        let l:filename = <SID>GetDiffFilename(l:patchstart)
+        let l:patchend = <SID>FindEndOfFileDiff(l:patchstart)
+
+        let l:fileposition = 0
+        if l:line >= l:patchstart + 2
+            let l:fileposition = <SID>FindPositionInFile(l:line)
         endif
 
         exec "e " . l:filename
-        exec s:ParseDiff_file_line
+        exec l:fileposition
 
-        let b:diff_nav_patch_start = s:ParseDiff_patch_start
-        let b:diff_nav_patch_end   = s:ParseDiff_patch_end
+        let b:diff_nav_patch_start = l:patchstart
+        let b:diff_nav_patch_end   = l:patchend
         let b:diff_nav_diff_buf    = l:buf
 
         setlocal noreadonly
     endfunction
 
-    " Parse the diff and return the filename where the cursor is
-    " but patch_start, patch_end and file_line into script variables
-    function! <SID>ParseDiff()
-        let l:curline = line('.')
-        let l:line = 1
+    " Find the --- line for the diff containing a:linenum
+    function! <SID>FindStartOfFileDiff(linenum)
+        let l:line = a:linenum
         let l:lastline = line('$')
-
-        let l:curfile = ''
-        let l:file_line = 1
-
-        while l:line <= l:curline " file loop
-            " go down until the +++ line
-            while getline(l:line) !~ '^+++ ' && l:line < l:lastline
-                let l:line = l:line + 1
-            endwhile
-
-            " return empty string on error
-            if l:line == l:lastline
-                return ''
-            endif
-
-            " get the current file name
-            let l:curfile = <SID>ParseFileLine(getline(l:line))
-
+        if getline(l:line) !~ s:diff_regex
+            " We are in the header, go down until we find the +++
             let l:line = l:line + 1
-
-            " now at @@
-            let l:patch_start = l:line
-
-            while getline(l:line) =~ '^@@ '      " patch loop
-                call <SID>ParsePatchStart(getline(l:line))
-
-                let l:line1 = s:ParsePatchStart_line1
-                let l:line2 = s:ParsePatchStart_line2
-                let l:end1 = l:line1 + s:ParsePatchStart_offset1
-                let l:end2 = l:line2 + s:ParsePatchStart_offset2
-
-                if l:line == l:curline
-                    let l:file_line = l:line2
-                endif
-
+            while l:line <= l:lastline && getline(l:line) !~ '^--- '
                 let l:line = l:line + 1
-
-                " loop over lines in patch part
-                while ( l:line1 < l:end1 || l:line2 < l:end2 ) && l:line <= l:lastline
-                    if l:line == l:curline
-                        let l:file_line = l:line2
-                    endif
-
-                    let l:char = getline(l:line)[0]
-
-                    if l:char != '+'
-                        let l:line1 = l:line1 + 1
-                    endif
-                    if l:char != '-'
-                        let l:line2 = l:line2 + 1
-                    endif
-
-                    let l:line = l:line + 1
-                endwhile
             endwhile
-
-            " check for \Newline 
-            if getline(l:line) =~ '^\\ '
-                if l:line == l:curline
-                    let l:file_line = '$'
-                endif
-                let l:line = l:line + 1
+            if l:line > l:lastline
+                return -1
             endif
-
-            let l:patch_end = l:line - 1
-        endwhile
-
-        " return empty string on error
-        if l:curfile == ''
-            return ''
+        elseif getline(l:line) == '^--- ' && getline(l:line + 1) =~ '^@@ '
+            " We are on the --- line, do nothing
+        elseif getline(l:line) == '^+++ ' && getline(l:line + 1) =~ '^@@ '
+            " We are on the +++ line, go up one
+            let l:line = l:line - 1
+        else
+            " We are in the body of the diff, move up until the --- line
+            let l:line = l:line - 1
+            while l:line >= 1 && ! (getline(l:line) =~ '^--- ' && getline(l:line + 2) =~ '^@@ ')
+                let l:line = l:line - 1
+            endwhile
+            if l:line < 1
+                return -1
+            endif
         endif
-
-        let s:ParseDiff_patch_start = l:patch_start - 2 " include headers
-        let s:ParseDiff_patch_end   = l:patch_end
-        let s:ParseDiff_file_line   = l:file_line
-
-        return l:curfile
+        return l:line
     endfunction
 
-    function! <SID>ParsePatchStart(line)
-        " check if line is valid
+    " Find the last line of a file diff given the first line
+    function! <SID>FindEndOfFileDiff(diffstart)
+        let l:line = a:diffstart
+        let l:lastline = line('$')
+        while l:line <= l:lastline && getline(l:line) =~ s:diff_regex
+            let l:line = l:line + 1
+        endwhile
+        return l:line - 1
+    endfunction
 
-        let l:range1 = matchstr(a:line, '[^ ]*', 4)
-        let l:range2 = matchstr(a:line, '[^ ]*', 6 + strlen(l:range1))
+    " Given the location of the --- line return the filename
+    function! <SID>GetDiffFilename(diffstart)
+        let l:minusfile = substitute(getline(a:diffstart), '^--- ', '', '')
+        let l:plusfile = substitute(getline(a:diffstart + 1), '^+++ ', '', '')
+        let [l:filename, l:mode] = <SID>GetFilenameAndMode(l:minusfile, l:plusfile)
+        return l:filename
+    endfunction
 
-        call <SID>ParseRange(l:range1)
-        let s:ParsePatchStart_line1   = s:ParseRange_line
-        let s:ParsePatchStart_offset1 = s:ParseRange_offset
+    " Given a - filename and a + filename return what the actual filename is
+    function! <SID>GetFilenameAndMode(minusfile, plusfile)
+        let l:mode = ''
+        let l:filename = ''
 
-        call <SID>ParseRange(l:range2)
-        let s:ParsePatchStart_line2   = s:ParseRange_line
-        let s:ParsePatchStart_offset2 = s:ParseRange_offset
+        if a:plusfile == '' && a:minusfile == ''
+            " pass
+        elseif a:minusfile == '' || a:minusfile == '/dev/null'
+            " added file
+            let l:mode = 'A'
+            let l:filename = a:plusfile
+        elseif a:plusfile == '' || a:plusfile == '/dev/null'
+            " deleted file
+            let l:mode = 'D'
+            let l:filename = a:minusfile
+        else
+            " modified file
+            let l:mode = 'M'
+            let l:filename = a:plusfile
+        endif
+
+        " Remove the first part of the path (which is an identifier for the
+        " diff)
+        let l:filename = substitute(l:filename, '^./', '', '')
+
+        return [l:filename, l:mode]
+    endfunction
+
+    " Find the line number in the + file that corresponds to the line a:line
+    " in the diff
+    function! <SID>FindPositionInFile(line)
+        let l:linetext = getline(a:line)
+
+        if l:linetext !~ s:diff_regex
+            " Anything in the header maps to line 1
+            return 1
+        elseif l:linetext =~ '^+++ ' && getline(a:line + 1) =~ '^@@ '
+            " +++ is part of the header => maps to line 1
+            return 1
+        elseif l:linetext =~ '^--- ' && getline(a:line + 2) =~ '^@@ '
+            " --- is part of the header => maps to line 1
+            return 1
+        endif
+
+        " We are in the body of a diff, look up until we find the start of the
+        " chunk
+
+        let l:curline = a:line
+        let l:patchoffset = 0
+
+        while l:curline > 0 && getline(l:curline) !~ '^@@ '
+            if getline(l:curline) !~ '^[\\-]'
+                let l:patchoffset = l:patchoffset + 1
+            endif
+            let l:curline = l:curline - 1
+        endwhile
+
+        if getline(l:curline) !~ '^@@ '
+            " There was an error, we should have found a patch
+            return 0
+        endif
+
+        " We over-counted the lines for patchoffset, unless a:line was
+        " actually the @@ line
+        if l:patchoffset > 0
+            let l:patchoffset = l:patchoffset - 1
+        endif
+
+        let [l:patchstart, l:patchsize, l:trailing] = <SID>ParsePatchStart(getline(l:curline))
+
+        return l:patchstart + l:patchoffset
+    endfunction
+
+    " Return [ start line of + file, offset of + file, trailing context ]
+    function! <SID>ParsePatchStart(linetext)
+        let l:range1 = matchstr(a:linetext, '[^ ]*', 4)
+        let l:range2 = matchstr(a:linetext, '[^ ]*', 6 + strlen(l:range1))
+
+        let [l:start, l:size] = <SID>ParseRange(l:range2)
 
         " return any trailing text
-        return substitute(a:line, '^@@[^@]*@@', '', '')
+        return [l:start, l:size, substitute(a:linetext, '^@@[^@]*@@', '', '')]
     endfunction
 
     function! <SID>ParseRange(range)
         if a:range !~ ','
-            let s:ParseRange_line   = a:range
-            let s:ParseRange_offset = 0
+            return [a:range, 0]
         else
-            let s:ParseRange_line   = matchstr(a:range, "[^,]*")
-            let s:ParseRange_offset = matchstr(a:range, ".*", strlen(s:ParseRange_line) + 1 )
+            let l:line   = matchstr(a:range, "[^,]*")
+            let l:size = matchstr(a:range, ".*", strlen(l:line) + 1 )
+            return [l:line, l:size]
         endif
-    endfunction
-
-    function! <SID>ParseFileLine(fileline)
-        let l:filename = substitute(a:fileline, '^+++ \([^ \t]*\).*$', '\1', '')
-
-        " If the above didn't match, return empty string for error
-        if l:filename == a:fileline
-            return ''
-        endif
-
-        while l:filename != '' && ! filereadable(l:filename)
-            let l:filename = substitute(l:filename, '^[^/]*/*\(.*\)$', '\1', '')
-        endwhile
-
-        return l:filename
     endfunction
 
     " For a given line number, determine the fold level
@@ -171,14 +196,14 @@ if ! exists('g:diff_nav_loaded')
         let l:line = getline(a:linenum)
 
         " Lines that are part of the diff start with +,,-,@,\,tab,space
-        if l:line =~ '^+++ ' && getline(a:linenum + 1) =~ '^@@'
+        if l:line =~ '^+++ ' && getline(a:linenum + 1) =~ '^@@ '
             " pass
-        elseif l:line =~ '^--- ' && getline(a:linenum + 2) =~ '^@@'
+        elseif l:line =~ '^--- ' && getline(a:linenum + 2) =~ '^@@ '
             " pass
         elseif l:line =~ '^@@ '
             " each individual diff section
             return '>2'
-        elseif l:line =~ '^[\\\t +-]' || strlen(l:line) == 0
+        elseif l:line =~ s:diff_regex
             return '2'
         endif
 
@@ -202,9 +227,8 @@ if ! exists('g:diff_nav_loaded')
         if v:foldlevel == 2
             "  @@ lines
             let l:difflines = v:foldend - v:foldstart
-            let l:trailing  = <SID>ParsePatchStart(l:line)
-            let l:start = s:ParsePatchStart_line2
-            let l:end   = l:start + s:ParsePatchStart_offset2 - 1
+            let [l:start, l:size, l:trailing]  = <SID>ParsePatchStart(l:line)
+            let l:end = l:start + l:size
 
             let l:range = 'line ' . l:start . '-' . l:end
             let l:diffsize = '(' . l:difflines . ' line diff)'
@@ -240,24 +264,10 @@ if ! exists('g:diff_nav_loaded')
             let l:mode = '?'
         endif
 
-        " If no +++ or --- line found then just print the line
-        if l:plusfile == '' && l:minusfile == ''
-            return l:line
+        let [l:filename, l:tmpmode] = <SID>GetFilenameAndMode(l:minusfile, l:plusfile)
+        if l:mode != '?'
+            let l:mode = l:tmpmode
         endif
-
-        let l:filename = l:plusfile
-        if l:minusfile == '' || l:minusfile == '/dev/null'
-            " added file
-            let l:mode = 'A'
-        elseif l:plusfile == '' || l:plusfile == '/dev/null'
-            " deleted file
-            let l:mode = 'D'
-            let l:filename = l:minusfile
-        endif
-
-        " Remove the first part of the path (which is an identifier for the
-        " diff)
-        let l:filename = substitute(l:filename, '^./', '', '')
 
         let l:difflines = v:foldend - l:linenum + 1
         return l:mode . ' ' . l:filename . ' (' . l:difflines . ' line diff)'
