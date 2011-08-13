@@ -175,17 +175,21 @@ if ! exists('g:diff_nav_loaded')
             " pass
         elseif l:line =~ '^@@ '
             " each individual diff section
-            return ">2"
+            return '>2'
         elseif l:line =~ '^[\\\t +-]' || strlen(l:line) == 0
-            return 2
+            return '2'
         endif
 
         " If we reach here the line is part of the diff header. Determine if
         " it is the start of the header or not.
-        if a:depth > 0 || a:linenum == 1 || <SID>DiffNav_DiffFoldLevelHelper(a:linenum-1, 1) == 2
-            return ">1"
+        " The '^diff --git' check is for diffs output by git, when only
+        " permissons changes there is no ---/+++ lines in the header
+        if a:linenum == 1 || l:line =~ '^diff --git '
+            return '>1'
+        elseif a:depth > 0 || <SID>DiffNav_DiffFoldLevelHelper(a:linenum-1, 1) == '2'
+            return '>1'
         else
-            return "1"
+            return '1'
         endif
     endfunction
 
@@ -205,12 +209,16 @@ if ! exists('g:diff_nav_loaded')
             return '      '. l:range . ' ' . l:diffsize . l:trailing
         endif
 
-        " file fold
+        " We are at a top-level (file) fold
+
         let l:linenum = v:foldstart
         let l:lastline = v:foldend
 
         let l:plusfile = ''
         let l:minusfile = ''
+
+        " The edit type ([A]dded, [D]eleted, [M]odified, [?] unknown)
+        let l:mode = 'M'
 
         " detemine the names of the +++ file and the --- file
         while (l:plusfile == '' || l:minusfile == '') && l:linenum <= l:lastline
@@ -223,15 +231,19 @@ if ! exists('g:diff_nav_loaded')
             let l:linenum = l:linenum + 1
         endwhile
 
+        " We didn't find any files, try checking the header
+        if l:plusfile == '' && l:minusfile == '' && l:line =~ '^diff --git '
+            let l:currentline = substitute(l:line, '^diff --git ', '', '')
+            let [l:minusfile, l:plusfile] = split(l:currentline)
+            let l:mode = '?'
+        endif
+
         " If no +++ or --- line found then just print the line
         if l:plusfile == '' && l:minusfile == ''
             return l:line
         endif
 
-        " Determine the edit type ([A]dded, [D]eleted, [M]odified)
         let l:filename = l:plusfile
-        let l:mode = 'M'
-
         if l:minusfile == '' || l:minusfile == '/dev/null'
             " added file
             let l:mode = 'A'
@@ -240,6 +252,10 @@ if ! exists('g:diff_nav_loaded')
             let l:mode = 'D'
             let l:filename = l:minusfile
         endif
+
+        " Remove the first part of the path (which is an identifier for the
+        " diff)
+        let l:filename = substitute(l:filename, '^./', '', '')
 
         let l:difflines = v:foldend - l:linenum + 1
         return l:mode . ' ' . l:filename . ' (' . l:difflines . ' line diff)'
