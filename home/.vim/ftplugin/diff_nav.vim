@@ -171,7 +171,9 @@ if ! exists('g:diff_nav_loaded')
         let l:line = getline(a:linenum)
 
         " Lines that are part of the diff start with +,,-,@,\,tab,space
-        if l:line =~ '^+++ ' || l:line =~ '^--- '
+        if l:line =~ '^+++ ' && getline(a:linenum + 1) =~ '^@@'
+            " pass
+        elseif l:line =~ '^--- ' && getline(a:linenum + 2) =~ '^@@'
             " pass
         elseif l:line =~ '^@@ '
             " each individual diff section
