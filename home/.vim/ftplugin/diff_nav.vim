@@ -42,35 +42,36 @@ if ! exists('g:diff_nav_loaded')
         setlocal noreadonly
     endfunction
 
-    " Find the --- line for the patch containing a:linenum
-    function! <SID>FindStartOfPatch(linenum)
-        let l:line = a:linenum
+    " Find the --- line for the patch containing a:line
+    function! <SID>FindStartOfPatch(line)
+        let l:curline = a:line
         let l:lastline = line('$')
-        if getline(l:line) !~ s:diff_regex
+        if getline(l:curline) !~ s:diff_regex
             " We are in the header, go down until we find the +++
-            let l:line = l:line + 1
-            while l:line <= l:lastline && getline(l:line) !~ '^--- '
-                let l:line = l:line + 1
+            let l:curline = l:curline + 1
+            while l:curline <= l:lastline && getline(l:curline) !~ '^--- '
+                let l:curline = l:curline + 1
             endwhile
-            if l:line > l:lastline
+            if l:curline > l:lastline
                 return -1
             endif
-        elseif getline(l:line) == '^--- ' && getline(l:line + 1) =~ '^@@ '
+        elseif getline(l:curline) == '^--- ' && getline(l:curline + 1) =~ '^@@ '
             " We are on the --- line, do nothing
-        elseif getline(l:line) == '^+++ ' && getline(l:line + 1) =~ '^@@ '
+        elseif getline(l:curline) == '^+++ ' && getline(l:curline + 1) =~ '^@@ '
             " We are on the +++ line, go up one
-            let l:line = l:line - 1
+            let l:curline = l:curline - 1
         else
             " We are in the body of the patch, move up until the --- line
-            let l:line = l:line - 1
-            while l:line >= 1 && ! (getline(l:line) =~ '^--- ' && getline(l:line + 2) =~ '^@@ ')
-                let l:line = l:line - 1
+            let l:curline = l:curline - 1
+            while l:curline >= 1 && ! (getline(l:curline) =~ '^--- ' && getline(l:curline + 2) =~ '^@@ ')
+                let l:curline = l:curline - 1
             endwhile
-            if l:line < 1
+            if l:curline < 1
                 return -1
             endif
         endif
-        return l:line
+
+        return l:curline
     endfunction
 
     " Find the last line of a patch given the first line
@@ -186,24 +187,24 @@ if ! exists('g:diff_nav_loaded')
     endfunction
 
     " For a given line number, determine the fold level
-    function! DiffNav_DiffFoldLevel(linenum)
-        return <SID>DiffNav_DiffFoldLevelHelper(a:linenum, 0)
+    function! DiffNav_DiffFoldLevel(line)
+        return <SID>DiffNav_DiffFoldLevelHelper(a:line, 0)
     endfunction
 
     " For a given line number, determine the fold level
     " If depth is non-zero then this function has been called recursively.
-    function! <SID>DiffNav_DiffFoldLevelHelper(linenum, depth)
-        let l:line = getline(a:linenum)
+    function! <SID>DiffNav_DiffFoldLevelHelper(line, depth)
+        let l:linetext = getline(a:line)
 
         " Lines that are part of the diff start with +,,-,@,\,tab,space
-        if l:line =~ '^+++ ' && getline(a:linenum + 1) =~ '^@@ '
+        if l:linetext =~ '^+++ ' && getline(a:line + 1) =~ '^@@ '
             " pass
-        elseif l:line =~ '^--- ' && getline(a:linenum + 2) =~ '^@@ '
+        elseif l:linetext =~ '^--- ' && getline(a:line + 2) =~ '^@@ '
             " pass
-        elseif l:line =~ '^@@ '
+        elseif l:linetext =~ '^@@ '
             " each individual hunk
             return '>2'
-        elseif l:line =~ s:diff_regex
+        elseif l:linetext =~ s:diff_regex
             return '2'
         endif
 
@@ -211,9 +212,9 @@ if ! exists('g:diff_nav_loaded')
         " it is the start of the header or not.
         " The '^diff --git' check is for diffs output by git, when only
         " permissons changes there is no ---/+++ lines in the header
-        if a:linenum == 1 || l:line =~ '^diff --git '
+        if a:line == 1 || l:linetext =~ '^diff --git '
             return '>1'
-        elseif a:depth > 0 || <SID>DiffNav_DiffFoldLevelHelper(a:linenum-1, 1) == '2'
+        elseif a:depth > 0 || <SID>DiffNav_DiffFoldLevelHelper(a:line-1, 1) == '2'
             return '>1'
         else
             return '1'
@@ -222,22 +223,22 @@ if ! exists('g:diff_nav_loaded')
 
     " define fold text
     function! DiffNav_DiffFoldText()
-        let l:line = getline(v:foldstart)
+        let l:linetext = getline(v:foldstart)
 
         if v:foldlevel == 2
             "  @@ lines
             let l:hunksize = v:foldend - v:foldstart
-            let [l:start, l:size, l:trailing]  = <SID>ParseHunkStart(l:line)
+            let [l:start, l:size, l:trailing]  = <SID>ParseHunkStart(l:linetext)
             let l:end = l:start + l:size
 
-            let l:range = 'line ' . l:start . '-' . l:end
+            let l:rangedesc = 'line ' . l:start . '-' . l:end
             let l:sizedesc = '(' . l:hunksize . ' lines)'
-            return '      '. l:range . ' ' . l:sizedesc . l:trailing
+            return '      '. l:rangedesc . ' ' . l:sizedesc . l:trailing
         endif
 
         " We are at a top-level (file) fold
 
-        let l:linenum = v:foldstart
+        let l:curline = v:foldstart
         let l:lastline = v:foldend
 
         let l:plusfile = ''
@@ -247,20 +248,20 @@ if ! exists('g:diff_nav_loaded')
         let l:mode = 'M'
 
         " detemine the names of the +++ file and the --- file
-        while (l:plusfile == '' || l:minusfile == '') && l:linenum <= l:lastline
-            let l:currentline = getline(l:linenum)
-            if l:currentline =~ '^--- '
-                let l:minusfile = substitute(l:currentline, '^--- ', '', '')
-            elseif l:currentline =~ '^+++ '
-                let l:plusfile = substitute(l:currentline, '^+++ ', '', '')
+        while (l:plusfile == '' || l:minusfile == '') && l:curline <= l:lastline
+            let l:curlinetext = getline(l:curline)
+            if l:curlinetext =~ '^--- '
+                let l:minusfile = substitute(l:curlinetext, '^--- ', '', '')
+            elseif l:curlinetext =~ '^+++ '
+                let l:plusfile = substitute(l:curlinetext, '^+++ ', '', '')
             endif
-            let l:linenum = l:linenum + 1
+            let l:curline = l:curline + 1
         endwhile
 
         " We didn't find any files, try checking the header
-        if l:plusfile == '' && l:minusfile == '' && l:line =~ '^diff --git '
-            let l:currentline = substitute(l:line, '^diff --git ', '', '')
-            let [l:minusfile, l:plusfile] = split(l:currentline)
+        if l:plusfile == '' && l:minusfile == '' && l:linetext =~ '^diff --git '
+            let l:filenames = substitute(l:linetext, '^diff --git ', '', '')
+            let [l:minusfile, l:plusfile] = split(l:filenames)
             let l:mode = '?'
         endif
 
@@ -269,7 +270,7 @@ if ! exists('g:diff_nav_loaded')
             let l:mode = l:tmpmode
         endif
 
-        let l:patchsize = v:foldend - l:linenum + 1
+        let l:patchsize = v:foldend - l:curline + 1
         return l:mode . ' ' . l:filename . ' (' . l:patchsize . ' lines)'
     endfunction
 endif
