@@ -136,50 +136,50 @@ if ! exists('g:diff_nav_loaded')
         endif
 
         " We are in the body of a diff, look up until we find the start of the
-        " chunk
+        " hunk
 
         let l:curline = a:line
-        let l:patchoffset = 0
+        let l:hunkoffset = 0
 
         while l:curline > 0 && getline(l:curline) !~ '^@@ '
             if getline(l:curline) !~ '^[\\-]'
-                let l:patchoffset = l:patchoffset + 1
+                let l:hunkoffset = l:hunkoffset + 1
             endif
             let l:curline = l:curline - 1
         endwhile
 
         if getline(l:curline) !~ '^@@ '
-            " There was an error, we should have found a patch
+            " There was an error, we should have found the start of the hunk
             return 0
         endif
 
-        " We over-counted the lines for patchoffset, unless a:line was
+        " We over-counted the lines for hunkoffset, unless a:line was
         " actually the @@ line
-        if l:patchoffset > 0
-            let l:patchoffset = l:patchoffset - 1
+        if l:hunkoffset > 0
+            let l:hunkoffset = l:hunkoffset - 1
         endif
 
-        let [l:patchstart, l:patchsize, l:trailing] = <SID>ParsePatchStart(getline(l:curline))
+        let [l:hunkstart, l:hunksize, l:trailing] = <SID>ParseHunkStart(getline(l:curline))
 
-        return l:patchstart + l:patchoffset
+        return l:hunkstart + l:hunkoffset
     endfunction
 
     " Return [ start line of + file, offset of + file, trailing context ]
-    function! <SID>ParsePatchStart(linetext)
+    function! <SID>ParseHunkStart(linetext)
         let l:range1 = matchstr(a:linetext, '[^ ]*', 4)
         let l:range2 = matchstr(a:linetext, '[^ ]*', 6 + strlen(l:range1))
 
-        let [l:start, l:size] = <SID>ParseRange(l:range2)
+        let [l:start, l:size] = <SID>ParseHunkRange(l:range2)
 
         " return any trailing text
         return [l:start, l:size, substitute(a:linetext, '^@@[^@]*@@', '', '')]
     endfunction
 
-    function! <SID>ParseRange(range)
+    function! <SID>ParseHunkRange(range)
         if a:range !~ ','
             return [a:range, 0]
         else
-            let l:line   = matchstr(a:range, "[^,]*")
+            let l:line = matchstr(a:range, "[^,]*")
             let l:size = matchstr(a:range, ".*", strlen(l:line) + 1 )
             return [l:line, l:size]
         endif
@@ -227,7 +227,7 @@ if ! exists('g:diff_nav_loaded')
         if v:foldlevel == 2
             "  @@ lines
             let l:difflines = v:foldend - v:foldstart
-            let [l:start, l:size, l:trailing]  = <SID>ParsePatchStart(l:line)
+            let [l:start, l:size, l:trailing]  = <SID>ParseHunkStart(l:line)
             let l:end = l:start + l:size
 
             let l:range = 'line ' . l:start . '-' . l:end
