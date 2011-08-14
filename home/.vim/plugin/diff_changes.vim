@@ -16,12 +16,6 @@ let loaded_diffchanged = 1
 
 let s:tmpfile = tempname()
 
-" Set up script variables
-let s:diffbuf = -1
-let s:origbuf = -1
-let s:bufname = "-DiffChanges-"
-let s:difftab = -1
-
 " Set up commands
 
 if !exists(':CDiffChanges')
