@@ -62,7 +62,7 @@ if ! exists('g:diff_nav_loaded')
             " We are in the header, go down until we find the +++
             let l:curline = l:curline + 1
             while l:curline <= l:lastline && getline(l:curline) !~ '^--- '
-                let l:curline = l:curline + 1
+                let l:curline += 1
             endwhile
             if l:curline > l:lastline
                 return -1
@@ -71,12 +71,12 @@ if ! exists('g:diff_nav_loaded')
             " We are on the --- line, do nothing
         elseif getline(l:curline) == '^+++ ' && getline(l:curline + 1) =~ '^@@ '
             " We are on the +++ line, go up one
-            let l:curline = l:curline - 1
+            let l:curline -= 1
         else
             " We are in the body of the patch, move up until the --- line
             let l:curline = l:curline - 1
             while l:curline >= 1 && ! (getline(l:curline) =~ '^--- ' && getline(l:curline + 2) =~ '^@@ ')
-                let l:curline = l:curline - 1
+                let l:curline -= 1
             endwhile
             if l:curline < 1
                 return -1
@@ -91,7 +91,7 @@ if ! exists('g:diff_nav_loaded')
         let l:line = a:patchstart
         let l:lastline = line('$')
         while l:line <= l:lastline && getline(l:line) =~ s:diff_regex
-            let l:line = l:line + 1
+            let l:line += 1
         endwhile
         return l:line - 1
     endfunction
@@ -168,7 +168,7 @@ if ! exists('g:diff_nav_loaded')
             if getline(l:curline) !~ '^[\\-]'
                 let l:hunkoffset = l:hunkoffset + 1
             endif
-            let l:curline = l:curline - 1
+            let l:curline -= 1
         endwhile
 
         if getline(l:curline) !~ '^@@ '
@@ -276,7 +276,7 @@ if ! exists('g:diff_nav_loaded')
             elseif l:curlinetext =~ '^+++ '
                 let l:plusfile = substitute(l:curlinetext, '^+++ ', '', '')
             endif
-            let l:curline = l:curline + 1
+            let l:curline += 1
         endwhile
 
         " We didn't find any files, try checking the header
