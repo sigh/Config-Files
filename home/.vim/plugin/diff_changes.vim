@@ -15,6 +15,9 @@ endif
 let loaded_diffchanged = 1
 
 let s:tmpfile = tempname()
+let s:vcsprogs = {}
+let s:vcsprogs.git = 'git diff --relative'
+let s:vcsprogs.svn = 'svn'
 
 " Set up commands
 
@@ -23,15 +26,15 @@ if !exists(':CDiffChanges')
 endif
 
 if !exists(':VDiffChanges')
-  command! -bang VDiffChanges silent call <SID>DiffStartVCS("<bang>", "")
+  command! -bang VDiffChanges silent call <SID>DiffStartVCS("<bang>", '')
 endif
 
 if !exists(':GitDiffChanges')
-  command! -bang GitDiffChanges call <SID>DiffStartVCS("<bang>", "git diff --relative")
+  command! -bang GitDiffChanges call <SID>DiffStartVCS("<bang>", 'git')
 endif
 
 if !exists(':SvnDiffChanges')
-  command! -bang SvnDiffChanges call <SID>DiffStartVCS("<bang>", "svn diff")
+  command! -bang SvnDiffChanges call <SID>DiffStartVCS("<bang>", 'svn')
 endif
 
 if !exists(':FileDiffChanges')
@@ -75,7 +78,7 @@ endfunction
 function! <SID>VCSAllUpdate()
     " first try to find the VCS program
     let l:prog = <SID>FindVCS()
-    if l:prog == ""
+    if l:prog == ''
         bdelete
         echoerr "No Version Control System found"
         return
@@ -88,7 +91,7 @@ function! <SID>VCSAllUpdate()
     setlocal nobuflisted
 
     normal ggdG
-    exec "silent read !" . l:prog . " diff"
+    exec "silent read !" . s:vcsprogs[l:prog]
     normal ggdd 
 
     setlocal filetype=diff
@@ -143,18 +146,16 @@ function! <SID>DiffStartVCS(close, prog)
 
     let l:prog = a:prog
 
-    if l:prog == ""
+    if l:prog == ''
         let l:prog = <SID>FindVCS()
-        if l:prog == ""
+        if l:prog == ''
             echoerr "No Version Control System found"
             return
-        else
-            let l:prog = l:prog . " diff"
         endif
     endif
 
     let l:filename = expand('%')
-    let l:command = "!" . l:prog . " " . l:filename
+    let l:command = "!" . s:vcsprogs[l:prog] . " " . l:filename
     let l:command = l:command . " | patch -s -R -o " . s:tmpfile . " " . l:filename 
     let l:command = l:command . " ; cat " . s:tmpfile 
     let l:command = l:command . " ; rm " . s:tmpfile 
@@ -165,12 +166,12 @@ endfunction
 
 " Find which VCS we are in
 function! <SID>FindVCS()
-    if isdirectory('.git')
-        return "git"
+    if system('git rev-parse --git-dir 2> /dev/null') != ''
+        return 'git'
     elseif isdirectory('.svn')
-        return "svn"
+        return 'svn'
     else
-        return ""
+        return ''
     endif
 endfunction
 
