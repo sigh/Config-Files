@@ -329,13 +329,14 @@ set smarttab
 
 " <Leader>p enters insert mode with paste on and mouse off and line numbering
 "    changes are reverted when exiting insert mode
-"    In older versions of vim, you must press <Esc> again to revert
+" While in paste mode a new ab is created so that splits don't get in the way
+" of copying.
 nmap <silent> <Leader>p :call <SID>MyPasteMode()<CR>i
-vmap <silent> <Leader>p :call <SID>MyPasteMode()<CR>i
 
 function! <SID>MyPasteMode()
-    set paste nonumber mouse=
-    map <silent> <Esc> :set nopaste number mouse=a<CR>:unmap <Char-60>Esc><CR>
+    tabedit %
+    setlocal paste nonumber mouse=
+    autocmd InsertLeave <buffer> setlocal nopaste number mouse=a | tabclose | autocmd! InsertLeave <buffer>
 endfunction
 
 if executable("pbcopy")
