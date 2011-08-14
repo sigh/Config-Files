@@ -45,7 +45,7 @@ if !exists(':VDiffChanges')
 endif
 
 if !exists(':GitDiffChanges')
-  command! -bang GitDiffChanges call <SID>DiffStartVCS("<bang>", "git diff")
+  command! -bang GitDiffChanges call <SID>DiffStartVCS("<bang>", "git diff --relative")
 endif
 
 if !exists(':SvnDiffChanges')
@@ -129,6 +129,7 @@ function! <SID>DiffStartNavPatch(close)
     let l:curbuf = bufnr('%')
 
     " yank the patch
+    " TODO: store yank in some other register
     let l:yankstring = b:diff_nav_patch_start . "," . b:diff_nav_patch_end . "yank"
     exec "silent buffer " . b:diff_nav_diff_buf
     exec "silent " . l:yankstring
@@ -139,7 +140,7 @@ function! <SID>DiffStartNavPatch(close)
     let l:command = l:command . ' ; cat ' . s:tmpfile 
     let l:command = l:command . ' ; rm ' . s:tmpfile 
 
-    call <SID>DiffStart(a:close, l:command, 0)
+    call <SID>DiffStart(a:close, l:command, 1)
 endfunction
 
 
@@ -163,7 +164,6 @@ function! <SID>DiffStartVCS(close, prog)
     let l:command = l:command . " ; cat " . s:tmpfile 
     let l:command = l:command . " ; rm " . s:tmpfile 
     call <SID>DiffStart(a:close, "read " . l:command, 1)
-
 endfunction
 
 " Find which VCS we are in
@@ -185,32 +185,36 @@ endfunction
 
 " Start diffing the current file
 function! <SID>DiffStart(close, execstring, remove)
-    " close current instance if it was running
     call <SID>DiffStop()
 
+    " Create a new tab to do the diff in
+    tab split
+
+    " Save settings
+    " TODO: Use TabEnter and TabLeave to reset settings
+    let b:diff_changes_settings = {}
+    let b:diff_changes_settings['foldmethod'] = &foldmethod
+    let b:diff_changes_settings['foldcolumn'] = &foldcolumn
+    let b:diff_changes_settings['foldenable'] = &foldenable
+    let b:diff_changes_settings['foldlevel'] = &foldlevel
+    let b:diff_changes_settings['wrap'] = &wrap
+
+    let t:diff_changes_info = {}
+    let t:diff_changes_info['origbuf'] = bufnr('%')
+
     let l:filetype = &filetype
-    let s:origbuf = bufnr('%')
-
-    tabedit %
-    let s:difftab = tabpagenr()
-
-	" TODO: Save these as b:diff_changes_* vars
-    let s:wrap = &wrap
-    let s:foldmethod = &foldmethod
-    let s:foldcolumn = &foldcolumn
-    let s:foldenable = &foldenable
-    let s:foldlevel  = &foldlevel
     diffthis
 
     " create buffer to diff against
-    exec "vsp " . s:bufname
+    vnew
+    let t:diff_changes_info['diffbuf'] = bufnr('%')
+
     setlocal buftype=nofile nobuflisted
     setlocal noreadonly
     setlocal modifiable
     exec "setlocal filetype=" . l:filetype
 
     " load the diffed file
-    let s:diffbuf = bufnr('%')
     exec "silent " . a:execstring
     if a:remove
         normal ggdd " remove the empty first line
@@ -218,11 +222,10 @@ function! <SID>DiffStart(close, execstring, remove)
 
     " error if diffbuf is empty
     if line('$') == 1 && col('$') == 1
-        call <SID>DiffStop()
-        exec "buffer " . s:origbuf
-        redraw
+        " call <SID>DiffStop()
+        " exec "buffer " . s:origbuf
+        " redraw
         echomsg "DiffChanges: Empty result (or error occured)"
-        return
     endif
 
     " link up the buffers
@@ -238,29 +241,81 @@ function! <SID>DiffStart(close, execstring, remove)
     endif
 
     " return to original buffer
-    exec bufwinnr(s:origbuf) . " wincmd w"
-
+    exec bufwinnr(t:diff_changes_info['origbuf']) . " wincmd w"
 endfunction
 
-" Stop diff changes (close the window and remove the buffer)
+" Stop diff changes for the current tab, failing that the current buffer
 function! <SID>DiffStop()
-    if s:diffbuf != -1
-        " Remove the diff buffer
-        exec "bwipeout! " . s:diffbuf
-        let s:diffbuf = -1
-
-        exec "buffer " . s:origbuf
-
-		setlocal nodiff
-        let &wrap = s:wrap
-        let &foldmethod = s:foldmethod
-        let &foldcolumn = s:foldcolumn
-        let &foldenable = s:foldenable
-        let &foldlevel  = s:foldlevel
-
-        exec "tabclose " . s:difftab
-        let s:difftab = -1
+    if exists('t:diff_changes_info')
+        call <SID>DiffStopTab()
+    elseif exists('b:diff_changes_settings')
+        call <SID>DiffStopBuffer()
     endif
+endfunction
+
+" Stop diff changes for the current tab
+function! <SID>DiffStopTab()
+    " Sanity check, don't do anything for non-diff tabs
+    if ! exists('t:diff_changes_info')
+        return
+    endif
+
+    exec 'buffer ' . t:diff_changes_info['origbuf']
+    if ! <SID>DiffStopBuffer()
+        tabclose
+    endif
+endfunction
+
+" Stop diff changes for the current buffer
+" Return 0 on error
+function! <SID>DiffStopBuffer()
+    " Sanity check, don't do anything for non-diff buffers
+    if ! exists('b:diff_changes_settings')
+        return 0
+    endif
+    let l:curbuf = bufnr('%')
+
+    " Reset settings
+    setlocal nodiff
+    let &wrap = b:diff_changes_settings['wrap']
+    let &foldmethod = b:diff_changes_settings['foldmethod']
+    let &foldcolumn = b:diff_changes_settings['foldcolumn']
+    let &foldenable = b:diff_changes_settings['foldenable']
+    let &foldlevel  = b:diff_changes_settings['foldlevel']
+
+    " Switch to the difftab
+    call <SID>SwitchToDiffTab(l:curbuf)
+
+    " Sanity check, tab and buffer agree that they are connected
+    if ! exists('t:diff_changes_info') || t:diff_changes_info['origbuf'] != l:curbuf
+        unlet b:diff_changes_settings
+        return 0
+    endif
+
+    " Remove the diff buffer
+    exec 'bwipeout! ' . t:diff_changes_info['diffbuf']
+
+    tabclose
+    unlet b:diff_changes_settings
+
+    return 1
+endfunction
+
+" Switch to the tab diff page for a:buf
+" return 0 if it couldn't
+function! <SID>SwitchToDiffTab(buf)
+    let l:currenttab = tabpagenr()
+    let l:tabpagenum = tabpagenr('$')
+    while l:tabpagenum > 0
+        exec 'tabnext ' . l:tabpagenum
+        if exists('t:diff_changes_info') && t:diff_changes_info['origbuf'] == a:buf
+            return 1
+        endif
+        let l:tabpagenum -= 1
+    endwhile
+
+    exec 'tabnext ' . l:currenttab
+    return 0
 endfunction
 
 " Open the diff window again
