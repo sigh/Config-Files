@@ -185,14 +185,13 @@ endfunction
 
 " Start diffing the current file
 function! <SID>DiffStart(close, execstring, remove)
-    call <SID>DiffStop()
+    if exists('t:diff_changes_info')
+        echoerr 'Already in a difftab'
+        return
+    endif
 
     " Create a new tab to do the diff in
     tab split
-
-    " Save settings
-    " TODO: Use TabEnter and TabLeave to reset settings
-    let b:diff_changes_settings = {}
 
     let t:diff_changes_info = {}
     let t:diff_changes_info['origbuf'] = bufnr('%')
