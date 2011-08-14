@@ -419,7 +419,7 @@ function! <SID>SetDiffMaps()
     map <silent> <buffer> <Leader>dt <Nop>
     map <silent> <buffer> <Leader>df :DiffOpenFile<CR>
     map <silent> <buffer> <Leader>dF :DiffOpenFile!<CR>
-    map <silent> <buffer> <Leader>dd <Leader>df:NavPatchDiffChanges<CR>
+    map <silent> <buffer> <Leader>dd :NavDiffChanges<CR>
     map <silent> <buffer> <Leader>du :VCSUpdateDiffChanges<CR>
 
     " TODO: when diff_changes can take patches:

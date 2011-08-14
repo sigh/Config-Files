@@ -45,7 +45,7 @@ if !exists(':FileDiffChanges')
 endif
 
 if !exists(':NavDiffChanges')
-  command! -bang NavPatchDiffChanges call <SID>DiffStartNavPatch("<bang>")
+  command! -bang NavDiffChanges call <SID>DiffStartNavPatch("<bang>")
 endif
 
 if ! exists(":ReturnDiffChanges")
@@ -64,9 +64,7 @@ endif
 " if force is set then then open up a new diff if we can't find a current diff
 function! <SID>DiffReturn(force)
     CDiffChanges
-    if exists("b:diff_nav_diff_buf") && bufloaded(b:diff_nav_diff_buf)
-        exec 'buffer ' . b:diff_nav_diff_buf
-    elseif a:force != ""
+    if a:force != ''
         call <SID>VCSAll()
     endif
 endfunction
@@ -110,25 +108,34 @@ endfunction
 " Diff using diff_nav patch infod
 
 function! <SID>DiffStartNavPatch(close)
-    if ! b:diff_nav_diff_buf
+    if &filetype != 'diff'
+        echoerr 'File is not a diff'
+        return
+    endif
+    if ! exists('*GetCurrentDiffPosition')
+        echoerr 'diff_nav not installed'
+    endif
+
+    let l:diffcontext = GetCurrentDiffPosition()
+    if type(l:diffcontext) != type({})
         return
     endif
 
-    let l:curbuf = bufnr('%')
-
     " yank the patch
     " TODO: store yank in some other register
-    let l:yankstring = b:diff_nav_patch_start . "," . b:diff_nav_patch_end . "yank"
-    exec "silent buffer " . b:diff_nav_diff_buf
-    exec "silent " . l:yankstring
-    exec "silent buffer " . l:curbuf
+    exec 'silent ' . l:diffcontext['patchstart'] . "," . l:diffcontext['patchend'] . 'yank'
+
+    " Open a new tab with the file
+    exec "tabnew " . l:diffcontext['filename']
+    exec l:diffcontext['fileposition']
+    setlocal noreadonly
 
     let l:command = 'put!'
     let l:command = l:command . ' | silent %!patch -s -R -o ' . s:tmpfile . ' ' . expand('%')
     let l:command = l:command . ' ; cat ' . s:tmpfile 
     let l:command = l:command . ' ; rm ' . s:tmpfile 
 
-    call <SID>DiffStart(a:close, l:command, 1)
+    call <SID>DiffStart(a:close, l:command, 0)
 endfunction
 
 
@@ -151,6 +158,8 @@ function! <SID>DiffStartVCS(close, prog)
     let l:command = l:command . " | patch -s -R -o " . s:tmpfile . " " . l:filename 
     let l:command = l:command . " ; cat " . s:tmpfile 
     let l:command = l:command . " ; rm " . s:tmpfile 
+
+    tab split
     call <SID>DiffStart(a:close, "read " . l:command, 1)
 endfunction
 
@@ -167,6 +176,7 @@ endfunction
 
 " Diff against file on disk
 function! <SID>DiffStartFile(close)
+    tab split
     call <SID>DiffStart(a:close, "read " . expand('%'), 1)
 endfunction
 
@@ -174,12 +184,9 @@ endfunction
 " Start diffing the current file
 function! <SID>DiffStart(close, execstring, remove)
     if exists('t:diff_changes_info')
-        echoerr 'Already in a difftab'
+        echoerr 'A new tab should have been created'
         return
     endif
-
-    " Create a new tab to do the diff in
-    tab split
 
     let t:diff_changes_info = {}
     let t:diff_changes_info['origbuf'] = bufnr('%')
