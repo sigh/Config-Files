@@ -142,6 +142,11 @@ endfunction
 
 " Diff version control system
 function! <SID>DiffStartVCS(close, prog)
+    if expand('%') == '' || &buftype == 'nofile'
+        echoerr 'No file'
+        return
+    endif
+
     let l:prog = a:prog
 
     if l:prog == ""
@@ -177,6 +182,11 @@ endfunction
 
 " Diff against file on disk
 function! <SID>DiffStartFile(close)
+    if expand('%') == '' || &buftype == 'nofile'
+        echoerr 'No file'
+        return
+    endif
+
     tab split
     call <SID>DiffStart(a:close, "read " . expand('%'))
 endfunction
