@@ -20,6 +20,7 @@ let s:tmpfile = tempname()
 let s:diffbuf = -1
 let s:origbuf = -1
 let s:bufname = "-DiffChanges-"
+let s:difftab = -1
 
 " Set up commands
 
@@ -134,9 +135,10 @@ function! <SID>DiffStartNavPatch(close)
     exec "silent buffer " . l:curbuf
 
     let l:command = 'put!'
-    let l:command = l:command . ' | %!patch -s -R -o ' . s:tmpfile . ' ' . expand('%')
+    let l:command = l:command . ' | silent %!patch -s -R -o ' . s:tmpfile . ' ' . expand('%')
     let l:command = l:command . ' ; cat ' . s:tmpfile 
     let l:command = l:command . ' ; rm ' . s:tmpfile 
+
     call <SID>DiffStart(a:close, l:command, 0)
 endfunction
 
@@ -189,6 +191,9 @@ function! <SID>DiffStart(close, execstring, remove)
     let l:filetype = &filetype
     let s:origbuf = bufnr('%')
 
+    tabedit %
+    let s:difftab = tabpagenr()
+
 	" TODO: Save these as b:diff_changes_* vars
     let s:wrap = &wrap
     let s:foldmethod = &foldmethod
@@ -204,7 +209,7 @@ function! <SID>DiffStart(close, execstring, remove)
     setlocal modifiable
     exec "setlocal filetype=" . l:filetype
 
-    " load the file
+    " load the diffed file
     let s:diffbuf = bufnr('%')
     exec "silent " . a:execstring
     if a:remove
@@ -240,30 +245,22 @@ endfunction
 " Stop diff changes (close the window and remove the buffer)
 function! <SID>DiffStop()
     if s:diffbuf != -1
-        " close diff buffer
-        call <SID>DiffClose()
+        " Remove the diff buffer
         exec "bwipeout! " . s:diffbuf
         let s:diffbuf = -1
 
-        let l:curwin = winnr()
-
-        " reset settings in original buffer
-        let l:winnr = bufwinnr(s:origbuf)
-        if l:winnr != -1
-            exec l:winnr . "wincmd w"
-        else
-            exec "buffer " . s:origbuf
-        endif
+        exec "buffer " . s:origbuf
 
 		setlocal nodiff
         let &wrap = s:wrap
-        let &foldmethod = s:foldmethod 
-        let &foldcolumn = s:foldcolumn 
+        let &foldmethod = s:foldmethod
+        let &foldcolumn = s:foldcolumn
         let &foldenable = s:foldenable
         let &foldlevel  = s:foldlevel
 
-        exec l:curwin . "wincmd w"
-    endif   
+        exec "tabclose " . s:difftab
+        let s:difftab = -1
+    endif
 endfunction
 
 " Open the diff window again
@@ -280,12 +277,9 @@ function! <SID>DiffOpen()
 
     let l:curbuf = bufnr('%')
 
-    let l:winnr = bufwinnr(s:origbuf)
-    if l:winnr != -1
-        " we only do something if the buffer is visible
-        exec l:winnr . "wincmd w"
-        exec "vsp #" . s:diffbuf
-    endif
+    tabedit %
+    let s:difftab = tabpagenr()
+    exec "vsp #" . s:diffbuf
 
     " return to original buffer
     exec bufwinnr(l:curbuf) . " wincmd w"
