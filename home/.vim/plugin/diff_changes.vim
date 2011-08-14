@@ -130,14 +130,15 @@ function! <SID>DiffStartNavPatch(close)
     exec l:diffcontext.fileposition
     setlocal noreadonly
 
-    let l:command = 'put!'
+    let l:command = 'put'
     let l:command = l:command . ' | silent %!patch -s -R -o ' . s:tmpfile . ' ' . expand('%')
-    let l:command = l:command . ' ; cat ' . s:tmpfile 
+    " There must be an empty line at the start of a successful patch for
+    " DiffStart to work
+    let l:command = l:command . ' ; cat <(echo) ' . s:tmpfile 
     let l:command = l:command . ' ; rm ' . s:tmpfile 
 
-    call <SID>DiffStart(a:close, l:command, 0)
+    call <SID>DiffStart(a:close, l:command)
 endfunction
-
 
 " Diff version control system
 function! <SID>DiffStartVCS(close, prog)
@@ -160,7 +161,7 @@ function! <SID>DiffStartVCS(close, prog)
     let l:command = l:command . " ; rm " . s:tmpfile 
 
     tab split
-    call <SID>DiffStart(a:close, "read " . l:command, 1)
+    call <SID>DiffStart(a:close, "read " . l:command)
 endfunction
 
 " Find which VCS we are in
@@ -177,12 +178,13 @@ endfunction
 " Diff against file on disk
 function! <SID>DiffStartFile(close)
     tab split
-    call <SID>DiffStart(a:close, "read " . expand('%'), 1)
+    call <SID>DiffStart(a:close, "read " . expand('%'))
 endfunction
 
-
 " Start diffing the current file
-function! <SID>DiffStart(close, execstring, remove)
+" a:execstring is a command to generate the file to diff against, it is
+" expected to add an extra empty line at the start of the file.
+function! <SID>DiffStart(close, execstring)
     if exists('t:diff_changes_info')
         echoerr 'A new tab should have been created'
         return
@@ -205,9 +207,6 @@ function! <SID>DiffStart(close, execstring, remove)
 
     " load the diffed file
     exec "silent " . a:execstring
-    if a:remove
-        normal ggdd " remove the empty first line
-    endif
 
     " error if diffbuf is empty
     if line('$') == 1 && col('$') == 1
@@ -215,7 +214,11 @@ function! <SID>DiffStart(close, execstring, remove)
         " exec "buffer " . s:origbuf
         " redraw
         echomsg "DiffChanges: Empty result (or error occured)"
+        return
     endif
+
+    " remove the empty first line
+    normal ggdd
 
     " link up the buffers
     diffthis
