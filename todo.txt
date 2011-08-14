@@ -1,18 +1,10 @@
 .bashrc
     + Fix lsd function so that it is more robust (no grep)
-    + Complete logging
     + archive .bash_history
-    + make ssh-fix more secure
-
-.screen
-    + Quick way to pipe current history scrollback through less
 
 .vimrc
     + mouse support for MBE
-    + svn plugin
     + tagliist plugin
-    + commentify: http://www.vim.org/scripts/script.php?script_id=23
-    + surround plugin
     + svn + git filetype recognition
     + set keywords based on filetpye
 
@@ -24,11 +16,14 @@ rcdist
 
 diff_nav:
     + handle "only file" lines etc (look in diff syntax file)
-    + handle deleted files properly (jus open old version)
 
 diff_changes:
     + save and reload yank register
 	+ multiple windows fucks up... WTF
         + focus screws up in All-Diffchanges
     + create CleanUpDiffChanges to find any borked windows (run on DiffStop).
-    + handle deleted file and new file.
+
+    + make DiffReturn actaully return to the originating diff (give each tab an ID in a variable so that it can be found)
+    + tabnames
+    + link buffers to diff so that we can easily cleanup
+    + disentangle vcs code
