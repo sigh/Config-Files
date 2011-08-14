@@ -30,10 +30,10 @@ if ! exists('g:diff_nav_loaded')
         endif
 
         let l:diffcontext = {}
-        let l:diffcontext['filename'] = l:filename
-        let l:diffcontext['patchstart'] = l:patchstart
-        let l:diffcontext['patchend'] = l:patchend
-        let l:diffcontext['fileposition'] = l:fileposition
+        let l:diffcontext.filename = l:filename
+        let l:diffcontext.patchstart = l:patchstart
+        let l:diffcontext.patchend = l:patchend
+        let l:diffcontext.fileposition = l:fileposition
 
         return l:diffcontext
     endfunction
@@ -48,8 +48,8 @@ if ! exists('g:diff_nav_loaded')
             return
         endif
 
-        exec "e " . l:diffcontext['filename']
-        exec l:diffcontext['fileposition']
+        exec "e " . l:diffcontext.filename
+        exec l:diffcontext.fileposition
 
         setlocal noreadonly
     endfunction
