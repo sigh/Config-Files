@@ -193,11 +193,6 @@ function! <SID>DiffStart(close, execstring, remove)
     " Save settings
     " TODO: Use TabEnter and TabLeave to reset settings
     let b:diff_changes_settings = {}
-    let b:diff_changes_settings['foldmethod'] = &foldmethod
-    let b:diff_changes_settings['foldcolumn'] = &foldcolumn
-    let b:diff_changes_settings['foldenable'] = &foldenable
-    let b:diff_changes_settings['foldlevel'] = &foldlevel
-    let b:diff_changes_settings['wrap'] = &wrap
 
     let t:diff_changes_info = {}
     let t:diff_changes_info['origbuf'] = bufnr('%')
@@ -244,61 +239,16 @@ function! <SID>DiffStart(close, execstring, remove)
     exec bufwinnr(t:diff_changes_info['origbuf']) . " wincmd w"
 endfunction
 
-" Stop diff changes for the current tab, failing that the current buffer
-function! <SID>DiffStop()
-    if exists('t:diff_changes_info')
-        call <SID>DiffStopTab()
-    elseif exists('b:diff_changes_settings')
-        call <SID>DiffStopBuffer()
-    endif
-endfunction
-
 " Stop diff changes for the current tab
-function! <SID>DiffStopTab()
+function! <SID>DiffStop()
     " Sanity check, don't do anything for non-diff tabs
     if ! exists('t:diff_changes_info')
         return
     endif
 
-    exec 'buffer ' . t:diff_changes_info['origbuf']
-    if ! <SID>DiffStopBuffer()
-        tabclose
-    endif
-endfunction
-
-" Stop diff changes for the current buffer
-" Return 0 on error
-function! <SID>DiffStopBuffer()
-    " Sanity check, don't do anything for non-diff buffers
-    if ! exists('b:diff_changes_settings')
-        return 0
-    endif
-    let l:curbuf = bufnr('%')
-
-    " Reset settings
-    setlocal nodiff
-    let &wrap = b:diff_changes_settings['wrap']
-    let &foldmethod = b:diff_changes_settings['foldmethod']
-    let &foldcolumn = b:diff_changes_settings['foldcolumn']
-    let &foldenable = b:diff_changes_settings['foldenable']
-    let &foldlevel  = b:diff_changes_settings['foldlevel']
-
-    " Switch to the difftab
-    call <SID>SwitchToDiffTab(l:curbuf)
-
-    " Sanity check, tab and buffer agree that they are connected
-    if ! exists('t:diff_changes_info') || t:diff_changes_info['origbuf'] != l:curbuf
-        unlet b:diff_changes_settings
-        return 0
-    endif
-
     " Remove the diff buffer
     exec 'bwipeout! ' . t:diff_changes_info['diffbuf']
-
     tabclose
-    unlet b:diff_changes_settings
-
-    return 1
 endfunction
 
 " Switch to the tab diff page for a:buf
