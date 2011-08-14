@@ -7,7 +7,7 @@
 [merge]
     tool = vimdiff
 [alias]
-    d = diff
+    d = diff --relative
     h = help
     b = branch
     a = add
