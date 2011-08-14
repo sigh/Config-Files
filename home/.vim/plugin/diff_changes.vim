@@ -61,10 +61,10 @@ if ! exists(":VCSUpdateDiffChanges")
 endif
 
 " Return to the diff window (if we got here from diff nav)
-" if force is set then then open up a new diff if we can't find a current diff
+" if force is set then then open up a new diff the current file is not a diff
 function! <SID>DiffReturn(force)
     CDiffChanges
-    if a:force != ''
+    if &filetype != 'diff' && a:force != ''
         call <SID>VCSAll()
     endif
 endfunction
@@ -207,15 +207,6 @@ function! <SID>DiffStart(close, execstring)
 
     " load the diffed file
     exec "silent " . a:execstring
-
-    " error if diffbuf is empty
-    if line('$') == 1 && col('$') == 1
-        " call <SID>DiffStop()
-        " exec "buffer " . s:origbuf
-        " redraw
-        echomsg "DiffChanges: Empty result (or error occured)"
-        return
-    endif
 
     " remove the empty first line
     normal ggdd
