@@ -329,7 +329,7 @@ set smarttab
 
 " <Leader>p enters insert mode with paste on and mouse off and line numbering
 "    changes are reverted when exiting insert mode
-" While in paste mode a new ab is created so that splits don't get in the way
+" While in paste mode a new tab is created so that splits don't get in the way
 " of copying.
 nmap <silent> <Leader>p :call <SID>MyPasteMode()<CR>i
 
