@@ -12,10 +12,7 @@ if ! exists('g:diff_nav_loaded')
         command! DiffOpenFile silent call <SID>DiffOpenCurrentFile()
     endif
 
-    " helper functions
-
-    " open file for the current patch
-    function! <SID>DiffOpenCurrentFile()
+    function! GetCurrentDiffPosition()
         let l:buf = bufnr('%')
         let l:line = line('.')
 
@@ -32,12 +29,27 @@ if ! exists('g:diff_nav_loaded')
             let l:fileposition = <SID>FindPositionInFile(l:line)
         endif
 
-        exec "e " . l:filename
-        exec l:fileposition
+        let l:diffcontext = {}
+        let l:diffcontext['filename'] = l:filename
+        let l:diffcontext['patchstart'] = l:patchstart
+        let l:diffcontext['patchend'] = l:patchend
+        let l:diffcontext['fileposition'] = l:fileposition
 
-        let b:diff_nav_patch_start = l:patchstart
-        let b:diff_nav_patch_end   = l:patchend
-        let b:diff_nav_diff_buf    = l:buf
+        return l:diffcontext
+    endfunction
+
+    " helper functions
+
+    " open file for the current patch
+    function! <SID>DiffOpenCurrentFile()
+        let l:diffcontext = GetCurrentDiffPosition()
+
+        if type(l:diffcontext) != type({})
+            return
+        endif
+
+        exec "e " . l:diffcontext['filename']
+        exec l:diffcontext['fileposition']
 
         setlocal noreadonly
     endfunction
