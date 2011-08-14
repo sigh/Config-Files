@@ -123,11 +123,11 @@ function! <SID>DiffStartNavPatch(close)
 
     " yank the patch
     " TODO: store yank in some other register
-    exec 'silent ' . l:diffcontext['patchstart'] . "," . l:diffcontext['patchend'] . 'yank'
+    exec 'silent ' . l:diffcontext.patchstart . "," . l:diffcontext.patchend . 'yank'
 
     " Open a new tab with the file
-    exec "tabnew " . l:diffcontext['filename']
-    exec l:diffcontext['fileposition']
+    exec "tabnew " . l:diffcontext.filename
+    exec l:diffcontext.fileposition
     setlocal noreadonly
 
     let l:command = 'put!'
@@ -189,14 +189,14 @@ function! <SID>DiffStart(close, execstring, remove)
     endif
 
     let t:diff_changes_info = {}
-    let t:diff_changes_info['origbuf'] = bufnr('%')
+    let t:diff_changes_info.origbuf = bufnr('%')
 
     let l:filetype = &filetype
     diffthis
 
     " create buffer to diff against
     vnew
-    let t:diff_changes_info['diffbuf'] = bufnr('%')
+    let t:diff_changes_info.diffbuf = bufnr('%')
 
     setlocal buftype=nofile nobuflisted
     setlocal noreadonly
@@ -230,7 +230,7 @@ function! <SID>DiffStart(close, execstring, remove)
     endif
 
     " return to original buffer
-    exec bufwinnr(t:diff_changes_info['origbuf']) . " wincmd w"
+    exec bufwinnr(t:diff_changes_info.origbuf) . " wincmd w"
 endfunction
 
 " Stop diff changes for the current tab
@@ -241,7 +241,7 @@ function! <SID>DiffStop()
     endif
 
     " Remove the diff buffer
-    exec 'bwipeout! ' . t:diff_changes_info['diffbuf']
+    exec 'bwipeout! ' . t:diff_changes_info.diffbuf
     tabclose
 endfunction
 
@@ -252,7 +252,7 @@ function! <SID>SwitchToDiffTab(buf)
     let l:tabpagenum = tabpagenr('$')
     while l:tabpagenum > 0
         exec 'tabnext ' . l:tabpagenum
-        if exists('t:diff_changes_info') && t:diff_changes_info['origbuf'] == a:buf
+        if exists('t:diff_changes_info') && t:diff_changes_info.origbuf == a:buf
             return 1
         endif
         let l:tabpagenum -= 1
