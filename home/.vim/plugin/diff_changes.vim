@@ -29,14 +29,6 @@ if !exists(':VDiffChanges')
   command! -bang VDiffChanges silent call <SID>DiffStartVCS("<bang>", '')
 endif
 
-if !exists(':GitDiffChanges')
-  command! -bang GitDiffChanges call <SID>DiffStartVCS("<bang>", 'git')
-endif
-
-if !exists(':SvnDiffChanges')
-  command! -bang SvnDiffChanges call <SID>DiffStartVCS("<bang>", 'svn')
-endif
-
 if !exists(':FileDiffChanges')
   command! -bang FileDiffChanges call <SID>DiffStartFile("<bang>")
 endif
