@@ -27,3 +27,4 @@ diff_changes:
     + tabnames
     + link buffers to diff so that we can easily cleanup
     + disentangle vcs code
+    + don't use actual buffer numbers in minibuf explorer, use positional indicators chage [N]- to match
