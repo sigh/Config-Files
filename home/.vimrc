@@ -408,7 +408,8 @@ map <silent> <Leader>dV :VDiffChanges!<CR>
 map <silent> <Leader>df :FileDiffChanges<CR>
 map <silent> <Leader>dF :FileDiffChanges!<CR>
 map <silent> <Leader>dd :ReturnDiffChanges!<CR>
-map <silent> <Leader>du <Leader>dd:VCSUpdateDiffChanges<CR>
+map <silent> <Leader>dv :VDiffChanges<CR>
+map <silent> <Leader>dc :CDiffChanges<CR>
 
 autocmd FileType diff call <SID>SetDiffMaps()
 
