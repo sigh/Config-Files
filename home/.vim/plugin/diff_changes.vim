@@ -19,10 +19,15 @@ let s:vcsprogs = {}
 let s:vcsprogs.git = 'git diff --relative'
 let s:vcsprogs.svn = 'svn'
 
+let s:difftabs = {}
+let s:max_diff_tab_id = 0
+
+autocmd TabEnter * call <SID>SetTabId() | call <SID>DiffTabCleanup()
+
 " Set up commands
 
 if !exists(':CDiffChanges')
-  command! CDiffChanges silent call <SID>DiffStop()
+  command! CDiffChanges tabclose
 endif
 
 if !exists(':VDiffChanges')
@@ -182,20 +187,21 @@ endfunction
 " a:execstring is a command to generate the file to diff against, it is
 " expected to add an extra empty line at the start of the file.
 function! <SID>DiffStart(close, execstring)
-    if exists('t:diff_changes_info')
-        echoerr 'A new tab should have been created'
+    if has_key(s:difftabs, t:diff_changes_tab_id)
+        echoerr 'DiffStart called with a used tab'
         return
     endif
 
-    let t:diff_changes_info = {}
-    let t:diff_changes_info.origbuf = bufnr('%')
+    let l:diff_changes_info = {}
+    let s:difftabs[t:diff_changes_tab_id] = l:diff_changes_info
+    let l:diff_changes_info.origbuf = bufnr('%')
 
     let l:filetype = &filetype
     diffthis
 
     " create buffer to diff against
     vnew
-    let t:diff_changes_info.diffbuf = bufnr('%')
+    let l:diff_changes_info.diffbuf = bufnr('%')
 
     setlocal buftype=nofile nobuflisted
     setlocal noreadonly
@@ -221,35 +227,37 @@ function! <SID>DiffStart(close, execstring)
     endif
 
     " return to original buffer
-    exec bufwinnr(t:diff_changes_info.origbuf) . " wincmd w"
+    exec bufwinnr(l:diff_changes_info.origbuf) . " wincmd w"
 endfunction
 
-" Stop diff changes for the current tab
-function! <SID>DiffStop()
-    " Sanity check, don't do anything for non-diff tabs
-    if ! exists('t:diff_changes_info')
-        return
-    endif
-
-    " Remove the diff buffer
-    exec 'bwipeout! ' . t:diff_changes_info.diffbuf
-    tabclose
-endfunction
-
-" Switch to the tab diff page for a:buf
-" return 0 if it couldn't
-function! <SID>SwitchToDiffTab(buf)
+" Go through all tabs and clean them up if they are closed. 
+function! <SID>DiffTabCleanup()
+    let l:open_tabs = {}
     let l:currenttab = tabpagenr()
-    let l:tabpagenum = tabpagenr('$')
-    while l:tabpagenum > 0
-        exec 'tabnext ' . l:tabpagenum
-        if exists('t:diff_changes_info') && t:diff_changes_info.origbuf == a:buf
-            return 1
+
+    " Find all the currently open tabs
+    for i in range(tabpagenr('$'))
+        exec 'tabnext ' . (i + 1)
+        if exists('t:diff_changes_tab_id')
+            let l:open_tabs[t:diff_changes_tab_id] = 1
         endif
-        let l:tabpagenum -= 1
-    endwhile
+    endfor
 
     exec 'tabnext ' . l:currenttab
-    return 0
+
+    " Remove the diff buffers that associated with closed tabs.
+    for [tabid, info] in items(s:difftabs)
+        if ! has_key(l:open_tabs, tabid)
+            " tabid has been deleted so cleanup the diff buffer
+            exec 'bwipeout! ' . info.diffbuf
+            unlet s:difftabs[tabid]
+        endif
+    endfor
 endfunction
 
+function! <SID>SetTabId()
+    if ! exists('t:diff_changes_tab_id')
+        let s:max_diff_tab_id += 1
+        let t:diff_changes_tab_id = s:max_diff_tab_id
+    endif
+endfunction
