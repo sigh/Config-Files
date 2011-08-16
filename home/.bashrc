@@ -413,24 +413,6 @@ reload() {
 # use SIGCONT because it is does not terminate bash by default
 trap reload CONT
 
-# send CONT to all shells so that they all reload
-reload-all() {
-    # make sure we don't reload ourselves while running this
-    trap "" CONT
-    local pid command
-    # from https://github.com/thrig/sial.org-scripts/blob/master/allsh/allsh
-    ps xwwo pid,command | while read pid command; do
-        if echo $command | egrep -- "^-bash$" >/dev/null; then
-            if [[ $pid != $$ ]]; then
-                echo Reloading $pid $command
-                kill -CONT $pid
-            fi
-        fi
-    done
-    # finally reload ourself
-    reload
-}
-
 # Full log and history updating
 # This must go after everything else
 unset PROMPT_COMMAND
