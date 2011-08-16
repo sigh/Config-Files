@@ -507,6 +507,61 @@ map  <Leader>s :call <SID>spell()<CR>
 imap <Leader>s <Esc>:call <SID>spell()<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Filetype specific autocommands
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Set some settings for editing makefiles
+augroup makefile
+  autocmd!
+  autocmd BufRead,BufNewFile ?akefile* set noexpandtab
+augroup END
+
+" Support editing of gzip-compressed files.
+augroup gzip
+  autocmd!
+
+  " Enable editing of gzipped files
+  "       read: set binary mode before reading the file
+  "             uncompress text in buffer after reading
+  "      write: compress file after writing
+  "     append: uncompress file, append, compress file
+  autocmd BufReadPre,FileReadPre        *.gz set bin
+  autocmd BufReadPost,FileReadPost      *.gz silent '[,']!gunzip
+  autocmd BufReadPost,FileReadPost      *.gz set nobin
+  autocmd BufReadPost,FileReadPost      *.gz execute ":doautocmd BufReadPost " . expand('%:r')
+
+  autocmd BufWritePost,FileWritePost    *.gz silent !mv <afile> <afile>:r
+  autocmd BufWritePost,FileWritePost    *.gz silent !gzip <afile>:r
+
+  autocmd FileAppendPre                 *.gz silent !gunzip <afile>
+  autocmd FileAppendPre                 *.gz silent !mv <afile>:r <afile>
+  autocmd FileAppendPost                *.gz silent !mv <afile> <afile>:r
+  autocmd FileAppendPost                *.gz silent !gzip <afile>:r
+augroup END
+
+augroup bzip2
+  autocmd!
+
+  " Enable editing of bzipped files
+  "       read: set binary mode before reading the file
+  "             uncompress text in buffer after reading
+  "      write: compress file after writing
+  "     append: uncompress file, append, compress file
+  autocmd BufReadPre,FileReadPre        *.bz2 set bin
+  autocmd BufReadPost,FileReadPost      *.bz2 silent '[,']!bunzip2
+  autocmd BufReadPost,FileReadPost      *.bz2 set nobin
+  autocmd BufReadPost,FileReadPost      *.bz2 execute ":doautocmd BufReadPost " . expand('%:r')
+
+  autocmd BufWritePost,FileWritePost    *.bz2 silent !mv <afile> <afile>:r
+  autocmd BufWritePost,FileWritePost    *.bz2 silent !bzip2 <afile>:r
+
+  autocmd FileAppendPre                 *.bz2 silent !bunzip2 <afile>
+  autocmd FileAppendPre                 *.bz2 silent !mv <afile>:r <afile>
+  autocmd FileAppendPost                *.bz2 silent !mv <afile> <afile>:r
+  autocmd FileAppendPost                *.bz2 silent !bzip2 -9 --repetitive-best <afile>:r
+augroup END
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Filetype switching
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -525,7 +580,6 @@ function s:fileswitch(ext)
     endif
     let b:fileswitch_prev = l:fileswitch_prev
 endfunction
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Helpful commands
