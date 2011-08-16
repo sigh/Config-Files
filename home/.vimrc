@@ -328,15 +328,31 @@ set nowrap
 set smarttab
 
 " <Leader>p enters insert mode with paste on and mouse off and line numbering
-"    changes are reverted when exiting insert mode
+"    changes are reverted when exiting insert mode (or navigating away in any
+"    way)
 " While in paste mode a new tab is created so that splits don't get in the way
 " of copying.
 nmap <silent> <Leader>p :call <SID>MyPasteMode()<CR>i
 
 function! <SID>MyPasteMode()
-    tabedit %
-    setlocal paste nonumber mouse=
-    autocmd InsertLeave <buffer> setlocal nopaste number mouse=a | tabclose | autocmd! InsertLeave <buffer>
+    tab split
+    setlocal paste nonumber mouse=nicr
+    augroup my_paste
+        autocmd!
+        autocmd InsertLeave <buffer> call <SID>MyPasteModeEnd()
+        autocmd BufLeave <buffer> call <SID>MyPasteModeEnd()
+        autocmd TabLeave <buffer> call <SID>MyPasteModeEnd()
+        autocmd WinLeave <buffer> call <SID>MyPasteModeEnd()
+    augroup END
+endfunction
+
+function! <SID>MyPasteModeEnd()
+    " Remove all commands from the group
+    autocmd! my_paste
+    " Delete the group
+    augroup! my_paste
+    setlocal nopaste number mouse=a
+    tabclose
 endfunction
 
 if executable("pbcopy")
