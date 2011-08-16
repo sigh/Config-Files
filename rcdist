@@ -2,8 +2,17 @@
 #
 # Distribute config files to $hosts
 
-declare -a hosts
+local_only=
+no_reload=
 
+while getopts "ln" flag ; do
+  case "$flag" in
+    l) local_only=1 ;;
+    n) no_reload=1 ;;
+  esac
+done
+
+declare -a hosts
 hosts=(
 )
 
@@ -13,11 +22,13 @@ cd home
 options="--compress --stats --recursive --perms --times --rsh=ssh"
 
 # sync with localhost
-rsync $options . "$HOME" && reload-all
+rsync $options . "$HOME" && [[ ! $no_reload ]] && reload-all
 
-# sync with remote hosts
-for host in "${hosts[@]}" ; do
-    echo
-    echo "Updating host: $host"
-    rsync $options . "$host:~" && ssh "$host" reload-all
-done
+if [[ ! $local_only ]] ; then
+  # sync with remote hosts
+  for host in "${hosts[@]}" ; do
+      echo
+      echo "Updating host: $host"
+      rsync $options . "$host:~" && [[ ! $no_reload ]] && ssh "$host" reload-all
+  done
+fi
