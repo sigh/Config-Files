@@ -63,6 +63,18 @@ autocmd FileType * exec "setlocal keywordprg=vimdoc\\ -" . &ft
 " Set leader to ","
 let mapleader = ","
 
+" Shortcut to get current file's directory
+cabbr <expr> %% <SID>CurrentWorkingDir()
+
+function! <SID>CurrentWorkingDir()
+    let l:dir = expand('%:h')
+    if l:dir != ''
+        return l:dir
+    else
+        return '.'
+    endif
+endfunction
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Theme/Colors
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
