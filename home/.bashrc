@@ -416,5 +416,9 @@ trap reload CONT
 # Full log and history updating
 # This must go after everything else
 unset PROMPT_COMMAND
-cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL STY=$STY SHELL=$SHELL BASH_VERSION=$BASH_VERSION" >> ~/._full_bash_history
+if [[ ! $_ALREADY_LOADED ]] ; then
+    # we don't want the first line when we reload
+    cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL STY=$STY SHELL=$SHELL BASH_VERSION=$BASH_VERSION" >> ~/._full_bash_history
+    export _ALREADY_LOADED=1
+fi
 trap 'awk -v prefix="$$ $LINENO $(date +%FT%T) $PWD \$" "{ print prefix, \$0 }" <<<"$BASH_COMMAND" >> ~/._full_bash_history; history -a' DEBUG
