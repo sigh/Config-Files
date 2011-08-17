@@ -348,6 +348,7 @@ nmap <silent> <Leader>p :call <SID>MyPasteMode()<CR>i
 
 function! <SID>MyPasteMode()
     tab split
+    TName 'Paste'
     setlocal paste nonumber mouse=nicr
     augroup my_paste
         autocmd!
@@ -421,6 +422,16 @@ set backupdir=~/.vim/.backup
 set directory=~/.vim/.swap
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Tabs
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+autocmd VimEnter * TName 'main'
+
+function! <SID>NameTabPrefix(prefix)
+    TName a:prefix . ' ' . pathshorten(expand('%'))
+endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Diff
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -431,12 +442,11 @@ set diffopt=filler,context:10
 vmap <silent> do :diffget<CR>
 
 " DiffChanges shortcuts :)
-map <silent> <Leader>dv :VDiffChanges<CR>
-map <silent> <Leader>dV :VDiffChanges!<CR>
-map <silent> <Leader>df :FileDiffChanges<CR>
-map <silent> <Leader>dF :FileDiffChanges!<CR>
+map <silent> <Leader>dv :VDiffChanges<CR>:call <SID>NameTabPrefix('VCS Diff')<CR>
+map <silent> <Leader>dV :VDiffChanges!<CR>:call <SID>NameTabPrefix('VCS Diff')<CR>
+map <silent> <Leader>df :FileDiffChanges<CR>:call <SID>NameTabPrefix('File Diff')<CR>
+map <silent> <Leader>dF :FileDiffChanges!<CR>:call <SID>NameTabPrefix('File Diff')<CR>
 map <silent> <Leader>dd :ReturnDiffChanges!<CR>
-map <silent> <Leader>dv :VDiffChanges<CR>
 map <silent> <Leader>dc :CDiffChanges<CR>
 
 autocmd FileType diff call <SID>SetDiffMaps()
@@ -447,7 +457,7 @@ function! <SID>SetDiffMaps()
     map <silent> <buffer> <Leader>dt <Nop>
     map <silent> <buffer> <Leader>df :DiffOpenFile<CR>
     map <silent> <buffer> <Leader>dF :DiffOpenFile!<CR>
-    map <silent> <buffer> <Leader>dd :NavDiffChanges<CR>
+    map <silent> <buffer> <Leader>dd :NavDiffChanges<CR>:call <SID>NameTabPrefix('Diff')<CR>
     map <silent> <buffer> <Leader>du :VCSUpdateDiffChanges<CR>
 
     " TODO: when diff_changes can take patches:
