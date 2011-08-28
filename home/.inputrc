@@ -4,15 +4,15 @@ set history-preserve-point on
 
 # Note: must set \e[0C and similar sequences in terminal prog
 
-"\e[5C": forward-word
-"\e[5D": backward-word
+"\e[1;5C": forward-word
+"\e[1;5D": backward-word
 
 # move to options
-"\C-s": "\C-a\e[5C"
+"\C-s": "\C-a\e[1;5C"
 
 # new delete commands
-"\e[1C": kill-word 
-"\e[1D": backward-kill-word 
+"\e[1;9C": kill-word
+"\e[1;9D": backward-kill-word
 "\e[3~": delete-char
 
 "\ea": backward-kill-line
