@@ -281,18 +281,43 @@ if [[ -z "$STY" ]] ; then
         echo -n ${HOSTNAME%%.*}
     }
 
+    # _attach-helper "-a1 -a2 ..." -b1 -b2 ... [session_name]
+    # Will call: screen -b1 -b2 ... -a1 -a2 ... session_name
+    # If no session name is given then the default will be used.
+    _attach-helper() {
+        local session_name first_args last_args
+
+        # determine the session name if user gave one, otherwise use the
+        # default session name.
+        if [[ ${!#} =~ ^- ]]; then
+            session_name="$(default-sessionname)"
+        else
+            session_name="${!#}"
+        fi
+
+        # last args (given by attach function).
+        last_args="$1"
+        shift
+
+        # first arguments (given by user).
+        first_args=()
+        while [[ $1 =~ ^- ]] ; do
+            first_args=("${first_args[@]}" "$1")
+            shift
+        done
+
+        # last_args is intentionally unquoted
+        screen "${first_args[@]}" $last_args "$session_name"
+    }
+
     # attach to an existing screen session or create one if it doesn't exist
     attach() {
-        local session_name=${1:-$(default-sessionname)}
-        setup-ssh-fix "$session_name"
-        screen -D -R "$session_name"
+        _attach-helper "-D -R" "$@"
     }
 
     # attach to an existing screen session or create one if it doesn't exist
     attach-again() {
-        local session_name=${1:-$(default-sessionname)}
-        setup-ssh-fix "$session_name"
-        screen -x -S "$session_name"
+        _attach-helper "-x -S" "$@"
     }
 
     # completion for attach* commands
