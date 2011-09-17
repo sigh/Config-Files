@@ -69,9 +69,9 @@ _fg() {
 # Note: This works better than `complete -A jobs fg` because it shows the full command
 complete -F _fg fg
 
-# Any command which is a subtring of a stopped job will resume it
+# Any single word command which is a prefix of a stopped job will resume it
 #   (trying out on a trial basis)
-export auto_resume=substring
+export auto_resume=prefix
 
 # ignore files with the following suffixes for tab completion
 export FIGNORE='.swp:.svn:.0:~';
