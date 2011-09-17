@@ -20,7 +20,6 @@ set history-preserve-point on
 
 "\C-v": unix-line-discard
 "\C-u": undo
-"\C-z": undo
 
 # do history expansion
 $if Bash
@@ -47,6 +46,8 @@ set page-completions off
 "\e[0A": complete-variable 
 
 "\M-/": complete-filename
+
+"\C-n": "\e#!!:s/#//:x \n"
 
 # Make Bash 8bit clean
 set meta-flag on
