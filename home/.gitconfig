@@ -33,7 +33,7 @@
     cm = "!f() { git commit -a -m \"$*\" ; }; f"
 
     # Stash current working directory but save it as a tag
-    save = "!f() { git tag \"$@\" $(git stash create); }; f"
+    save = "!f() { git tag \"$@\" \"$(git stash create)\" 2> /dev/null ; }; f"
     # Restort stash from tag
     restore = stash apply
 
