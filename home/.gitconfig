@@ -13,7 +13,7 @@
     a = add
     m = merge
 
-    st = status
+    st = status -sb
     ci = commit
     co = checkout
     ls = ls-files
