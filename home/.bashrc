@@ -26,6 +26,9 @@ shopt -s progcomp
 . "$HOME/.bash_completion"
 . "$HOME/.git-completion.bash"
 
+# don't bother trying to complete all commands on empty prompt
+shopt -s no_empty_cmd_completion
+
 # allow us to cd to variables (turn on AFTER bash_completion)
 shopt -s cdable_vars
 
@@ -138,6 +141,7 @@ export HISTTIMEFORMAT='%FT%T ' # save timestamps (and display in ISO format)
 
 shopt -s histappend
 shopt -s cmdhist
+shopt -s histreedit
 
 # make sure we don't leave accidentally
 export IGNOREEOF=1
