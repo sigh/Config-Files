@@ -4,7 +4,7 @@ export PATH="${PATH}:$HOME/bin"
 # only run if we are interactive
 [ -z "$PS1" ] && return
 
-# remove all aliases so that we can redfine them without errors
+# remove all aliases so that we can redefine them without errors
 unalias -a
 
 # disable flow control (C-s, C-r)
@@ -21,7 +21,7 @@ shopt -s cdspell
 # otherwise all variables match for cd
 shopt -u cdable_vars
 
-# turn on smart tab completetion
+# turn on smart tab completion
 shopt -s progcomp
 . "$HOME/.bash_completion"
 . "$HOME/.git-completion.bash"
@@ -118,11 +118,11 @@ unset TITLEBAR
 # customise history
 
 # Change the location of HISTFILE
-# this way if .bashrc isn't run, our HISFILE isn't truncated
+# this way if .bashrc isn't run, our HISTFILE isn't truncated
 hist_old=$HISTFILE
 export HISTFILE="$HOME/._bash_history"
 
-# if it doesn't exist, then initalise with
+# if it doesn't exist, then initialise with
 # current history
 if [[ -f "$hist_old" && ! -f "$HISTFILE" ]] ; then
     cp "$hist_old" "$HISTFILE"
