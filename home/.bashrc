@@ -10,6 +10,10 @@ unalias -a
 # disable flow control (C-s, C-r)
 stty -ixon
 
+# Report immediately when background jobs finish.
+# (Trial only, see if this annoys me).
+set -b
+
 # allow for correction of inaccurate cd commands
 shopt -s cdspell
 
