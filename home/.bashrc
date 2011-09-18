@@ -45,7 +45,7 @@ cd() {
         # eval required for ~ expansion.
         eval path=\"${DIRSTACK[$i]}\"
         if [[ $path == $PWD ]] ; then
-            popd +"$i" -n
+            popd +"$i" -n > /dev/null
         fi
     done
 }
