@@ -34,9 +34,9 @@ cd() {
     pushd "$@" > /dev/null
     local path
     # remove all previous instances of the current directory from $DIRSTACK.
-    for ((i=$(($(dirs -v | wc -l) - 1)); i > 0; i=$(($i - 1)))) ; do
+    for ((i=${#DIRSTACK[@]} - 1; i > 0; i--)) ; do
         # eval required for ~ expansion.
-        eval path="$(dirs "+$i")"
+        eval path=\"${DIRSTACK[$i]}\"
         if [[ $path == $PWD ]] ; then
             popd +"$i" -n
         fi
