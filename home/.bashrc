@@ -10,6 +10,9 @@ unalias -a
 # disable flow control (C-s, C-r)
 stty -ixon
 
+# don't echo control characters (in particular don't echo ^C on the command line).
+stty -ctlecho
+
 # Report immediately when background jobs finish.
 # (Trial only, see if this annoys me).
 set -b
