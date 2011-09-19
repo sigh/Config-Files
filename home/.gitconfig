@@ -13,19 +13,15 @@
     a = add
     m = merge
 
-    st = status
+    st = status -sb
     ci = commit
-    ca = commit -a
     co = checkout
-    br = branch
     ls = ls-files
 
-    stat = status
-
-    log = log --graph
+    lg = log --date=short --first-parent --pretty=format:'%C(ul)%s%Creset%n%C(yellow)%h %Creset%ad %Cblue%ae%Creset%Cred%d%n' --stat
 
     # display all commits in all branches
-    rl = rev-list --pretty=oneline --all --graph --abbrev-commit -n 100
+    rl = rev-list --pretty=oneline --all --graph --abbrev-commit --color=auto -n 100
 
     # open a github url for the current git repo
     hub = !git remote -v|sed "'s|.*git[:@]\\(.*\\).git.*|http://\\1|;s|m:|m/|'"|uniq|xargs open
@@ -36,9 +32,17 @@
     # commit all with an message (which need not be quoted)
     cm = "!f() { git commit -a -m \"$*\" ; }; f"
 
+    # Stash current working directory but save it as a tag
+    save = "!f() { git tag \"$@\" \"$(git stash create)\" 2> /dev/null ; }; f"
+    # Restort stash from tag
+    restore = stash apply
+
     # force an action on a dirty working set
     #  if there are local changes then we stash them first
-    force = "!f() { [ $(git stash create) ] && ( git stash save forcing; git \"$@\" ; git stash pop; ) || git \"$@\"; }; f"
+    force = "!f() { if git save -f __force ; then git reset --hard HEAD && git \"$@\" && git restore --quiet __force ; else git \"$@\"; fi ; }; f"
+
+    # reset to HEAD while saving the working directory.
+    safe-reset = "!f() { git save -f __before_reset && git reset --hard HEAD; }; f"
 [color]
     ui = true
 [branch]

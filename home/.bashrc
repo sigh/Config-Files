@@ -4,11 +4,15 @@ export PATH="${PATH}:$HOME/bin"
 # only run if we are interactive
 [ -z "$PS1" ] && return
 
-# remove all aliases so that we can redfine them without errors
+# remove all aliases so that we can redefine them without errors
 unalias -a
 
 # disable flow control (C-s, C-r)
 stty -ixon
+
+# Report immediately when background jobs finish.
+# (Trial only, see if this annoys me).
+set -b
 
 # allow for correction of inaccurate cd commands
 shopt -s cdspell
@@ -17,10 +21,13 @@ shopt -s cdspell
 # otherwise all variables match for cd
 shopt -u cdable_vars
 
-# turn on smart tab completetion
+# turn on smart tab completion
 shopt -s progcomp
 . "$HOME/.bash_completion"
 . "$HOME/.git-completion.bash"
+
+# don't bother trying to complete all commands on empty prompt
+shopt -s no_empty_cmd_completion
 
 # allow us to cd to variables (turn on AFTER bash_completion)
 shopt -s cdable_vars
@@ -30,7 +37,18 @@ shopt -s cdspell
 
 # customise cd
 
-cd()   { pushd "$@" > /dev/null; }
+cd() {
+    pushd "$@" > /dev/null
+    local path
+    # remove all previous instances of the current directory from $DIRSTACK.
+    for ((i=${#DIRSTACK[@]} - 1; i > 0; i--)) ; do
+        # eval required for ~ expansion.
+        eval path=\"${DIRSTACK[$i]}\"
+        if [[ $path == $PWD ]] ; then
+            popd +"$i" -n > /dev/null
+        fi
+    done
+}
 
 cd..() { cd "$@" .. ; }
 ..()   { cd "$@" .. ; }
@@ -58,9 +76,9 @@ _fg() {
 # Note: This works better than `complete -A jobs fg` because it shows the full command
 complete -F _fg fg
 
-# Any command which is a subtring of a stopped job will resume it
+# Any single word command which is a prefix of a stopped job will resume it
 #   (trying out on a trial basis)
-export auto_resume=substring
+export auto_resume=prefix
 
 # ignore files with the following suffixes for tab completion
 export FIGNORE='.swp:.svn:.0:~';
@@ -103,11 +121,11 @@ unset TITLEBAR
 # customise history
 
 # Change the location of HISTFILE
-# this way if .bashrc isn't run, our HISFILE isn't truncated
+# this way if .bashrc isn't run, our HISTFILE isn't truncated
 hist_old=$HISTFILE
 export HISTFILE="$HOME/._bash_history"
 
-# if it doesn't exist, then initalise with
+# if it doesn't exist, then initialise with
 # current history
 if [[ -f "$hist_old" && ! -f "$HISTFILE" ]] ; then
     cp "$hist_old" "$HISTFILE"
@@ -123,6 +141,7 @@ export HISTTIMEFORMAT='%FT%T ' # save timestamps (and display in ISO format)
 
 shopt -s histappend
 shopt -s cmdhist
+shopt -s histreedit
 
 # make sure we don't leave accidentally
 export IGNOREEOF=1

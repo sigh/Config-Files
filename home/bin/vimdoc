@@ -7,10 +7,10 @@ if [[ "${1:0:1}" == "-" ]] ; then
 fi
 
 case "$filetype" in 
-    perl)   perldoc "$@" 2> /dev/null || perldoc -f "$@" ;;
-    python) pydoc "$@" | vimless -f man ;;
-    c)      man -s3 "$@" ;;
-    sh)     man "$@" ;;
-    man)    man "$@" ;;
-    *)      man "$@" ;;
+    perl)   exec perldoc "$@" 2> /dev/null || perldoc -f "$@" ;;
+    python) exec pydoc "$@" | vimless -f man ;;
+    c)      exec man -s3 "$@" ;;
+    sh)     exec man "$@" ;;
+    man)    exec man "$@" ;;
+    *)      exec man "$@" ;;
 esac
