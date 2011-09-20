@@ -456,7 +456,7 @@ else
     update-status
 
     # change the directory we start in if it has been specified
-    if [ -n "$SCREEN_SHELLDIR" ]; then
+    if [[ -n $SCREEN_SHELLDIR && ! $_ALREADY_LOADED ]]; then
         cd "$SCREEN_SHELLDIR"
     fi
 fi
