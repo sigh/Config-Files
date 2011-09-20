@@ -1,0 +1,103 @@
+#!/bin/bash
+
+# for the correct sed binary... fix stuff so that it doesn't need this.
+export PATH=/opt/local/libexec/gnubin:$PATH
+
+# _attach-helper "-a1 -a2 ..." -b1 -b2 ... [session_name]
+# Will call: screen -b1 -b2 ... -a1 -a2 ... session_name
+# If no session name is given then the default will be used.
+_attach-helper() {
+    local session_name first_args last_args
+
+    # determine the session name if user gave one, otherwise use the
+    # default session name (_).
+    if [[ ${!#} =~ ^- ]]; then
+        session_name="_"
+    else
+        session_name="${!#}"
+    fi
+
+    # last args (given by attach function).
+    last_args="$1"
+    shift
+
+    # first arguments (given by user).
+    first_args=()
+    while [[ $1 =~ ^- ]] ; do
+        first_args=("${first_args[@]}" "$1")
+        shift
+    done
+
+    # last_args is intentionally unquoted
+    screen "${first_args[@]}" $last_args "$session_name"
+}
+
+# attach to an existing screen session or create one if it doesn't exist
+attach() {
+    _attach-helper "-D -R" "$@"
+}
+
+# attach to an existing screen session or create one if it doesn't exist
+attach-again() {
+    _attach-helper "-x -S" "$@"
+}
+
+# Given an optional prefix, return all matching screen names.
+find_screen() {
+    declare -a screens=( $(
+        screen -ls $1 | \
+        sed -ne 's|^['$'\t'']\+\([0-9]\+\.[^'$'\t'']\+\).*$|\1|p' | \
+        sort -t. -k2 -u
+    ) )
+
+    if [[ -z $1 ]] ; then
+        # add default option if it doesn't exist.
+        # (but not if the user gave an explicit name).
+        declare -i has_default=0
+        for screen in "${screens[@]}" ; do
+            [[ $screen =~ ^[0-9]+\._ ]] && has_default=1
+        done
+        [[ $has_default -eq 0 ]] && screens=( _ "${screens[@]}" )
+    else
+        # if the screen doesn't exist then just use that name. 
+        if [[ ${#screens[@]} -eq 0 ]] ; then
+            screens=("$1")
+        fi
+    fi
+
+    ask_which_screen "${screens[@]}"
+}
+
+# Ask the user which of several screens to open.
+ask_which_screen() {
+    # if the number of screens is 1 the user has no choice!
+    if [[ $# == 1 ]] ; then
+        echo "$1"
+        return
+    fi
+
+    declare -i index=0
+    for screen in "$@" ; do
+        echo "$index: $screen" 1>&2
+        index+=1
+    done
+    echo -n 'Which screen (default 0): ' 1>&2
+
+    local user_choice
+    read -e user_choice
+    if [[ -z $user_choice ]] ; then
+        echo "$1"     
+    elif [[ ! $user_choice =~ ^[0-9]+$ ]] ; then
+        # user entered free text, go with it.
+        echo "$user_choice"
+    elif [[ $user_choice -ge $# ]] ; then
+        # user entered an invalid number, load the first screen.
+        echo "$1"
+    else
+        # load requested screen.
+        user_choice=$((user_choice+1))
+        echo "${!user_choice}"
+    fi
+}
+
+attach "$(find_screen $1)"
