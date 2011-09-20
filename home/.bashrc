@@ -65,7 +65,7 @@ complete -F _cd -o filenames -o nospace mcd
 j() { jobs -l "$@"; }
 
 _fg() {
-    local IFS=$'\n\t' cur=${COMP_WORDS[COMP_CWORD]}
+    local IFS=$'\n\t' cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=( $(jobs | \
         perl -ne '
             s/\(.*\)$//;
@@ -125,7 +125,7 @@ unset TITLEBAR
 
 # Change the location of HISTFILE
 # this way if .bashrc isn't run, our HISTFILE isn't truncated
-hist_old=$HISTFILE
+hist_old="$HISTFILE"
 export HISTFILE="$HOME/._bash_history"
 
 # if it doesn't exist, then initialise with
@@ -173,9 +173,9 @@ shopt -s nocaseglob
 shopt -s extglob
 
 # colorize search results for grep
-zgr()  { zgrep -e  --color=always "$@" ; }
+zgr() { zgrep -e  --color=always "$@" ; }
 zgi() { zgrep -ei --color=always "$@" ; }
-gr()   { egrep    --color=always "$@" ; }
+gr()  { egrep     --color=always "$@" ; }
 gi()  { egrep -i  --color=always "$@" ; }
 gh()  { gi "$@" "$HISTFILE"; }
 
@@ -247,7 +247,7 @@ _unmount() {
         return
     fi
 
-    local IFS=$'\t\n' cur=${COMP_WORDS[COMP_CWORD]}
+    local IFS=$'\t\n' cur="${COMP_WORDS[COMP_CWORD]}"
     COMPREPLY=( $(command cd /Volumes; compgen -d -- $cur ) )
 }
 complete -F _unmount -o filenames unmount
@@ -269,7 +269,7 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 
 # ensure screendir is populated with the directory
 #   that screen is actually using
-SCREENDIR=$(screen -ls | tail -2 | sed -ne 's/^.* in \(\S\+\).$/\1/p')
+SCREENDIR="$(screen -ls | tail -2 | sed -ne 's/^.* in \(\S\+\).$/\1/p')"
 
 # easy way to list screens
 #   (and no risk of starting a new screen if we make a typo)
@@ -296,13 +296,15 @@ if [[ -z "$STY" ]] ; then
                 opt="-S $1"
             fi
 
+            # opt is unquoted on purpose. I could make this an array and do it
+            # properly.
             screen $opt -X register z "$string" > /dev/null 2>&1
         fi
     }
 
     # default sessionname is the first part of the $HOSTNAME
     default-sessionname() {
-        echo -n ${HOSTNAME%%.*}
+        echo -n "${HOSTNAME%%.*}"
     }
 
     # _attach-helper "-a1 -a2 ..." -b1 -b2 ... [session_name]
@@ -393,7 +395,7 @@ else
 
     # fix the STY variable which gets messed up if we change the session name
     sty-fix() {
-        export STY=$(basename $SCREENDIR/${STY%%.*}.*)
+        export STY="$(basename $SCREENDIR/${STY%%.*}.*)"
     }
 
     # ensure that $STY is correct before running any screen commands
