@@ -302,11 +302,6 @@ if [[ -z "$STY" ]] ; then
         fi
     }
 
-    # default sessionname is the first part of the $HOSTNAME
-    default-sessionname() {
-        echo -n "${HOSTNAME%%.*}"
-    }
-
     # _attach-helper "-a1 -a2 ..." -b1 -b2 ... [session_name]
     # Will call: screen -b1 -b2 ... -a1 -a2 ... session_name
     # If no session name is given then the default will be used.
@@ -314,9 +309,9 @@ if [[ -z "$STY" ]] ; then
         local session_name first_args last_args
 
         # determine the session name if user gave one, otherwise use the
-        # default session name.
+        # default session name (_).
         if [[ ${!#} =~ ^- ]]; then
-            session_name="$(default-sessionname)"
+            session_name="_"
         else
             session_name="${!#}"
         fi
@@ -404,15 +399,22 @@ else
         command screen "$@"
     }
 
-    # update the status to display the sessionname
+    # update the status to display the sessionname.
+    # if the displayname is the default sessioname (-) then show the hostname.
     update-status() {
         sty-fix
-        screen -X hardstatus string '%{= kG}'${STY#*.}' %{= kW}%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<%{= kW} %='
+        local display_name
+        if [[ ${STY#*.} == _ ]] ; then
+            display_name="${HOSTNAME%%.*}"
+        else
+            display_name="${STY#*.}"
+        fi
+        screen -X hardstatus string '%{= kG}'"$display_name"' %{= kW}%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<%{= kW} %='
     }
 
     # change the session name
     sessionname() {
-        screen -X sessionname $1
+        screen -X sessionname "$1"
         update-status
     }
 
