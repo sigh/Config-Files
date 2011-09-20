@@ -278,30 +278,6 @@ screens() { screen -ls ; }
 if [[ -z "$STY" ]] ; then
     # commands for outside screen
 
-    # store ssh session data in screen variables
-    # only required if we are accessing an existing screen session
-    # if the session doesn't exist then this command does nothing
-    #   and that is OK.
-    setup-ssh-fix() {
-        if [[ -n "$SSH_CLIENT" ]]; then
-            local string=' ' # start with a space so it is ignored by history
-            for x in SSH_CLIENT SSH_TTY SSH_AUTH_SOCK SSH_CONNECTION DISPLAY; do
-                string="$string export $x='$(eval echo \$$x)' ; "
-            done
-            string="$string"$'\n'
-
-            # screenname is an optional argument
-            opt=
-            if [[ -n "$1" ]]; then
-                opt="-S $1"
-            fi
-
-            # opt is unquoted on purpose. I could make this an array and do it
-            # properly.
-            screen $opt -X register z "$string" > /dev/null 2>&1
-        fi
-    }
-
     # _attach-helper "-a1 -a2 ..." -b1 -b2 ... [session_name]
     # Will call: screen -b1 -b2 ... -a1 -a2 ... session_name
     # If no session name is given then the default will be used.
@@ -443,11 +419,6 @@ else
         # output file with blank line deleted from the top
         sed '/./,$!d' "$filename"
         rm "$filename"
-    }
-
-    # import ssh session
-    ssh-fix() {
-        screen -X process z
     }
 
     # revert titlebar if screen messes with it
