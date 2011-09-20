@@ -257,6 +257,8 @@ vless() { vimless "$@" ; }
 
 # shortcut vim and set it as our editor
 vi() { vim "$@" ; }
+v() { vim "$@" ; }
+complete -o filenames -F _filedir_xspec v
 export EDITOR=vim
 export SVNEDITOR=vim
 
@@ -382,6 +384,10 @@ if [[ -z "$STY" ]] ; then
 
     complete -F _attach attach
     complete -F _attach attach-again
+
+    # I use attach a lot
+    a() { attach "$@"; }
+    complete -F _attach a
 else
     # commands for use inside screen
 
