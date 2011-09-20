@@ -464,6 +464,7 @@ fi
 # reload the bashrc for the current shell
 reload() {
   . ~/.bashrc
+  bind -f ~/.inputrc
 }
 # use SIGCONT because it is does not terminate bash by default
 trap reload CONT
