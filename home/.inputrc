@@ -18,9 +18,6 @@ set history-preserve-point on
 "\ea": backward-kill-line
 "\ee": kill-line
 
-"\C-v": unix-line-discard
-"\C-u": undo
-
 # do history expansion
 $if Bash
     Space: magic-space
@@ -47,7 +44,11 @@ set page-completions off
 
 "\M-/": complete-filename
 
+# comment out current line then run with everything quoted.
 "\C-n": "\e#!!:s/#//:x \n"
+
+# make C-d do something useful when the line is not empty.
+"\C-d": insert-comment
 
 # Make Bash 8bit clean
 set meta-flag on
