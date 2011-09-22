@@ -31,7 +31,7 @@ set nolist
 set paste mouse=nicr
 
 function FoldLevel(line)
-  if getline(a:line) =~ '^\[\d\d:\d\d\] \[\d*\] dilshan@\w*:'
+  if getline(a:line) =~ '^\[\d\d:\d\d\] \[\d\+\] dilshan@\w\+:'
     return '>1'
   else
     return '1'
@@ -59,6 +59,26 @@ set fillchars=vert:\ ,stl:\ ,stlnc:\ ,diff:\ ,fold:\
 
 " Don't consider the file modified.
 set nomod
+
+" DA: Syntax highlighting
+set background=light
+hi clear
+syntax reset
+hi Comment ctermfg=2
+syn match command '^\[\d\d:\d\d\] \[\d\d*\] dilshan@\w\w*:.*\n\d\d* \$'
+hi link command Comment
+hi Folded term=standout ctermfg=4 ctermbg=8
+hi FoldColumn term=standout ctermfg=4 ctermbg=7
+
+" DA: mouse clicks open and close folds
+function ToggleFold()
+  if foldclosed('.') == -1
+    foldclose
+  else
+    foldopen
+  endif
+endfunction
+noremap <silent> <LeftMouse> <LeftMouse>:call ToggleFold()<CR>
 
 " Used after each command: put cursor at end and display position
 if &wrap
