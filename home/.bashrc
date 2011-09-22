@@ -414,11 +414,13 @@ else
 
     # print entire scrollback to stdout 
     scrollback() {
-        local filename="/tmp/screen-$STY.$WINDOW"
-        screen -X hardcopy -h "$filename"
-        # output file with blank line deleted from the top
-        sed '/./,$!d' "$filename"
-        rm "$filename"
+        (
+            local filename="$(mktemp)"
+            trap "rm -f -- '$filename'" 0
+            trap 'exit 2' 1 2 3 15
+            command screen -X hardcopy -h "$filename"
+            vim -u NONE -c "runtime! macros/scrollback_less.vim" "$filename"
+        )
     }
 
     # revert titlebar if screen messes with it
