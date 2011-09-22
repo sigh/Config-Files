@@ -422,6 +422,7 @@ else
             vim -u NONE -c "runtime! macros/scrollback_less.vim" "$filename"
         )
     }
+    sb() { scrollback; }
 
     # revert titlebar if screen messes with it
     printf "\033];$USER@${HOSTNAME%%.*}\007"
