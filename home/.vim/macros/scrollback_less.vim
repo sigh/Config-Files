@@ -1,9 +1,4 @@
-" Vim script to work like "less"
-" Maintainer:	Bram Moolenaar <Bram@vim.org>
-" Last Change:	2002 Aug 15
-
-" If not reading from stdin, skip files that can't be read.
-" Exit if there is no file at all.
+" This only works with one file given on the command line
 if argc() != 1
   qa
 endif
@@ -22,12 +17,12 @@ nohlsearch
 set viminfo=
 set nows
 
-" DA: no swap file and smaller cmd 
+" no swap file and smaller cmd
 set noswf
 set cmdheight=1
 set nolist
 
-" DA: ensure we can scroll with mouse and still copy
+" ensure we can scroll with mouse and still copy
 set paste mouse=nicr
 
 function FoldLevel(line)
@@ -45,7 +40,7 @@ function DiffFoldText()
   return l:time . ' ' . l:linetext . ' ' . l:sizedesc
 endfunction
 
-" DA: define folds
+" define folds
 set foldenable
 set foldmethod=expr
 set foldexpr=FoldLevel(v:lnum)
@@ -60,7 +55,7 @@ set fillchars=vert:\ ,stl:\ ,stlnc:\ ,diff:\ ,fold:\
 " Don't consider the file modified.
 set nomod
 
-" DA: Syntax highlighting
+" Syntax highlighting
 set background=light
 hi clear
 syntax reset
@@ -70,7 +65,7 @@ hi link command Comment
 hi Folded term=standout ctermfg=4 ctermbg=8
 hi FoldColumn term=standout ctermfg=4 ctermbg=7
 
-" DA: mouse clicks open and close folds
+" mouse clicks open and close folds
 function ToggleFold()
   if foldclosed('.') == -1
     foldclose
@@ -91,7 +86,10 @@ endif
 
 noremap q :q<CR>
 
-" DA: Go to the end of a buffer when loading a page
-normal GL
+" Set the status line
+set statusline=[scrollback]\ %=%l/%L%<\ [%p%%]\ %v\ [%b,0x%B]
+set laststatus=2
 
+" Go to the end of a buffer when loading a page
+normal GL
 
