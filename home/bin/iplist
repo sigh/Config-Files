@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $format = $ARGV[0] || "%s: %s";
+
+my $current_interface;
+
+for my $line (`ifconfig`) {
+  chomp($line);
+  if ($line =~ /^(\w+):/) {
+    $current_interface = $1;
+  } elsif ($line =~ /^\s+inet (\d+.\d+.\d+.\d+\b)/) {
+    printf($format . "\n", $current_interface, $1);
+  }
+}
