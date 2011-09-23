@@ -18,7 +18,8 @@
     co = checkout
     ls = ls-files
 
-    lg = log --date=short --first-parent --pretty=format:'%C(ul)%s%Creset%n%C(yellow)%h %Creset%ad %Cblue%ae%Creset%Cred%d%n' --stat
+    # short but comprehensive log
+    l = log --date=short --first-parent --pretty=format:'%C(ul)%s%Creset%n%C(yellow)%h %Creset%ad %Cblue%ae %Cgreen(%cr)%Creset%Cred%d%n' --stat
 
     # display all commits in all branches
     rl = rev-list --pretty=oneline --all --graph --abbrev-commit --color=auto -n 100
