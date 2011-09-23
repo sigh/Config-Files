@@ -79,7 +79,6 @@ hi FoldColumn ctermfg=4 ctermbg=7
 " for the statusline.
 hi User1 ctermfg=3 ctermbg=0
 
-" mouse clicks open and close folds
 function ToggleFold()
   if foldclosed('.') == -1
     foldclose
@@ -87,23 +86,23 @@ function ToggleFold()
     foldopen
   endif
 endfunction
+
+" mouse clicks open and close folds
 nnoremap <silent> <LeftRelease> :call ToggleFold()<CR>
 
-" Used after each command: put cursor at end and display position
+" Put cursor at end and display position
 if &wrap
   noremap <SID>L L0zb<CR>
-  " au VimEnter * normal L0zb
 else
   noremap <SID>L Lg0zb<CR>
-  " au VimEnter * normal Lg0zb
 endif
 
-noremap q :q<CR>
+noremap q <Esc>:q<CR>
 
 function MyStatusLine()
   let l:start = '[scrollback]%<'
   let l:end = ' %l/%L [%p%%] %v [%b,0x%B]'
-  if foldclosed('.') >= 0
+  if foldclosed('.') >= 0 || bufnr('%') != 1
     return l:start . '%=' . l:end
   endif
 
