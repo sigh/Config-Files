@@ -74,8 +74,10 @@ syntax reset
 hi Comment ctermfg=2
 syn match command '^\[\d\d:\d\d\] \[\d\+\] dilshan@[^:]\+:.*\n\d\+ \$'
 hi link command Comment
-hi Folded term=standout ctermfg=4 ctermbg=8
-hi FoldColumn term=standout ctermfg=4 ctermbg=7
+hi Folded ctermfg=4 ctermbg=8
+hi FoldColumn ctermfg=4 ctermbg=7
+" for the statusline.
+hi User1 ctermfg=3 ctermbg=0
 
 " mouse clicks open and close folds
 function ToggleFold()
@@ -98,8 +100,37 @@ endif
 
 noremap q :q<CR>
 
+function MyStatusLine()
+  let l:start = '[scrollback]%<'
+  let l:end = ' %l/%L [%p%%] %v [%b,0x%B]'
+  if foldclosed('.') >= 0
+    return l:start . '%=' . l:end
+  endif
+
+  let l:save_cursor = getpos('.')
+  foldclose
+  let l:text = foldtextresult(foldclosed('.'))
+  let l:lastline = foldclosedend('.')
+  foldopen
+  call setpos('.', l:save_cursor)
+
+  let l:parts = matchlist(l:text, '\$\( .*\) (\(\d\+\) lines)$')
+  let l:cmd = l:parts[1]
+  let l:lines = l:parts[2]
+
+  " Calculate the current line. Lines in the header are all line 0.
+  let l:curline = l:lines - (l:lastline - line('.'))
+  if l:curline < 0
+    let l:curline = 0
+  endif
+
+  let l:percent = l:curline <= 0 ? 0 : (l:lines == 1 ? 100 : (l:curline-1) * 100 / (l:lines - 1))
+
+  return l:start . '%1*' . l:cmd . '%*%= ' . l:curline . '/' . l:lines . ' [' . l:percent . '%%]' . l:end
+endfunction
+
 " Set the status line
-set statusline=[scrollback]\ %=%l/%L%<\ [%p%%]\ %v\ [%b,0x%B]
+set statusline=%!MyStatusLine()
 set laststatus=2
 
 " Go to the end of a buffer when loading a page
