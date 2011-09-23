@@ -22,8 +22,8 @@ set noswf
 set cmdheight=1
 set nolist
 
-" ensure we can scroll with mouse and still copy
-set paste mouse=nicr
+set mouse=a
+set ttymouse=xterm2
 
 function FoldLevel(line)
   if getline(a:line) =~ '^\[\d\d:\d\d\] \[\d\+\] dilshan@[^:]\+:'
@@ -87,7 +87,7 @@ function ToggleFold()
     foldopen
   endif
 endfunction
-noremap <silent> <LeftMouse> <LeftMouse>:call ToggleFold()<CR>
+nnoremap <silent> <LeftRelease> :call ToggleFold()<CR>
 
 " Used after each command: put cursor at end and display position
 if &wrap
