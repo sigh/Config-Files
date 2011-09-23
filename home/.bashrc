@@ -216,7 +216,11 @@ extract()
 less() { command less -R "$@" ; }
 
 # share directory on the web
-webshare() { python -m SimpleHTTPServer "$@" ; }
+webshare() {
+  local port="${1:-8000}"
+  iplist "%s: http://$(tput setf 3)%s$(tput sgr0):$port/"
+  python -m SimpleHTTPServer "$port" > /dev/null
+}
 
 # print short wikipedia lookup
 wiki() {
