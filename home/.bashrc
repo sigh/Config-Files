@@ -215,13 +215,6 @@ extract()
 # make less display colors
 less() { command less -R "$@" ; }
 
-# share directory on the web
-webshare() {
-  local port="${1:-8000}"
-  iplist "%s: http://$(tput setf 3)%s$(tput sgr0):$port/"
-  python -m SimpleHTTPServer "$port" > /dev/null
-}
-
 # print short wikipedia lookup
 wiki() {
     dig +short txt "`echo $@`".wp.dg.cx \
