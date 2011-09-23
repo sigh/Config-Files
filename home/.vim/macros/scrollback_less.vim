@@ -26,7 +26,7 @@ set nolist
 set paste mouse=nicr
 
 function FoldLevel(line)
-  if getline(a:line) =~ '^\[\d\d:\d\d\] \[\d\+\] dilshan@\w\+:'
+  if getline(a:line) =~ '^\[\d\d:\d\d\] \[\d\+\] dilshan@[^:]\+:'
     return '>1'
   else
     return '1'
@@ -60,7 +60,7 @@ set background=light
 hi clear
 syntax reset
 hi Comment ctermfg=2
-syn match command '^\[\d\d:\d\d\] \[\d\d*\] dilshan@\w\w*:.*\n\d\d* \$'
+syn match command '^\[\d\d:\d\d\] \[\d\+\] dilshan@[^:]\+:.*\n\d\+ \$'
 hi link command Comment
 hi Folded term=standout ctermfg=4 ctermbg=8
 hi FoldColumn term=standout ctermfg=4 ctermbg=7
