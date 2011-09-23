@@ -34,10 +34,22 @@ function FoldLevel(line)
 endfunction
 
 function DiffFoldText()
+  " The timestamp on the command line.
   let l:time = split(getline(v:foldstart))[0]
+
+  " The command name.
   let l:linetext = getline(v:foldstart + 1)
-  let l:sizedesc = '(' . (v:foldend - v:foldstart - 1) . ' lines)'
-  return l:time . ' ' . l:linetext . ' ' . l:sizedesc
+
+  " The number of lines in the command output.
+  let l:numlines = v:foldend - v:foldstart - 1
+
+  " If the command name is fg then the real command will be printed next line.
+  if l:linetext =~ '^\d\+ \$ \s*fg\>'
+    let l:linetext = substitute(l:linetext, 'fg.*', 'fg: ' . getline(v:foldstart + 2), '')
+    let l:numlines -= 1
+  endif
+
+  return l:time . ' ' . l:linetext . ' (' . l:numlines . ' lines)'
 endfunction
 
 " define folds
