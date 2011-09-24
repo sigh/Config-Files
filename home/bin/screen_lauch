@@ -3,16 +3,16 @@
 from __future__ import print_function
 
 import argparse
-import getopt
+import re
 import os
 import subprocess
-import sys
 
 DEFAULT_SESSION_NAME = '_'
+LIST_RE = '\t(\d+)\.([^\t]+)\t\((At|De)tached\)'
 
 def run_screen(session_name = None,
                reattach = False,
-               fork = False,
+               child = False,
                window = None):
 
     if session_name is None:
@@ -27,10 +27,30 @@ def run_screen(session_name = None,
         args.extend(['-D', '-R'])
     args.append(session_name)
 
-    if fork:
+    if child:
         subprocess.call(args)
     else:
         os.execvp(args[0], args)
+
+def get_screen_list():
+    process = subprocess.Popen(['screen', '-ls'], stdout=subprocess.PIPE)
+    stdout, stderr = process.communicate()
+
+    screens = []
+    for line in stdout.split("\n"):
+        result = re.match(LIST_RE, line)
+        if result:
+            screens.append({
+                'pid': result.group(1),
+                'name': result.group(2),
+                'attached': result.group(3) == 'At',
+            })
+    return screens
+
+def print_screen_list(screens):
+    for screen in screens:
+        print('*' if screen['attached'] else ' ',
+              '%(pid)s.%(name)s' % screen)
 
 def main():
     parser = argparse.ArgumentParser(description = 'Launch screen')
@@ -39,19 +59,30 @@ def main():
         action = 'store_false',
         help = "Reattach session (don't close existing sessions)")
     parser.add_argument(
-        '--fork', '-f',
+        '--child', '-c',
         action = 'store_false',
-        help = "Fork screen, don't exec")
+        help = "Create as child process, don't exec")
     parser.add_argument(
         '--window', '-p',
-        help = "Open to given window")
+        help = 'Open to given window')
+    parser.add_argument(
+        '--list', '-l',
+        action = 'store_true',
+        help = 'List current screens')
     parser.add_argument(
         'session_name',
         type = str,
         nargs = '?',
         help = 'Name of the session')
 
-    run_screen(**vars(parser.parse_args()))
+    args = parser.parse_args()
+
+    if (args.list):
+        screens = get_screen_list()
+        print_screen_list(screens)
+        return
+
+    run_screen(**vars(args))
 
 if __name__ == '__main__':
     main()
