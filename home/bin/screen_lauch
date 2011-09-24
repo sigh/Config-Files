@@ -47,6 +47,11 @@ def get_screen_list():
             })
     return screens
 
+def filter_screens(screens, session_name):
+    return [s for s in screens if
+            s['name'].startswith(session_name) or
+            (s['pid']  + '.' + s['name']).startswith(session_name)]
+
 def print_screen_list(screens):
     for screen in screens:
         print('*' if screen['attached'] else ' ',
@@ -79,6 +84,8 @@ def main():
 
     if (args.list):
         screens = get_screen_list()
+        if args.session_name:
+            screens = filter_screens(screens, args.session_name)
         print_screen_list(screens)
         return
 
