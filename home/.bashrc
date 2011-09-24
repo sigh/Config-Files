@@ -269,13 +269,7 @@ s() { screen_wrapper "$@"; }
 
 # completion for screen_wrapper
 _screen_wrapper() {
-    local cur=${COMP_WORDS[COMP_CWORD]}
-
-    if [[ -n $cur ]]; then
-        COMPREPLY=( $( screen_wrapper --complete "$cur" ) )
-    else
-        COMPREPLY=( $( screen_wrapper --complete ) )
-    fi
+    COMPREPLY=( $( screen_wrapper --complete "${COMP_WORDS[COMP_CWORD]}" ) )
 }
 
 complete -F _screen_wrapper screen_wrapper

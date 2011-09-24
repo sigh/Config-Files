@@ -52,10 +52,13 @@ class Screen(object):
 class ScreenPrompt(cmd.Cmd):
     def __init__(self, all_screens, initial_session):
         cmd.Cmd.__init__(self)
-        self.intro = (
-            'All current screens: \n' +
-            get_screen_list_string(all_screens) +
-            '\n')
+        if all_screens:
+            self.intro = (
+                'All current screens: \n' +
+                get_screen_list_string(all_screens) +
+                '\n')
+        else:
+            self.intro = 'No current screens\n\n'
         self.prompt = '> '
         self.screens = all_screens
         self.response = None
