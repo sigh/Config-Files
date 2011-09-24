@@ -1,23 +1,52 @@
 #!/usr/bin/python
 
+# A wrapper for screen
+#
+# usage: screen_launch [-h] [--reattach] [--child] [--window WINDOW] [--list]
+#                      [--complete]
+#                      [session]
+#
+# positional arguments:
+#   session               The session to load. Can be identified by name, pid,
+#                         name.pid, pid.name or any unique prefix of previous
+#                         options
+#
+# optional arguments:
+#   -h, --help            show this help message and exit
+#   --reattach, -r        Reattach session (don't close existing sessions)
+#   --child, -c           Create as child process, don't exec
+#   --window WINDOW, -p WINDOW
+#                         Open to given window
+#   --list, -l            List current screens
+#   --complete            List completions for current screens
+
 from __future__ import print_function
 
 import argparse
 import re
 import os
 import subprocess
+import sys
+import collections
 
 DEFAULT_SESSION_NAME = '_'
 LIST_RE = '\t(\d+)\.([^\t]+)\t\((At|De)tached\)'
+BLUE = '\033[94m'
+NOCOLOR = '\033[0m'
 
-def run_screen(session_name = None,
+class Screen(object):
+    def __init__(self, name = None, pid = None, attached=False):
+        self.name = name
+        self.pid = pid
+        self.attached = attached
+
+    def __str__(self):
+        return '%s.%s' % (self.pid, self.name)
+
+def run_screen(screen,
                reattach = False,
                child = False,
                window = None):
-
-    if session_name is None:
-        session_name = DEFAULT_SESSION_NAME
-
     args = ['screen']
     if window is not None:
         args.extend(['-p', window])
@@ -25,12 +54,44 @@ def run_screen(session_name = None,
         args.extend(['-x', '-S'])
     else:
         args.extend(['-D', '-R'])
-    args.append(session_name)
+    args.append(str(screen))
 
     if child:
         subprocess.call(args)
     else:
         os.execvp(args[0], args)
+
+def find_screen_to_load(screens, session):
+    if not screens:
+        return None
+    if len(screens) == 1:
+        return screens[0]
+
+    exact_name = []
+    exact_pid = []
+    for screen in screens:
+        if screen.name == session:
+            exact_name.append(screen)
+        elif screen.pid == session:
+            exact_pid.append(screen)
+
+    if len(exact_name) == 1:
+        return exact_name[0]
+    elif len(exact_pid) == 1:
+        return exact_pid[0]
+
+    return None
+
+def filtered_screen_list(session):
+    return filter_screens(get_screen_list(), session)
+
+def filter_screens(screens, session):
+    if not session:
+        return screens
+    return [s for s in screens if
+            s.name.startswith(session) or
+            (s.pid  + '.' + s.name).startswith(session) or
+            (s.name  + '.' + s.pid).startswith(session)]
 
 def get_screen_list():
     process = subprocess.Popen(['screen', '-ls'], stdout=subprocess.PIPE)
@@ -40,32 +101,43 @@ def get_screen_list():
     for line in stdout.split("\n"):
         result = re.match(LIST_RE, line)
         if result:
-            screens.append({
-                'pid': result.group(1),
-                'name': result.group(2),
-                'attached': result.group(3) == 'At',
-            })
+            screens.append(Screen(
+                pid = result.group(1),
+                name = result.group(2),
+                attached = result.group(3) == 'At',
+            ))
     return screens
 
-def filter_screens(screens, session_name):
-    return [s for s in screens if
-            s['name'].startswith(session_name) or
-            (s['pid']  + '.' + s['name']).startswith(session_name)]
-
-def print_screen_list(screens):
+def print_screen_list(screens, file = sys.stdout):
     for screen in screens:
-        print('*' if screen['attached'] else ' ',
-              '%(pid)s.%(name)s' % screen)
+        print('*' if screen.attached else ' ',
+              '%s%s%s.%s' % (
+                  BLUE,
+                  screen.name,
+                  NOCOLOR,
+                  screen.pid,
+              ), file = file)
+
+def print_screen_completions(screens, session):
+    by_name = collections.defaultdict(list)
+    for screen in screens:
+        by_name[screen.name].append(screen.pid)
+    for name, pids in by_name.items():
+        if len(pids) == 1 and screen.name.startswith(session):
+            print(name)
+        else:
+            for pid in pids:
+                print('%s.%s' %(name, pid))
 
 def main():
-    parser = argparse.ArgumentParser(description = 'Launch screen')
+    parser = argparse.ArgumentParser(description = 'A wrapper for screen')
     parser.add_argument(
         '--reattach', '-r',
-        action = 'store_false',
+        action = 'store_true',
         help = "Reattach session (don't close existing sessions)")
     parser.add_argument(
         '--child', '-c',
-        action = 'store_false',
+        action = 'store_true',
         help = "Create as child process, don't exec")
     parser.add_argument(
         '--window', '-p',
@@ -75,21 +147,47 @@ def main():
         action = 'store_true',
         help = 'List current screens')
     parser.add_argument(
-        'session_name',
+        '--complete',
+        action = 'store_true',
+        help = 'List completions for current screens')
+    parser.add_argument(
+        'session',
         type = str,
         nargs = '?',
-        help = 'Name of the session')
+        default = '',
+        help = 'The session to load. Can be identified by ' +
+               'name, pid, name.pid, pid.name or any unique ' +
+               'prefix of previous options')
 
     args = parser.parse_args()
 
+    # list of screens which match the session argument
+    screens = filtered_screen_list(args.session)
+
     if (args.list):
-        screens = get_screen_list()
-        if args.session_name:
-            screens = filter_screens(screens, args.session_name)
         print_screen_list(screens)
         return
+    if (args.complete):
+        print_screen_completions(screens, args.session)
+        return
 
-    run_screen(**vars(args))
+    screen = None
+    if not screens and not args.reattach:
+        # If there are no matching screens then create a new one.
+        # (It doesn't make sense to reattach to a screen which doesn't exist).
+        screen = args.session or DEFAULT_SESSION_NAME
+    else:
+        # Otherwise figure out which screen to load.
+        screen = find_screen_to_load(screens, args.session)
+        if not screen:
+            print('There are %d matching screens' % len(screens), file = sys.stderr)
+            print_screen_list(screens, file = sys.stderr)
+            sys.exit(2)
+
+    run_screen(screen,
+               child = args.child,
+               reattach = args.reattach,
+               window = args.window)
 
 if __name__ == '__main__':
     main()
