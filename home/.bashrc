@@ -264,102 +264,29 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 
 # screen commands
 
-# ensure screendir is populated with the directory
-#   that screen is actually using
-SCREENDIR="$(screen -ls | tail -2 | sed -ne 's/^.* in \(\S\+\).$/\1/p')"
+# I use screen_wrapper a lot
+s() { screen_wrapper "$@"; }
 
-# easy way to list screens
-#   (and no risk of starting a new screen if we make a typo)
-screens() { screen -ls ; }
+# completion for screen_wrapper
+_screen_wrapper() {
+    local cur=${COMP_WORDS[COMP_CWORD]}
 
-if [[ -z "$STY" ]] ; then
-    # commands for outside screen
+    if [[ -n $cur ]]; then
+        COMPREPLY=( $( screen_wrapper --complete "$cur" ) )
+    else
+        COMPREPLY=( $( screen_wrapper --complete ) )
+    fi
+}
 
-    # _attach-helper "-a1 -a2 ..." -b1 -b2 ... [session_name]
-    # Will call: screen -b1 -b2 ... -a1 -a2 ... session_name
-    # If no session name is given then the default will be used.
-    _attach-helper() {
-        local session_name first_args last_args
+complete -F _screen_wrapper screen_wrapper
+complete -F _screen_wrapper s
 
-        # determine the session name if user gave one, otherwise use the
-        # default session name (_).
-        if [[ ${!#} =~ ^- ]]; then
-            session_name="_"
-        else
-            session_name="${!#}"
-        fi
-
-        # last args (given by attach function).
-        last_args="$1"
-        shift
-
-        # first arguments (given by user).
-        first_args=()
-        while [[ $1 =~ ^- ]] ; do
-            first_args=("${first_args[@]}" "$1")
-            shift
-        done
-
-        # last_args is intentionally unquoted
-        screen "${first_args[@]}" $last_args "$session_name"
-    }
-
-    # attach to an existing screen session or create one if it doesn't exist
-    attach() {
-        _attach-helper "-D -R" "$@"
-    }
-
-    # attach to an existing screen session or create one if it doesn't exist
-    attach-again() {
-        _attach-helper "-x -S" "$@"
-    }
-
-    # completion for attach* commands
-    _attach() {
-        # attach only takes one argument, so don't complete any more
-        if [[ $COMP_CWORD -ne 1 ]] ; then
-            return
-        fi
-
-        local cur=${COMP_WORDS[COMP_CWORD]}
-
-        if [[ -n "$cur" ]]; then
-            # if the user has already started typing then show all matches
-            #   (both long and short names)
-            COMPREPLY=( \
-                $( command screen -ls | \
-                    sed -ne 's|^['$'\t'']\+\('$cur'[0-9]\+\.[^'$'\t'']\+\).*$|\1|p' ) \
-                $( command screen -ls | \
-                    sed -ne 's|^['$'\t'']\+[0-9]\+\.\('$cur'[^'$'\t'']\+\).*$|\1|p' | \
-                    sort | uniq -u ) )
-        else
-            # otherwise we don't want to show duplicate matches and stuff
-            COMPREPLY=( $( command screen -ls | \
-                sed -ne 's|^['$'\t'']\+\([0-9]\+\.[^'$'\t'']\+\).*$|\1|p' | \
-                perl -e '
-                    my @names = <STDIN>; my %counts;
-                    map { my $n=$_; $n=~s/^[0-9]+\.//; $counts{$n}+=1 } @names;
-                    while (my($value,$count) = each(%counts)) {
-                        if ( $count == 1 ) {
-                            # name is unique, so use short name
-                            print "$value\n";
-                        } else {
-                            # name is not unique so show all matching full names
-                            print "$_\n" foreach grep { /^[0-9]+\.$value$/ } @names;
-                        }
-                    }
-                ' ) )
-        fi
-    }
-
-    complete -F _attach attach
-    complete -F _attach attach-again
-
-    # I use attach a lot
-    a() { attach "$@"; }
-    complete -F _attach a
-else
+if [[ -n $STY ]] ; then
     # commands for use inside screen
+
+    # ensure screendir is populated with the directory
+    #   that screen is actually using
+    SCREENDIR="$(screen -ls | tail -2 | sed -ne 's/^.* in \(\S\+\).$/\1/p')"
 
     # fix the STY variable which gets messed up if we change the session name
     sty-fix() {
@@ -431,6 +358,8 @@ else
     # change the directory we start in if it has been specified
     if [[ -n $SCREEN_SHELLDIR && ! $_ALREADY_LOADED ]]; then
         cd "$SCREEN_SHELLDIR"
+        # clear the directory stack so that only the current directory is there.
+        dirs -c
     fi
 fi
 
