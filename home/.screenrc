@@ -55,4 +55,4 @@ bind d  # detach
 # I still want to be able to kill (just make it harder to do accidentally).
 bind K kill
 # I still want to be able to detach.
-bind d pow_detach
+bind D detach
