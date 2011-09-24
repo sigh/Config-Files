@@ -2,14 +2,15 @@
 
 # A wrapper for screen
 #
-# usage: screen_wrapper [-h] [--reattach] [--child] [--window WINDOW] [--list]
-#                       [--complete]
+# usage: screen_wrapper [-h] [--reattach] [--child] [--window WINDOW] [--ask]
+#                       [--list] [--complete]
 #                       [session]
 #
 # positional arguments:
 #   session               The session to load. Can be identified by name, pid,
 #                         name.pid, pid.name or any unique prefix of previous
-#                         options
+#                         options. A "!" suffix forces the creation of a new
+#                         screen
 #
 # optional arguments:
 #   -h, --help            show this help message and exit
@@ -17,6 +18,7 @@
 #   --child, -c           Create as child process, don't exec
 #   --window WINDOW, -p WINDOW
 #                         Open to given window
+#   --ask, -a             Ask which screen to open even there is only one match
 #   --list, -l            List current screens
 #   --complete            List completions for current screens
 
@@ -27,6 +29,7 @@ import cmd
 import collections
 import re
 import sys
+import subprocess
 
 DEFAULT_SESSION_NAME = '_'
 LIST_RE = '\t(\d+)\.([^\t]+)\t\((At|De)tached\)'
@@ -34,13 +37,17 @@ BLUE = '\033[94m'
 NOCOLOR = '\033[0m'
 
 class Screen(object):
-    def __init__(self, name = None, pid = None, attached=False):
+    # A screen object with no pid means create a new screen.
+    def __init__(self, name, pid = None, attached=False):
         self.name = name
         self.pid = pid
         self.attached = attached
 
     def __str__(self):
-        return '%s.%s' % (self.pid, self.name)
+        if self.pid:
+            return '%s.%s' % (self.pid, self.name)
+        else:
+            return self.name
 
 class ScreenPrompt(cmd.Cmd):
     def __init__(self, all_screens, initial_session):
@@ -99,7 +106,7 @@ def run_screen(screen,
     args = ['screen']
     if window is not None:
         args.extend(['-p', window])
-    if type(screen) == str:
+    if screen.pid is None:
         # force creation of a new screen
         args.extend(['-S'])
     elif reattach:
@@ -108,7 +115,6 @@ def run_screen(screen,
         args.extend(['-D', '-R'])
     args.append(str(screen))
 
-    import subprocess
     import os
     if child:
         subprocess.call(args)
@@ -118,10 +124,10 @@ def run_screen(screen,
 def find_screen_to_load(all_screens, session, default = None):
     if session.endswith('!') and session != '!':
         # exclamation mark forces a new screen to open
-        return session[:-1]
+        return Screen(session[:-1])
     screens = filter_screens(all_screens, session)
     if not screens:
-        return session or default
+        return Screen(session or default)
     if len(screens) == 1:
         return screens[0]
 
@@ -221,7 +227,8 @@ def main():
         default = '',
         help = 'The session to load. Can be identified by ' +
                'name, pid, name.pid, pid.name or any unique ' +
-               'prefix of previous options')
+               'prefix of previous options. A "!" suffix forces ' +
+               'the creation of a new screen')
 
     args = parser.parse_args()
 
