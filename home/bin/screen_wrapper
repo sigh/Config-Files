@@ -2,9 +2,9 @@
 
 # A wrapper for screen
 #
-# usage: screen_launch [-h] [--reattach] [--child] [--window WINDOW] [--list]
-#                      [--complete]
-#                      [session]
+# usage: screen_wrapper [-h] [--reattach] [--child] [--window WINDOW] [--list]
+#                       [--complete]
+#                       [session]
 #
 # positional arguments:
 #   session               The session to load. Can be identified by name, pid,
