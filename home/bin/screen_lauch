@@ -1,0 +1,60 @@
+#!/usr/bin/python
+
+from __future__ import print_function
+
+import getopt
+import os
+import subprocess
+import sys
+
+DEFAULT_SESSION_NAME = '_'
+
+def run_screen(user_args, session_name = None, reattach = False, noexec = False):
+    if session_name is None:
+        session_name = DEFAULT_SESSION_NAME
+
+    args = ['screen']
+    args.extend(user_args)
+    if reattach:
+        args.extend(['-x', '-S'])
+    else:
+        args.extend(['-D', '-R'])
+    args.append(session_name)
+
+    if noexec:
+        subprocess.call(args)
+    else:
+        os.execvp(args[0], args)
+
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'rn',
+            ['reattach', 'noexec'])
+    except getopt.GetoptError, err:
+        print(str(err), file=sys.stderr) # will print something like "option -a not recognized"
+        usage_and_exit()
+
+    reattach = False
+    noexec = False
+
+    for o, a in opts:
+        if o in ('-r', '--reattach'):
+            reattach = True
+        elif o in ('-n', '--noexec'):
+            noexec = True
+        else:
+            assert False, 'unhandled option'
+
+    session_name = None
+    if args and not args[-1].startswith('-'):
+        session_name = args.pop()
+    run_screen(args,
+               session_name = session_name,
+               reattach = reattach,
+               noexec = noexec)
+
+def usage_and_exit():
+    sys.exit(2)
+
+if __name__ == '__main__':
+    main()
