@@ -35,14 +35,19 @@ stty -ixon
 stty -ctlecho
 
 # allow me to use arrow keys to select items.
-zstyle ':completion:*' menu select
-# make matching case insensitive and to substring matching as last resort.
+zstyle ':completion:*' menu yes select
+# case-insensitive, partial-word and then substring completion
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' \
        'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
+# fuzzy matching of completions
+# zstyle ':completion:*' completer _complete _match _approximate
+# zstyle ':completion:*:match:*' original only
+# zstyle ':completion:*:approximate:*' max-errors 1 numeric
+
 # tab completion
 autoload -U compinit && compinit
-autoload bashcompinit && bashcompinit
+autoload -U bashcompinit && bashcompinit
 source ~/.git-completion.bash
 
 # Completion is done from both ends.
@@ -61,6 +66,17 @@ zle-line-finish() {
     fi
 }
 zle -N zle-line-finish
+
+# Other global aliases
+alias -g C='| wc -l'
+alias -g L='| less'
+alias -g V='| vimless'
+alias -g NO="&> /dev/null"
+alias -g NE="2> /dev/null"
+alias -g NS="> /dev/null"
+alias -g G='| egrep --color=always'
+alias -g GI='| egrep -i --color=always'
+alias -g H='| head'
 
 # history
 export HISTFILE="$HOME/._zsh_history"
@@ -96,6 +112,8 @@ bindkey "\e[1;9D" backward-kill-word
 
 # directory colors
 eval $(dircolors -b)
+# Comandline completion has colors
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 alias ls="ls --color=tty -hF"
 alias ll="ls -l"
 alias lt="ll -t"
@@ -103,7 +121,8 @@ alias la="ls -A"
 alias lla="ll -A"
 l.()  { ls  -d "$@" .* ; }
 lth() { lla -t "$@" | head ; }
-lsd() { ls     "$@" | grep '/$' ; }
+# TODO: allow lsd to take directory argument.
+lsd() { command ls --color=tty -hd "$@" */ }
 
 # make sure we don't leave accidentally
 IGNOREEOF=1
@@ -128,6 +147,9 @@ bindkey "^D" bash-ctrl-d
 # allow comments in the shell
 setopt interactive_comments
 
+# fancy mv
+autoload -U zmv
+
 # customise cd
 
 # If a command is issued that can’t be executed as a normal command, and the
@@ -144,10 +166,21 @@ setopt correct
 # case insensitive globbing
 setopt no_case_glob
 
-alias ...="cd ../.."
 alias d="dirs -v"
 mcd() { mkdir -p "$@" && cd "${@:$#}" ; }
-# TODO: command line completion for mcd
+compdef _cd mcd
+
+# strings of dots are expanded to parents
+# TODO: Is there a way to make this display the target directory as a side effect?
+rationalise-dot() {
+  if [[ $LBUFFER = *.. ]]; then
+    LBUFFER+=/..
+  else
+    LBUFFER+=.
+  fi
+}
+zle -N rationalise-dot
+bindkey . rationalise-dot
 
 # TODO: fg completion
 
@@ -161,6 +194,8 @@ setopt auto_resume
 setopt long_list_jobs
 # Report the status of background jobs immediately. (Trial only).
 setopt notify
+# Report non-zero exit value
+setopt print_exit_value
 
 # empty input redirection goes to less
 export READNULLCMD="less -Ri"
@@ -212,6 +247,12 @@ extract()
      fi
 }
 # TODO: completion for extract
+
+# open man page as a PDF in preview
+if [[ -d /Applications/Preview.app ]] ; then
+    pman() { command man -t "$@" | open -f -a /Applications/Preview.app; }
+    compdef _man pman
+fi
 
 alias du="du -hc --max-depth=1"
 alias dus="command du -hs"
