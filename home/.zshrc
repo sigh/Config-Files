@@ -37,7 +37,7 @@ stty -ctlecho
 # allow me to use arrow keys to select items.
 zstyle ':completion:*' menu yes select
 # case-insensitive, partial-word and then substring completion
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' \
+zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
        'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
 # fuzzy matching of completions
@@ -175,6 +175,9 @@ compdef _cd mcd
 rationalise-dot() {
   if [[ $LBUFFER = *.. ]]; then
     LBUFFER+=/..
+    # Make this work in a more robust way
+    # PREDISPLAY="${LBUFFER% *} $(cd ${LBUFFER##* } 2> /dev/null && pwd)"$'\n'"$HISTCMD \$ "
+    # region_highlight=("P0 ${#PREDISPLAY} fg=blue")
   else
     LBUFFER+=.
   fi
@@ -278,8 +281,10 @@ g.() {
 
 # I use screen_wrapper a lot
 alias s=screen_wrapper
-
-# TODO: completion for screen_wrapper
+_screen_wrapper() {
+    compadd - $( screen_wrapper --complete "$words[$CURRENT]" )
+}
+compdef _screen_wrapper screen_wrapper
 
 if [[ -n $STY ]] ; then
     # commands for use inside screen
