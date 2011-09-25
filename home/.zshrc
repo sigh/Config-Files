@@ -23,7 +23,7 @@ _dir_ps1() {
     fi
     echo "$dir"
 }
-PS1=$'%F{blue}[%T] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h $ %f'
+PS1=$'%F{blue}[%T] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
 PS2=$'%F{blue}> %f'
 PS4=$'%F{blue}+%N:%i> %f'
 export GIT_PS1_SHOWDIRTYSTATE=true
