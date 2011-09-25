@@ -296,6 +296,21 @@ if [[ -n $STY ]] ; then
     fi
 fi
 
-# let us know that this has been loaded so that we can prevent somethings from
-# loading twice.
-readonly _ALREADY_LOADED=1
+# reload the bashrc for the current shell
+reload() { . ~/.zshrc }
+# use SIGCONT because it is does not terminate bash by default
+trap reload CONT
+
+if [[ -z $_ALREADY_LOADED ]] ; then
+    cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL STY=$STY ZSH_VERSION=$ZSH_VERSION" >> ~/._full_zsh_history
+    # let us know that this has been loaded so that we can prevent somethings from
+    # loading twice.
+    readonly _ALREADY_LOADED=1
+    _FULL_HIST_LINENO=1
+fi
+chmod 600 ~/._full_zsh_history
+
+preexec() {
+    awk -v prefix="$$ $_FULL_HIST_LINENO $(date +%FT%T) $PWD \$" "{ print prefix, \$0 }" <<<"$1" >> ~/._full_zsh_history
+    _FULL_HIST_LINENO=$((_FULL_HIST_LINENO + 1))
+}
