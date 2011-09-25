@@ -9,8 +9,9 @@
 
 echo -n 'Reloading '
 ps xwwo pid,command | while read pid command; do
-    if echo $command | egrep -- "^-bash$" >/dev/null; then
-        if [[ $pid != $$ ]]; then
+    if egrep -- "^-(bash|zsh)$" <<<"$command" >/dev/null; then
+        # $PPID is required because we are in a subshell because of the pipe
+        if [[ $pid != $PPID ]]; then
             echo -n $pid ''
             kill -CONT $pid
         fi
