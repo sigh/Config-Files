@@ -7,6 +7,11 @@ export PATH=/opt/local/libexec/gnubin:$PATH
 # put our bin folder in the path
 export PATH="${PATH}:$HOME/bin"
 
+# warn me if I create globals in a function
+setopt warn_create_global
+
+# Set up prompt
+
 # TODO: Fix colors once we are ready to switch.
 setopt prompt_subst
 PS1=$'%F{blue}[%T] [%j] %n@%m:%d$(__git_ps1)\n%h $ %f'
@@ -135,3 +140,69 @@ setopt notify
 export READNULLCMD="less -Ri"
 # Report timing stats for any command longer than 10 seconds
 export REPORTTIME=10
+
+# config for python interactive shell
+export PYTHONSTARTUP="$HOME/.pystartup"
+
+# editor setup
+export EDITOR=vim
+alias vi=vim
+alias v=vim
+# TOOD: Ensure command line completion work correctly for v and vi
+
+alias vless=vimless
+
+# unmount an OSX volume
+unmount() {
+    diskutil unmount "/Volumes/$1"
+}
+# TODO: completion for unmount
+
+alias e=echo
+# make less display colors
+alias less="less -Ri"
+alias g=git
+
+# Handy Extract Program.
+extract()
+{
+     if [[ -f $1 ]] ; then
+         case "$1" in
+             *.tar.bz2)   tar xvjf "$1"     ;;
+             *.tar.gz)    tar xvzf "$1"     ;;
+             *.bz2)       bunzip2 "$1"      ;;
+             *.rar)       7za x "$1"        ;;
+             *.gz)        gunzip "$1"       ;;
+             *.tar)       tar xvf "$1"      ;;
+             *.tbz2)      tar xvjf "$1"     ;;
+             *.tgz)       tar xvzf "$1"     ;;
+             *.zip)       unzip "$1"        ;;
+             *.Z)         uncompress "$1"   ;;
+             *.7z)        7za x "$1"         ;;
+             *)           echo "'$1' cannot be extracted via >extract<" 1>&2 ;;
+         esac
+     else
+         echo "'$1' is not a valid file" 1>&2
+     fi
+}
+# TODO: completion for extract
+
+alias du="du -hc --max-depth=1"
+alias dus="command du -hs"
+
+# display full paths
+realpath() { readlink --verbose -e "${1:-.}" ; }
+alias rp=realpath
+
+# colorize search results for grep
+alias zgr="zgrep -e --color=always"
+alias zgi="zgrep -ei --color=always"
+alias gr="egrep --color=always"
+alias gi="egrep -i --color=always"
+gh() { gi "$@" "$HISTFILE" }
+
+# Grep all files in the current directory recursively
+#   ignoring any files and folders that start with a .
+g.() {
+    find . -name '.?*' -prune -o -exec egrep --color=always -H "$@" {} \; 2> /dev/null
+}
