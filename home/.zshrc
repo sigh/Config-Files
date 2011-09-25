@@ -34,18 +34,33 @@ stty -ixon
 # don't echo control characters (in particular don't echo ^C on the command line).
 stty -ctlecho
 
+# allow me to use arrow keys to select items.
+zstyle ':completion:*' menu select
+# make matching case insensitive and to substring matching as last resort.
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' \
+       'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
 # tab completion
 autoload -U compinit && compinit
 autoload bashcompinit && bashcompinit
 source ~/.git-completion.bash
 
-# allow me to use arrow keys to select items.
-zstyle ':completion:*' menu select
-
 # Completion is done from both ends.
 setopt complete_in_word
 # Show the type of each file with a trailing identifying mark.
 setopt list_types
+
+# If the line ends in Q then quote all the words in the line
+zle-line-finish() {
+    if [[ $BUFFER =~ '.* Q$' ]] ; then
+        local result
+        for word in $(echo ${BUFFER%Q}) ; do
+            result="$result ${(q)word}"
+        done
+        BUFFER="${result# }"
+    fi
+}
+zle -N zle-line-finish
 
 # history
 export HISTFILE="$HOME/._zsh_history"
@@ -126,6 +141,8 @@ setopt pushd_ignore_dups
 setopt cdable_vars
 # Allow for correction of inaccurate commands
 setopt correct
+# case insensitive globbing
+setopt no_case_glob
 
 alias ...="cd ../.."
 alias d="dirs -v"
