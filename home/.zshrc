@@ -35,7 +35,7 @@ stty -ixon
 stty -ctlecho
 
 # allow me to use arrow keys to select items.
-zstyle ':completion:*' menu yes select
+zstyle ':completion:*' menu select
 # case-insensitive, partial-word and then substring completion
 zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
        'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
@@ -99,6 +99,8 @@ bindkey "^[[B" history-beginning-search-forward
 bindkey ' ' magic-space
 bindkey '\e#' pound-insert
 bindkey -s "\C-q" "\e#!!:s/#//:x \n"
+bindkey -s "\C-s" "\C-a\e[1;5C"
+bindkey "\e[Z" reverse-menu-complete # Shift-tab
 
 # move with control
 bindkey "\e[1;5C" forward-word
