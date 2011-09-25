@@ -8,9 +8,11 @@ export PATH=/opt/local/libexec/gnubin:$PATH
 export PATH="${PATH}:$HOME/bin"
 
 # TODO: Fix colors once we are ready to switch.
-PS1=$'%F{blue}[%T] [%j] %n@%m:%d\n%h $ %f'
+setopt prompt_subst
+PS1=$'%F{blue}[%T] [%j] %n@%m:%d$(__git_ps1)\n%h $ %f'
 PS2=$'%F{blue}> %f'
 PS4=$'%F{blue}+%N:%i> %f'
+export GIT_PS1_SHOWDIRTYSTATE=true
 
 # disable flow control (C-s, C-r)
 stty -ixon
@@ -20,6 +22,8 @@ stty -ctlecho
 
 # tab completion
 autoload -U compinit && compinit
+autoload bashcompinit && bashcompinit
+source ~/.git-completion.bash
 
 # allow me to use arrow keys to select items.
 zstyle ':completion:*' menu select
