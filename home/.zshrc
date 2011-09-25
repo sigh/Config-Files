@@ -1,3 +1,5 @@
+# TODO: move this into profile and make profile smart enough to deal with it.
+#       I can source profile from here then.
 # MacPorts Installer addition on 2011-08-26_at_21:21:54: adding an appropriate PATH variable for use with MacPorts.
 export PATH=/opt/local/bin:/opt/local/sbin:$PATH
 # Ensure GNU tools are used by default
@@ -5,6 +7,7 @@ export PATH=/opt/local/libexec/gnubin:$PATH
 # put our bin folder in the path
 export PATH="${PATH}:$HOME/bin"
 
+# TODO: Fix colors once we are ready to switch.
 PS1=$'%F{blue}[%T] [%j] %n@%m:%d\n%h $ %f'
 PS2=$'%F{blue}> %f'
 PS4=$'%F{blue}+%N:%i> %f'
@@ -29,7 +32,7 @@ setopt list_types
 # history
 export HISTFILE=~/.zsh_history
 export HISTSIZE=100000
-export SAVEHIST=100000
+export SAVEHIST=10000
 setopt append_history
 setopt bang_hist
 setopt extended_history
@@ -60,6 +63,14 @@ bindkey "\e[1;9D" backward-kill-word
 
 # directory colors
 eval $(dircolors -b)
+alias ls="ls --color=tty -hF"
+alias ll="ls -l"
+alias lt="ll -t"
+alias la="ls -A"
+alias lla="ll -A"
+l.()  { ls  -d "$@" .* ; }
+lth() { lla -t "$@" | head ; }
+lsd() { ls     "$@" | grep '/$' ; }
 
 # make sure we don't leave accidentally
 IGNOREEOF=1
@@ -93,8 +104,30 @@ setopt auto_cd
 setopt auto_pushd
 # Don’t push multiple copies of the same directory onto the directory stack. 
 setopt pushd_ignore_dups
+# iallow cd to variables
+setopt cdable_vars
+# Allow for correction of inaccurate commands
+setopt correct
+
+alias ...="cd ../.."
+alias d="dirs -v"
+mcd() { mkdir -p "$@" && cd "${@:$#}" ; }
+# TODO: command line completion for mcd
+
+# TODO: fg completion
+
+# Stopped jobs that are removed from the job table with the disown builtin
+# command are automatically sent a CONT signal to make them running.
+setopt auto_continue
+# Treat single word simple commands without redirection as candidates for
+# resumption of an existing job.
+setopt auto_resume
+# jobs -l by default
+setopt long_list_jobs
+# Report the status of background jobs immediately. (Trial only).
+setopt notify
 
 # empty input redirection goes to less
-export READNULLCMD="less -R"
+export READNULLCMD="less -Ri"
 # Report timing stats for any command longer than 10 seconds
 export REPORTTIME=10
