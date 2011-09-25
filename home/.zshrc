@@ -107,11 +107,11 @@ setopt interactive_comments
 # customise cd
 
 # If a command is issued that can’t be executed as a normal command, and the
-# command is the name of a directory, perform the cd command to that directory. 
+# command is the name of a directory, perform the cd command to that directory.
 setopt auto_cd
 # Make cd push the old directory onto the directory stack.
 setopt auto_pushd
-# Don’t push multiple copies of the same directory onto the directory stack. 
+# Don’t push multiple copies of the same directory onto the directory stack.
 setopt pushd_ignore_dups
 # iallow cd to variables
 setopt cdable_vars
@@ -206,3 +206,96 @@ gh() { gi "$@" "$HISTFILE" }
 g.() {
     find . -name '.?*' -prune -o -exec egrep --color=always -H "$@" {} \; 2> /dev/null
 }
+
+# screen commands
+
+# I use screen_wrapper a lot
+alias s=screen_wrapper
+
+# TODO: completion for screen_wrapper
+
+if [[ -n $STY ]] ; then
+    # commands for use inside screen
+
+    # ensure screendir is populated with the directory
+    #   that screen is actually using
+    SCREENDIR="$(screen -ls | tail -2 | sed -ne 's/^.* in \(\S\+\).$/\1/p')"
+
+    # fix the STY variable which gets messed up if we change the session name
+    sty-fix() {
+        export STY="$(basename $SCREENDIR/${STY%%.*}.*)"
+    }
+
+    # ensure that $STY is correct before running any screen commands
+    screen() {
+        sty-fix
+        command screen "$@"
+    }
+
+    # update the status to display the sessionname.
+    # if the displayname is the default sessioname (_) then show the hostname.
+    update-status() {
+        sty-fix
+        local display_name
+        if [[ ${STY#*.} == _ ]] ; then
+            display_name="${HOSTNAME%%.*}"
+        else
+            display_name="${STY#*.}"
+        fi
+        screen -X hardstatus string '%{= kG}'"$display_name"' %{= kW}%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<%{= kW} %='
+    }
+
+    # change the session name
+    sessionname() {
+        screen -X sessionname "$1"
+        update-status
+    }
+
+    # set title for current session
+    #   new title can contain spaces
+    title() {
+        screen -X title "$*"
+    }
+
+    # change the default directory that screens open in
+    #   screen -X chdir doesn't seem to work
+    chdir() {
+        local abs_path=$(cd "${1:-.}" 2> /dev/null && pwd)
+        if [[ -n $abs_path ]] ; then
+            screen -X setenv SCREEN_SHELLDIR "$abs_path"
+        else
+            echo "chdir: $1: No such directory"
+        fi
+    }
+    # TODO: chdir should have the same completion as cd
+
+    # print entire scrollback to stdout
+    scrollback() {
+        (
+            local filename="$(mktemp)"
+            trap "rm -f -- '$filename'" 0
+            trap 'exit 2' 1 2 3 15
+            command screen -X hardcopy -h "$filename"
+            vim -u NONE -c "runtime! macros/scrollback_less.vim" "$filename"
+        )
+    }
+    alias sb=scrollback
+
+    # revert titlebar if screen messes with it
+    printf "\033];$USER@${HOSTNAME%%.*}\007"
+
+    # ensure that the status is up-to-date
+    #   in particular if this the start of the session
+    update-status
+
+    # change the directory we start in if it has been specified
+    if [[ -n $SCREEN_SHELLDIR && -z $_ALREADY_LOADED ]] ; then
+        cd "$SCREEN_SHELLDIR"
+        # clear the directory stack so that only the current directory is there.
+        dirs -c
+    fi
+fi
+
+# let us know that this has been loaded so that we can prevent somethings from
+# loading twice.
+readonly _ALREADY_LOADED=1
