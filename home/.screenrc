@@ -21,10 +21,10 @@ hardstatus      string '%{= kW} %-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<%{= kW} %='
 caption         string '%?%F%{.B.}%?%3n%f %t'
 
 # force new shells to be login shells
-shell			-bash
-shelltitle		bash
+shell			-zsh
+shelltitle		zsh
 
-# Bindings for fast switching to windows 10 to 19. 
+# Bindings for fast switching to windows 10 to 19.
 #   ( C-a - 0 selects window 10 )
 bind -c window 0 select 10
 bind -c window 1 select 11
