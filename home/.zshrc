@@ -48,7 +48,7 @@ setopt complete_in_word
 setopt list_types
 
 # history
-export HISTFILE=~/.zsh_history
+export HISTFILE="$HOME/._zsh_history"
 export HISTSIZE=100000
 export SAVEHIST=10000
 setopt append_history
