@@ -14,7 +14,16 @@ setopt warn_create_global
 
 # TODO: Fix colors once we are ready to switch.
 setopt prompt_subst
-PS1=$'%F{blue}[%T] [%j] %n@%m:%d$(__git_ps1)\n%h $ %f'
+_dir_ps1() {
+    local dir="${PWD/#$HOME/~}"
+    local git_path="$(git rev-parse --show-prefix 2> /dev/null)"
+    if [[ -n $git_path ]] ; then
+        git_path="${git_path%/}"
+        dir="${dir%$git_path}%U$git_path%u"
+    fi
+    echo "$dir"
+}
+PS1=$'%F{blue}[%T] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h $ %f'
 PS2=$'%F{blue}> %f'
 PS4=$'%F{blue}+%N:%i> %f'
 export GIT_PS1_SHOWDIRTYSTATE=true
