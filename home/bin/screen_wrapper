@@ -37,7 +37,7 @@
 
 from __future__ import print_function
 
-import argparse
+import optparse
 import cmd
 import collections
 import re
@@ -284,70 +284,62 @@ def get_screen_completions(screens, session):
     return completions
 
 def main():
-    parser = argparse.ArgumentParser(description = 'A wrapper for screen')
-    parser.add_argument(
+    parser = optparse.OptionParser(description = 'A wrapper for screen')
+    parser.add_option(
         '--reattach', '-r',
         action = 'store_true',
         help = "Reattach session (don't close existing sessions)")
-    parser.add_argument(
+    parser.add_option(
         '--child', '-c',
         action = 'store_true',
         help = "Create as child process, don't exec")
-    parser.add_argument(
+    parser.add_option(
         '--window', '-p',
         help = 'Open to given window')
-    parser.add_argument(
+    parser.add_option(
         '--ask', '-a',
         action = 'store_true',
         help = 'Ask which screen to open even there is only one match')
-    parser.add_argument(
+    parser.add_option(
         '--list', '-l',
         action = 'store_true',
         help = 'List current screens')
-    parser.add_argument(
+    parser.add_option(
         '--complete',
         action = 'store_true',
         help = 'List completions for current screens')
-    parser.add_argument(
-        'session',
-        type = str,
-        nargs = '?',
-        default = '',
-        help = 'The session to load. Can be identified by ' +
-               'name, pid, name.pid, pid.name or any unique ' +
-               'prefix of previous options. A "!" suffix forces ' +
-               'the creation of a new screen')
 
-    args = parser.parse_args()
+    options, args = parser.parse_args()
+    session = args[0] if args else ''
 
     # get all the screens
     all_screens = get_screen_list()
 
     # if we just wanted a list of screens (or completions) do that first
-    if (args.complete):
-        screens = filter_screens(all_screens, args.session)
-        print(' '.join(get_screen_completions(screens, args.session)))
+    if (options.complete):
+        screens = filter_screens(all_screens, session)
+        print(' '.join(get_screen_completions(screens, session)))
         return
-    if (args.list):
-        screens = filter_screens(all_screens, args.session)
+    if (options.list):
+        screens = filter_screens(all_screens, session)
         print(get_screen_list_string(screens))
         return
 
     # Try to find which screen is being asked for
     screen = None
-    if not args.ask:
-        screen = find_screen_to_load(all_screens, args.session, DEFAULT_SESSION_NAME)
+    if not options.ask:
+        screen = find_screen_to_load(all_screens, session, DEFAULT_SESSION_NAME)
     if not screen:
         # Multiple possible screens, ask the user!
-        screen = ScreenPrompt(all_screens, args.session).get_user_response()
+        screen = ScreenPrompt(all_screens, session).get_user_response()
         if not screen:
             print()
             sys.exit(2)
 
     run_screen(screen,
-               child = args.child,
-               reattach = args.reattach,
-               window = args.window)
+               child = options.child,
+               reattach = options.reattach,
+               window = options.window)
 
 if __name__ == '__main__':
     main()
