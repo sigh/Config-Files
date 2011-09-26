@@ -75,13 +75,17 @@ class ScreenPrompt(cmd.Cmd):
         self.response = None
         self.has_default = has_default(all_screens)
         self.screens = all_screens
+        self.prompt = '> '
 
         if initial_session:
             # only show intro when there is some initial text, otherwise all
             # options would be shown anyway.
             self.intro = self.get_intro()
+        else:
+            self.intro = ''
 
-        self.prompt, self.options = self.generate_next_prompt(initial_session)
+        pre_prompt, self.options = self.generate_next_prompt(initial_session)
+        self.intro += pre_prompt
 
         if initial_session:
             # Add initial_session text to the history so that it can be
@@ -128,7 +132,8 @@ class ScreenPrompt(cmd.Cmd):
             return True
 
         # No unique match, try again.
-        self.prompt, self.options = self.generate_next_prompt(line)
+        pre_prompt, self.options = self.generate_next_prompt(line)
+        self.stdout.write(pre_prompt + '\n')
         return False
 
     def completenames(self, text, *ignored):
@@ -178,7 +183,6 @@ class ScreenPrompt(cmd.Cmd):
                 text += ' [default]'
             lines.append(text)
         lines.append('Type ? for help')
-        lines.append('> ')
         return '\n'.join(lines), screens
 
     def get_user_response(self):
