@@ -397,7 +397,7 @@ _status_ps1() {
         echo -n "%(?..  %F{red}[exit %?]\n)"
     fi
 }
-PS1=$'$(_status_ps1)%F{blue}[%T] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
+PS1=$'$(_status_ps1)%F{blue}[%D{%H:%M}] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
 PS2=$'%F{blue}> %f'
 PS4=$'%F{magenta}+%N:%i> %f'
 export GIT_PS1_SHOWDIRTYSTATE=true
