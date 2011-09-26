@@ -1,8 +1,14 @@
 # populate our path properly
 [[ -f ~/.profile ]] && . ~/.profile
 
+# clean up all existing aliases
+unhash -am '*'
+
 # warn me if I create globals in a function
 setopt warn_create_global
+
+# advanced input redirection (no need for tee)
+setopt multios
 
 # Set up prompt
 
@@ -111,6 +117,11 @@ bindkey "\ee" kill-line
 bindkey "\e[1;9C" kill-word
 bindkey "\e[1;9D" backward-kill-word
 
+export WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
+
+# map shift-enter to ^J and then it will allow easy multiline editing.
+bindkey "^J" self-insert
+
 # directory colors
 eval $(dircolors -b)
 # Comandline completion has colors
@@ -196,7 +207,7 @@ setopt auto_resume
 setopt long_list_jobs
 # Report the status of background jobs immediately. (Trial only).
 setopt notify
-# Report non-zero exit value
+# Report non-zero exit value (error status)
 setopt print_exit_value
 
 # empty input redirection goes to less
