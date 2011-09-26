@@ -23,9 +23,9 @@ _dir_ps1() {
     fi
     echo "$dir"
 }
-PS1=$'%F{blue}[%T] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
+PS1=$'%F{blue}[%T] [%j] %n@%m:$(_dir_ps1)$(__git_ps1) %(?..%F{red}[%?]%F{blue} )\n%h %(!.#.$) %f'
 PS2=$'%F{blue}> %f'
-PS4=$'%F{blue}+%N:%i> %f'
+PS4=$'%F{magenta}+%N:%i> %f'
 export GIT_PS1_SHOWDIRTYSTATE=true
 
 # disable flow control (C-s, C-r)
@@ -207,8 +207,6 @@ setopt auto_resume
 setopt long_list_jobs
 # Report the status of background jobs immediately. (Trial only).
 setopt notify
-# Report non-zero exit value (error status)
-setopt print_exit_value
 
 # empty input redirection goes to less
 export READNULLCMD="less -Ri"
