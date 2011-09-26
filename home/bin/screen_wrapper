@@ -45,7 +45,7 @@ import sys
 import subprocess
 
 DEFAULT_SESSION_NAME = '_'
-LIST_RE = '\t(\d+)\.([^\t]+)\t\((At|De)tached\)'
+LIST_RE = '\t(\d+)\.([^\t]+)\t.*\((At|De)tached\)'
 BLUE = '\033[94m'
 NOCOLOR = '\033[0m'
 
