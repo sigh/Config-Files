@@ -10,41 +10,6 @@ setopt warn_create_global
 # advanced input redirection (no need for tee)
 setopt multios
 
-# Set up prompt
-
-# TODO: Fix colors once we are ready to switch.
-setopt prompt_subst
-_dir_ps1() {
-    local dir="${PWD/#$HOME/~}"
-    local git_path="$(git rev-parse --show-prefix 2> /dev/null)"
-    if [[ -n $git_path ]] ; then
-        git_path="${git_path%/}"
-        dir="${dir%$git_path}%U$git_path%u"
-    fi
-    echo -n "$dir"
-}
-_status_ps1() {
-    if [[ $_PS1_NEW_CMD == 2 ]] ; then
-        echo -n "%(?..  %F{red}[exit %?]\n)"
-    fi
-}
-PS1=$'$(_status_ps1)%F{blue}[%T] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
-PS2=$'%F{blue}> %f'
-PS4=$'%F{magenta}+%N:%i> %f'
-export GIT_PS1_SHOWDIRTYSTATE=true
-
-_PS1_NEW_CMD=2
-precmd() {
-    # helper to let us know the first time we show the prompt after a command finishs.
-
-    # This value is set to 0 in preexec
-    if [[ $_PS1_NEW_CMD == 1 ]] ; then
-        _PS1_NEW_CMD=2
-    else
-        _PS1_NEW_CMD=0
-    fi
-}
-
 # disable flow control (C-s, C-r)
 stty -ixon
 
@@ -403,17 +368,56 @@ reload() { . ~/.zshrc }
 # use SIGCONT because it is does not terminate bash by default
 trap reload CONT
 
+# full history file is used to create a verbose detailed record of my commands.
+readonly FULLHISTFILE=~/._full_zsh_history
+
 if [[ -z $_ALREADY_LOADED ]] ; then
-    cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL STY=$STY ZSH_VERSION=$ZSH_VERSION" >> ~/._full_zsh_history
+    cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL STY=$STY ZSH_VERSION=$ZSH_VERSION" >> "$FULLHISTFILE"
     # let us know that this has been loaded so that we can prevent somethings from
     # loading twice.
     readonly _ALREADY_LOADED=1
-    _FULL_HIST_LINENO=1
+    _FULL_HIST_LINENO=0
 fi
-chmod 600 ~/._full_zsh_history
+chmod 600 "$FULLHISTFILE"
 
+# Set up prompt
+
+setopt prompt_subst
+_dir_ps1() {
+    local dir="${PWD/#$HOME/~}"
+    local git_path="$(git rev-parse --show-prefix 2> /dev/null)"
+    if [[ -n $git_path ]] ; then
+        git_path="${git_path%/}"
+        dir="${dir%$git_path}%U$git_path%u"
+    fi
+    echo -n "$dir"
+}
+_status_ps1() {
+    if [[ $_PS1_NEW_CMD == 2 ]] ; then
+        echo -n "%(?..  %F{red}[exit %?]\n)"
+    fi
+}
+PS1=$'$(_status_ps1)%F{blue}[%T] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
+PS2=$'%F{blue}> %f'
+PS4=$'%F{magenta}+%N:%i> %f'
+export GIT_PS1_SHOWDIRTYSTATE=true
+
+_PS1_NEW_CMD=2
+precmd() {
+    # helper to let us know the first time we show the prompt after a command finishs.
+
+    local exit_status=$?
+    # This value is set to 1 in preexec
+    if [[ $_PS1_NEW_CMD == 1 ]] ; then
+        echo "$$ $_FULL_HIST_LINENO $(date +%FT%T) [$exit_status]" >> "$FULLHISTFILE"
+        _PS1_NEW_CMD=2
+    else
+        _PS1_NEW_CMD=0
+    fi
+}
 preexec() {
-    awk -v prefix="$$ $_FULL_HIST_LINENO $(date +%FT%T) $PWD \$" "{ print prefix, \$0 }" <<<"$1" >> ~/._full_zsh_history
     _FULL_HIST_LINENO=$((_FULL_HIST_LINENO + 1))
+    # awk is used here so that multiline commands are shown on one line each.
+    awk -v prefix="$$ $_FULL_HIST_LINENO $(date +%FT%T) $PWD \$" "{ print prefix, \$0 }" <<<"$1" >> "$FULLHISTFILE"
     _PS1_NEW_CMD=1
 }
