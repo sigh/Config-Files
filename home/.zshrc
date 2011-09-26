@@ -21,12 +21,29 @@ _dir_ps1() {
         git_path="${git_path%/}"
         dir="${dir%$git_path}%U$git_path%u"
     fi
-    echo "$dir"
+    echo -n "$dir"
 }
-PS1=$'%F{blue}[%T] [%j] %n@%m:$(_dir_ps1)$(__git_ps1) %(?..%F{red}[%?]%F{blue} )\n%h %(!.#.$) %f'
+_status_ps1() {
+    if [[ $_PS1_NEW_CMD == 2 ]] ; then
+        echo -n "%(?..  %F{red}[exit %?]\n)"
+    fi
+}
+PS1=$'$(_status_ps1)%F{blue}[%T] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
 PS2=$'%F{blue}> %f'
 PS4=$'%F{magenta}+%N:%i> %f'
 export GIT_PS1_SHOWDIRTYSTATE=true
+
+_PS1_NEW_CMD=2
+precmd() {
+    # helper to let us know the first time we show the prompt after a command finishs.
+
+    # This value is set to 0 in preexec
+    if [[ $_PS1_NEW_CMD == 1 ]] ; then
+        _PS1_NEW_CMD=2
+    else
+        _PS1_NEW_CMD=0
+    fi
+}
 
 # disable flow control (C-s, C-r)
 stty -ixon
@@ -398,4 +415,5 @@ chmod 600 ~/._full_zsh_history
 preexec() {
     awk -v prefix="$$ $_FULL_HIST_LINENO $(date +%FT%T) $PWD \$" "{ print prefix, \$0 }" <<<"$1" >> ~/._full_zsh_history
     _FULL_HIST_LINENO=$((_FULL_HIST_LINENO + 1))
+    _PS1_NEW_CMD=1
 }
