@@ -314,6 +314,8 @@ __git_ps1 ()
 	fi
 }
 
+[[ -z "$BASH_VERSION" ]] && return
+
 # __gitcomp_1 requires 2 arguments
 __gitcomp_1 ()
 {
