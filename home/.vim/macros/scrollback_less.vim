@@ -113,7 +113,7 @@ function MyStatusLine()
   foldopen
   call setpos('.', l:save_cursor)
 
-  let l:parts = matchlist(l:text, '\$\( .*\) (\(\d\+\) lines)$')
+  let l:parts = matchlist(l:text, '\$\(.*\) (\(\d\+\) lines)$')
   let l:cmd = l:parts[1]
   let l:lines = l:parts[2]
 
