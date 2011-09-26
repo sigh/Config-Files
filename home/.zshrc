@@ -305,7 +305,7 @@ if [[ -n $STY ]] ; then
         sty-fix
         local display_name
         if [[ ${STY#*.} == _ ]] ; then
-            display_name="${HOSTNAME%%.*}"
+            display_name="${HOST%%.*}"
         else
             display_name="${STY#*.}"
         fi
