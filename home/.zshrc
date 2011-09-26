@@ -40,6 +40,9 @@ zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
        'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
+# don't complete the same filenames again
+zstyle ':completion:*:(rm|cp|mv|zmv):*' ignore-line other
+
 # fuzzy matching of completions
 # zstyle ':completion:*' completer _complete _match _approximate
 # zstyle ':completion:*:match:*' original only
@@ -54,6 +57,8 @@ source ~/.git-completion.bash
 setopt complete_in_word
 # Show the type of each file with a trailing identifying mark.
 setopt list_types
+# if there are other completions, always show them
+unsetopt rec_exact
 
 # If the line ends in Q then quote all the words in the line
 zle-line-finish() {
@@ -187,8 +192,6 @@ rationalise-dot() {
 zle -N rationalise-dot
 bindkey . rationalise-dot
 
-# TODO: fg completion
-
 # Stopped jobs that are removed from the job table with the disown builtin
 # command are automatically sent a CONT signal to make them running.
 setopt auto_continue
@@ -222,7 +225,12 @@ alias vless=vimless
 unmount() {
     diskutil unmount "/Volumes/$1"
 }
-# TODO: completion for unmount
+_unmount() {
+    local dirs
+    dirs=( /Volumes/"$PREFIX"* )
+    compadd - "${dirs[@]##/Volumes/}"
+}
+compdef _unmount unmount
 
 alias e=echo
 # make less display colors
@@ -251,7 +259,8 @@ extract()
          echo "'$1' is not a valid file" 1>&2
      fi
 }
-# TODO: completion for extract
+zstyle ':completion:*:*:extract:*' file-patterns \
+    '*.(tar|bz2|rar|gz|tbz2|tgz|zip|Z|7z):zip\ files *(-/):directories'
 
 # open man page as a PDF in preview
 if [[ -d /Applications/Preview.app ]] ; then
@@ -284,7 +293,7 @@ g.() {
 # I use screen_wrapper a lot
 alias s=screen_wrapper
 _screen_wrapper() {
-    compadd - $( screen_wrapper --complete "$words[$CURRENT]" )
+    compadd - $( screen_wrapper --complete "$PREFIX" )
 }
 compdef _screen_wrapper screen_wrapper
 
