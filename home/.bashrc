@@ -1,6 +1,3 @@
-# put our bin folder in the path
-export PATH="${PATH}:$HOME/bin"
-
 # only run if we are interactive
 [ -z "$PS1" ] && return
 
@@ -318,7 +315,7 @@ if [[ -n $STY ]] ; then
         screen -X title "$*"
     }
 
-    # change the default directory that screens open in 
+    # change the default directory that screens open in
     #   screen -X chdir doesn't seem to work
     chdir() {
         local abs_path=$(cd "${1:-.}" 2> /dev/null && pwd)
@@ -330,7 +327,7 @@ if [[ -n $STY ]] ; then
     }
     complete -F _cd -o nospace -o filenames chdir
 
-    # print entire scrollback to stdout 
+    # print entire scrollback to stdout
     scrollback() {
         (
             local filename="$(mktemp)"
@@ -360,7 +357,6 @@ fi
 # reload the bashrc for the current shell
 reload() {
   . ~/.bashrc
-  bind -f ~/.inputrc
 }
 # use SIGCONT because it is does not terminate bash by default
 trap reload CONT
