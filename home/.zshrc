@@ -1,11 +1,5 @@
-# TODO: move this into profile and make profile smart enough to deal with it.
-#       I can source profile from here then.
-# MacPorts Installer addition on 2011-08-26_at_21:21:54: adding an appropriate PATH variable for use with MacPorts.
-export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-# Ensure GNU tools are used by default
-export PATH=/opt/local/libexec/gnubin:$PATH
-# put our bin folder in the path
-export PATH="${PATH}:$HOME/bin"
+# populate our path properly
+[[ -f ~/.profile ]] && . ~/.profile
 
 # warn me if I create globals in a function
 setopt warn_create_global
@@ -217,7 +211,6 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 export EDITOR=vim
 alias vi=vim
 alias v=vim
-# TOOD: Ensure command line completion work correctly for v and vi
 
 alias vless=vimless
 
@@ -350,7 +343,7 @@ if [[ -n $STY ]] ; then
             echo "chdir: $1: No such directory"
         fi
     }
-    # TODO: chdir should have the same completion as cd
+    zstyle ':completion:*:*:chdir:*' file-patterns 'files *(-/):directories'
 
     # print entire scrollback to stdout
     scrollback() {
