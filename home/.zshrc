@@ -54,6 +54,10 @@ zle-line-finish() {
 }
 zle -N zle-line-finish
 
+# If I paste a URL into the command line it gets automatically quoted!
+autoload -U url-quote-magic
+zle -N self-insert url-quote-magic
+
 # Other global aliases
 alias -g C='| wc -l'
 alias -g L='| less'
