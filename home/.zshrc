@@ -205,6 +205,8 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 export EDITOR=vim
 alias vi=vim
 alias v=vim
+# ignores for vim
+zstyle ':completion:*:*:vim:*:*files' ignored-patterns '*?.(aux|dvi|ps|pdf|bbl|toc|lot|lof|o|cm?)'
 
 alias vless=vimless
 
