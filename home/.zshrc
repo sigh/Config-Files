@@ -102,7 +102,7 @@ bindkey "\ee" kill-line
 bindkey "\e[1;9C" kill-word
 bindkey "\e[1;9D" backward-kill-word
 
-export WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
+WORDCHARS="${WORDCHARS:s#/#}"
 
 # map shift-enter to ^J and then it will allow easy multiline editing.
 bindkey "^J" self-insert
