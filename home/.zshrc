@@ -32,7 +32,6 @@ zstyle ':completion:*:(rm|cp|mv|zmv):*' ignore-line other
 
 # tab completion
 autoload -U compinit && compinit
-autoload -U bashcompinit && bashcompinit
 source ~/.git-completion.bash
 
 # Completion is done from both ends.
