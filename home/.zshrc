@@ -23,13 +23,14 @@ zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}
        # 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
 # don't complete the same filenames again
-# zstyle ':completion:*:(rm|cp|mv|zmv|vim|git):*' ignore-line other
-zstyle ':completion:*:*:*' ignore-line other
+zstyle ':completion:*:(rm|cp|mv|zmv|vim|git):*' ignore-line other
+
+zstyle ':completion:*:*:*' ignore-parents parent pwd
 
 # fuzzy matching of completions
-# zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*' completer _complete _match _approximate
 # zstyle ':completion:*:match:*' original only
-# zstyle ':completion:*:approximate:*' max-errors 1 numeric
+zstyle ':completion:*:approximate:*' max-errors 1 numeric
 
 # tab completion
 autoload -U compinit && compinit
