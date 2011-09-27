@@ -18,17 +18,19 @@ stty -ctlecho
 
 # allow me to use arrow keys to select items.
 zstyle ':completion:*' menu select
-# case-insensitive, partial-word and then substring completion
-zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' \
-       'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+# case-insensitive completion. Partial-word and then substring completion commented out
+zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' # \
+       # 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
 # don't complete the same filenames again
-zstyle ':completion:*:(rm|cp|mv|zmv):*' ignore-line other
+zstyle ':completion:*:(rm|cp|mv|zmv|vim|git):*' ignore-line other
+
+zstyle ':completion:*:*:*' ignore-parents parent pwd
 
 # fuzzy matching of completions
-# zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*' completer _complete _match _approximate
 # zstyle ':completion:*:match:*' original only
-# zstyle ':completion:*:approximate:*' max-errors 1 numeric
+zstyle ':completion:*:approximate:*' max-errors 1 numeric
 
 # tab completion
 autoload -U compinit && compinit
@@ -40,22 +42,6 @@ setopt complete_in_word
 setopt list_types
 # if there are other completions, always show them
 unsetopt rec_exact
-
-# If the line ends in Q then quote all the words in the line
-zle-line-finish() {
-    if [[ $BUFFER =~ '.* Q$' ]] ; then
-        local result
-        for word in $(echo ${BUFFER%Q}) ; do
-            result="$result ${(q)word}"
-        done
-        BUFFER="${result# }"
-    fi
-}
-zle -N zle-line-finish
-
-# If I paste a URL into the command line it gets automatically quoted!
-autoload -U url-quote-magic
-zle -N self-insert url-quote-magic
 
 # Other global aliases
 alias -g C='| wc -l'
@@ -84,13 +70,58 @@ setopt hist_reduce_blanks
 setopt hist_save_no_dups
 setopt inc_append_history
 
+bindkey -e # use emacs mode by default
 bindkey "^[[A" history-beginning-search-backward
 bindkey "^[[B" history-beginning-search-forward
 bindkey ' ' magic-space
 bindkey '\e#' pound-insert
-bindkey -s "\C-q" "\e#!!:s/#//:x \n"
 bindkey -s "\C-s" "\C-a\e[1;5C"
 bindkey "\e[Z" reverse-menu-complete # Shift-tab
+
+# Alt-' quotes current argument
+# Alt-' Alt-' quote entire line
+quote-after() {
+    local result i
+    for (( i=0; i < ${#RBUFFER}; i++ )) ; do
+        if [[ ${RBUFFER:$i:1} == ' ' ]] ; then
+            if [[ $1 == 'arg' ]]; then
+                RBUFFER="$result${RBUFFER:$i}"
+                return
+            fi
+            result+=' '
+        else
+            result+="${(q)RBUFFER:$i:1}"
+        fi
+    done
+    RBUFFER="$result"
+}
+quote-before() {
+    local result i
+    for (( i=${#LBUFFER}-1; i >= 0; i-- )) ; do
+        if [[ ${LBUFFER:$i:1} == ' ' ]] ; then
+            if [[ $1 == 'arg' ]]; then
+                LBUFFER="${LBUFFER:0:$i} $result"
+                return
+            fi
+            result=" $result"
+        else
+            result="${(q)LBUFFER:$i:1}$result"
+        fi
+    done
+    LBUFFER="$result"
+}
+quote-current-line() {
+    quote-before
+    quote-after
+}
+quote-current-arg() {
+    quote-before arg
+    quote-after arg
+}
+zle -N quote-current-arg
+zle -N quote-current-line
+bindkey "\e'" quote-current-arg
+bindkey "\e'\e'" quote-current-line
 
 # move with control
 bindkey "\e[1;5C" forward-word
@@ -374,7 +405,9 @@ reload() { . ~/.zshrc }
 trap reload CONT
 
 # full history file is used to create a verbose detailed record of my commands.
-readonly FULLHISTFILE=~/._full_zsh_history
+if [[ -z $FULLHISTFILE ]] ; then
+    readonly FULLHISTFILE=~/._full_zsh_history
+fi
 
 if [[ -z $_ALREADY_LOADED ]] ; then
     cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL STY=$STY ZSH_VERSION=$ZSH_VERSION" >> "$FULLHISTFILE"
