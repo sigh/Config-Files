@@ -403,7 +403,9 @@ reload() { . ~/.zshrc }
 trap reload CONT
 
 # full history file is used to create a verbose detailed record of my commands.
-readonly FULLHISTFILE=~/._full_zsh_history
+if [[ -z $FULLHISTFILE ]] ; then
+    readonly FULLHISTFILE=~/._full_zsh_history
+fi
 
 if [[ -z $_ALREADY_LOADED ]] ; then
     cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL STY=$STY ZSH_VERSION=$ZSH_VERSION" >> "$FULLHISTFILE"
