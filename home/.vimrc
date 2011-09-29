@@ -270,9 +270,9 @@ function! <SID>ResetAll()
 endfunction
 
 " what to show when I hit :set list
-set listchars=tab:\|\ ,trail:.,extends:>,precedes:<,eol:$
+set listchars=tab:·\ ,trail:…,extends:»,precedes:«
+set list
 
-" Minimal number of screen lines to keep above and below the cursor
 set scrolloff=4
 
 " Make side scrolling act more naturally
