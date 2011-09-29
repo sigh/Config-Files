@@ -261,18 +261,20 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 
 # screen commands
 
-# I use screen_wrapper a lot
-s() { screen_wrapper "$@"; }
+if [[ -z $STY ]] ; then
+    # commands for outside screen
 
-# completion for screen_wrapper
-_screen_wrapper() {
-    COMPREPLY=( $( screen_wrapper --complete "${COMP_WORDS[COMP_CWORD]}" ) )
-}
+    # I use screen_wrapper a lot
+    s() { screen_wrapper "$@"; }
 
-complete -F _screen_wrapper screen_wrapper
-complete -F _screen_wrapper s
+    # completion for screen_wrapper
+    _screen_wrapper() {
+        COMPREPLY=( $( screen_wrapper --complete "${COMP_WORDS[COMP_CWORD]}" ) )
+    }
 
-if [[ -n $STY ]] ; then
+    complete -F _screen_wrapper screen_wrapper
+    complete -F _screen_wrapper s
+else
     # commands for use inside screen
 
     # ensure screendir is populated with the directory

@@ -310,14 +310,16 @@ g.() {
 
 # screen commands
 
-# I use screen_wrapper a lot
-alias s=screen_wrapper
-_screen_wrapper() {
-    compadd - $( screen_wrapper --complete "$PREFIX" )
-}
-compdef _screen_wrapper screen_wrapper
+if [[ -z $STY ]] ; then
+    # commands for outside screen
 
-if [[ -n $STY ]] ; then
+    # I use screen_wrapper a lot
+    alias s=screen_wrapper
+    _screen_wrapper() {
+        compadd - $( screen_wrapper --complete "$PREFIX" )
+    }
+    compdef _screen_wrapper screen_wrapper
+else
     # commands for use inside screen
 
     # ensure screendir is populated with the directory
