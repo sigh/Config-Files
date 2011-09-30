@@ -16,6 +16,7 @@ stty -ixon
 # don't echo control characters (in particular don't echo ^C on the command line).
 stty -ctlecho
 
+# Turn caching on
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path ~/.zsh/cache
 
@@ -40,6 +41,12 @@ zstyle ':completion:*' accept-exact-dirs true
 # The following option is a stricter version of the above which prohibits
 # *any* completion on the path.
 # zstyle ':completion:*' path-completion false
+
+# Don't complete usernames without a ~
+zstyle ':completion::complete:(mcd|chdir)::' tag-order '! users' -
+zstyle ':completion::complete:cd::' tag-order local-directories named-directories directory-stack
+# tab through previous directories automatically
+zstyle ':completion::complete:cd::directory-stack' menu yes select
 
 # tab completion
 autoload -U compinit && compinit
@@ -232,7 +239,7 @@ setopt auto_cd
 setopt auto_pushd
 # Don’t push multiple copies of the same directory onto the directory stack.
 setopt pushd_ignore_dups
-# iallow cd to variables
+# allow cd to variables
 setopt cdable_vars
 # Allow for correction of inaccurate commands
 setopt correct
@@ -247,7 +254,7 @@ compdef _cd mcd
 # TODO: Is there a way to make this display the target directory as a side effect?
 # TODO: Look at the docs for recursive-edit
 rationalise-dot() {
-  if [[ $LBUFFER =~ ' \.*\.\.' ]]; then
+  if [[ $LBUFFER =~ ' \.\.(/\.\.)*$' ]]; then
     LBUFFER+=/..
     # Make this work in a more robust way
     # PREDISPLAY="${LBUFFER% *} $(cd ${LBUFFER##* } 2> /dev/null && pwd)"$'\n'"$HISTCMD \$ "
@@ -503,7 +510,6 @@ export GIT_PS1_SHOWDIRTYSTATE=true
 _PS1_NEW_CMD=2
 precmd() {
     # helper to let us know the first time we show the prompt after a command finishs.
-
     local exit_status=$?
     # This value is set to 1 in preexec
     if [[ $_PS1_NEW_CMD == 1 ]] ; then
@@ -519,3 +525,4 @@ preexec() {
     awk -v prefix="$$ $_FULL_HIST_LINENO $(date +%FT%T) $PWD \$" "{ print prefix, \$0 }" <<<"$1" >> "$FULLHISTFILE"
     _PS1_NEW_CMD=1
 }
+
