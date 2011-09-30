@@ -292,7 +292,15 @@ alias du="du -hc --max-depth=1"
 alias dus="command du -hs"
 
 # display full paths
-realpath() { readlink --verbose -e "${1:-.}" ; }
+realpath() {
+    if (( $# == 0 )) ; then
+        readlink --verbose -e .
+        return
+    fi
+    for p in "$@" ; do
+        readlink --verbose -e "$p"
+    done
+}
 alias rp=realpath
 
 # colorize search results for grep
