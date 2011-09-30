@@ -209,10 +209,11 @@ alias d="dirs -v"
 mcd() { mkdir -p "$@" && cd "${@:$#}" ; }
 compdef _cd mcd
 
-# strings of dots are expanded to parents
+# strings of dots are expanded to parents if they form the start of a word.
 # TODO: Is there a way to make this display the target directory as a side effect?
+# TODO: Look at the docs for recursive-edit
 rationalise-dot() {
-  if [[ $LBUFFER = *.. ]]; then
+  if [[ $LBUFFER =~ ' \.*\.\.' ]]; then
     LBUFFER+=/..
     # Make this work in a more robust way
     # PREDISPLAY="${LBUFFER% *} $(cd ${LBUFFER##* } 2> /dev/null && pwd)"$'\n'"$HISTCMD \$ "
