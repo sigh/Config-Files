@@ -16,6 +16,9 @@ stty -ixon
 # don't echo control characters (in particular don't echo ^C on the command line).
 stty -ctlecho
 
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
+
 # allow me to use arrow keys to select items.
 zstyle ':completion:*' menu select
 # case-insensitive completion. Partial-word and then substring completion commented out
