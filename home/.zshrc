@@ -59,6 +59,30 @@ setopt glob_complete
 autoload -U run-help
 HELPDIR=~/.zsh/help
 
+# Make run help understand git subcommands
+run-help-git() {
+    if (( $# == 0 )); then
+        man git
+    else
+        local al
+        local subcmd="$1"
+        if al=$(git config --get "alias.$1"); then
+            subcmd="${al%% *}"
+            echo "$1 is an alias for $al"
+        fi
+        man git-"$subcmd" 2> /dev/null
+    fi
+}
+
+# Sudo should get help for the actual command
+run-help-sudo() {
+    if (( $# == 0 )); then
+        man sudo
+    else
+        man "$1"
+    fi
+}
+
 # Other global aliases
 alias -g C='| wc -l'
 alias -g L='| less'
@@ -247,7 +271,7 @@ setopt long_list_jobs
 setopt notify
 
 # empty input redirection goes to less
-export READNULLCMD="less -Ri"
+export READNULLCMD=less
 # Report timing stats for any command longer than 10 seconds
 export REPORTTIME=10
 
@@ -256,6 +280,7 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 
 # editor setup
 export EDITOR=vim
+export VISUAL=vim
 alias vi=vim
 alias v=vim
 # ignores for vim
@@ -275,9 +300,12 @@ _unmount() {
 compdef _unmount unmount
 
 alias e=echo
-# make less display colors
-alias less="less -Ri"
 alias g=git
+
+# make less display colors, have case insensitive search, quit on Ctrl-C
+# and skip search results on the current screen.
+export LESS=RiKa
+export PAGER=less
 
 # Handy Extract Program.
 extract()
