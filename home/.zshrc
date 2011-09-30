@@ -32,6 +32,12 @@ zstyle ':completion:*' completer _complete _match _approximate
 # zstyle ':completion:*:match:*' original only
 zstyle ':completion:*:approximate:*' max-errors 1 numeric
 
+# Stop trying to complete things in the path which already match!
+zstyle ':completion:*' accept-exact-dirs true
+# The following option is a stricter version of the above which prohibits
+# *any* completion on the path.
+# zstyle ':completion:*' path-completion false
+
 # tab completion
 autoload -U compinit && compinit
 source ~/.git-completion.bash
