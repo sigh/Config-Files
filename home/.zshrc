@@ -48,6 +48,8 @@ setopt complete_in_word
 setopt list_types
 # if there are other completions, always show them
 unsetopt rec_exact
+# don't expand glob automatically when completing.
+setopt glob_complete
 
 # Other global aliases
 alias -g C='| wc -l'
