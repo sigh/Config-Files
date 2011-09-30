@@ -54,6 +54,11 @@ unsetopt rec_exact
 # don't expand glob automatically when completing.
 setopt glob_complete
 
+# run-help is awesome... get help about the current command.
+# By default it is bound to ESC-h (Alt-h)
+autoload -U run-help
+HELPDIR=~/.zsh/help
+
 # Other global aliases
 alias -g C='| wc -l'
 alias -g L='| less'
