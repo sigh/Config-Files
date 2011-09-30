@@ -89,6 +89,11 @@ bindkey '\e#' pound-insert
 bindkey -s "\C-s" "\C-a\e[1;5C"
 bindkey "\e[Z" reverse-menu-complete # Shift-tab
 
+# map alt-, to complete files regardless of context
+zle -C complete-files complete-word _generic
+zstyle ':completion:complete-files:*' completer _files
+bindkey '^[,' complete-files
+
 # Alt-' quotes current argument
 # Alt-' Alt-' quote entire line
 quote-after() {
