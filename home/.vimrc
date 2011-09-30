@@ -520,6 +520,9 @@ imap <Leader>s <Esc>:call <SID>spell()<CR>
 " Filetype specific autocommands
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" Detect Go filetype
+autocmd BufNewFile,BufRead *.go set ft=go
+
 " Set some settings for editing makefiles
 augroup makefile
   autocmd!
