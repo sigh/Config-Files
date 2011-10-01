@@ -319,6 +319,8 @@ function s:SetUpForNewFiletype(filetype, forceReset)
         call s:MapDelimiters('#', '')
     elseif a:filetype ==? "gnuplot"
         call s:MapDelimiters('#','')
+    elseif a:filetype ==? "go"
+        call s:MapDelimitersWithAlternative('//','', '/*','*/')
     elseif a:filetype ==? "groovy"
         call s:MapDelimitersWithAlternative('//','', '/*','*/')
     elseif a:filetype ==? "gtkrc"
