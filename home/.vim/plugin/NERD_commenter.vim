@@ -314,7 +314,7 @@ function s:SetUpForNewFiletype(filetype, forceReset)
     elseif a:filetype ==? 'gitcommit'
         call s:MapDelimiters('#', '')
     elseif a:filetype ==? 'gitconfig'
-        call s:MapDelimiters(';', '')
+        call s:MapDelimiters('#', '')
     elseif a:filetype ==? 'gitrebase'
         call s:MapDelimiters('#', '')
     elseif a:filetype ==? "gnuplot"
