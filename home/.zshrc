@@ -174,45 +174,61 @@ zle -C complete-files complete-word _generic
 zstyle ':completion:complete-files:*' completer _files
 bindkey '^[,' complete-files
 
+# quote chars and keep cursor on the same character that it
+# was before (not necessarily the same position).
+# Characters are quoted in the range [$1, $2)
+# Whitespace is ignored unless $3 is set.
+_quote-chars-follow-cursor() {
+    local new_cursor=$CURSOR
+    local new_buffer=${BUFFER:0:$1}
+    integer i
+
+    for (( i = $1; i < $2; i++ )) ; do
+        if [[ -z $3 && ${BUFFER:$i:1} =~ $'[ \t\n\r]' ]] ; then
+            new_buffer+=${BUFFER:$i:1}
+        else
+            new_buffer+=${(q)BUFFER:$i:1}
+        fi
+        if [[ $i == $CURSOR ]] ; then
+            new_cursor=$(( ${#new_buffer} - 1 ))
+        fi
+    done
+
+    new_buffer+=${BUFFER:$2}
+
+    # If the cursor is after the end of the region, then
+    # move it forward by however much the buffer has increased.
+    if (( CURSOR >= $2 )) ; then
+        new_cursor=$(( CURSOR + ${#new_buffer} - ${#BUFFER} ))
+    fi
+
+    BUFFER=$new_buffer
+    CURSOR=$new_cursor
+}
+# find the position of the current arg
+_current-arg-position() {
+    local start=0 end=${#BUFFER}
+    integer i
+
+    for (( i=0; i < ${#BUFFER}; i++ )) ; do
+        if [[ ${BUFFER:$i:1} =~ $'[ \t\r\n]' ]] ; then
+            if (( i >= CURSOR )) ; then
+                end=$i
+            else
+                start=$i
+            fi
+        fi
+    done
+    echo -n "$start $end"
+}
+
 # Alt-' quotes current argument
 # Alt-' Alt-' quote entire line
-quote-after() {
-    local result i
-    for (( i=0; i < ${#RBUFFER}; i++ )) ; do
-        if [[ ${RBUFFER:$i:1} == ' ' ]] ; then
-            if [[ $1 == 'arg' ]]; then
-                RBUFFER="$result${RBUFFER:$i}"
-                return
-            fi
-            result+=' '
-        else
-            result+="${(q)RBUFFER:$i:1}"
-        fi
-    done
-    RBUFFER="$result"
-}
-quote-before() {
-    local result i
-    for (( i=${#LBUFFER}-1; i >= 0; i-- )) ; do
-        if [[ ${LBUFFER:$i:1} == ' ' ]] ; then
-            if [[ $1 == 'arg' ]]; then
-                LBUFFER="${LBUFFER:0:$i} $result"
-                return
-            fi
-            result=" $result"
-        else
-            result="${(q)LBUFFER:$i:1}$result"
-        fi
-    done
-    LBUFFER="$result"
-}
 quote-current-line() {
-    quote-before
-    quote-after
+    _quote-chars-follow-cursor 0 ${#BUFFER}
 }
 quote-current-arg() {
-    quote-before arg
-    quote-after arg
+    _quote-chars-follow-cursor $(_current-arg-position)
 }
 zle -N quote-current-arg
 zle -N quote-current-line
