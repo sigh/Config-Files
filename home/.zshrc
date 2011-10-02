@@ -154,6 +154,16 @@ bindkey '\e#' pound-insert
 bindkey -s "\C-s" "\C-a\e[1;5C"
 bindkey "\e[Z" reverse-menu-complete # Shift-tab
 
+# Show dots when the command line is completing so that
+# we have some visual indication of when the shell is busy.
+expand-or-complete-with-dots() {
+    echo -n "$(tput setf 4)...$(tput sgr0)"
+    zle expand-or-complete
+    zle redisplay
+}
+zle -N expand-or-complete-with-dots
+bindkey "^I" expand-or-complete-with-dots
+
 # map alt-, to complete files regardless of context
 zle -C complete-files complete-word _generic
 zstyle ':completion:complete-files:*' completer _files
