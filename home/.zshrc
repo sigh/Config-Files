@@ -203,6 +203,8 @@ zle -N quote-current-arg
 zle -N quote-current-line
 bindkey "\e'" quote-current-arg
 bindkey "\e'\e'" quote-current-line
+# Alt enter just accepts the line like normal.
+bindkey '^[^M' accept-line
 
 # move with control
 bindkey "\e[1;5C" forward-word
