@@ -118,8 +118,36 @@ setopt hist_save_no_dups
 setopt inc_append_history
 
 bindkey -e # use emacs mode by default
-bindkey "^[[A" history-beginning-search-backward
-bindkey "^[[B" history-beginning-search-forward
+
+# Up and down move through multi-line buffer or through history using LBUFFER
+# as a prefix.
+my-up-line-or-history-search-backward() {
+    if (( CURSOR == 0 )) ; then
+        zle .up-history
+    elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-history-search-* ]]; then
+        zle .up-history
+    elif [[ $LBUFFER == *$'\n'* ]]; then
+        zle .up-line-or-history
+    else
+        zle .history-beginning-search-backward
+    fi
+}
+my-history-up-line-or-search-forward() {
+    if (( CURSOR == 0 )) ; then
+        zle .down-history
+    elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-history-search-* ]]; then
+        zle .down-history
+    elif [[ $RBUFFER == *$'\n'* ]]; then
+        zle .down-line-or-history
+    else
+        zle .history-beginning-search-forward
+    fi
+}
+zle -N my-up-line-or-history-search-backward
+zle -N my-history-up-line-or-search-forward
+bindkey "^[[A" my-up-line-or-history-search-backward
+bindkey "^[[B" my-history-up-line-or-search-forward
+
 bindkey ' ' magic-space
 bindkey '\e#' pound-insert
 bindkey -s "\C-s" "\C-a\e[1;5C"
