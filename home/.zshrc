@@ -124,7 +124,7 @@ bindkey -e # use emacs mode by default
 my-up-line-or-history-search-backward() {
     if (( CURSOR == 0 )) ; then
         zle .up-history
-    elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-history-search-* ]]; then
+    elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
         zle .up-history
     elif [[ $LBUFFER == *$'\n'* ]]; then
         zle .up-line-or-history
@@ -132,11 +132,13 @@ my-up-line-or-history-search-backward() {
         zle .history-beginning-search-backward
     fi
 }
-my-history-up-line-or-search-forward() {
+my-down-line-or-history-search-forward() {
     if (( CURSOR == 0 )) ; then
         zle .down-history
-    elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-history-search-* ]]; then
+    elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
         zle .down-history
+    elif [[ $LBUFFER != *$'\n'* && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
+        zle .history-beginning-search-forward
     elif [[ $RBUFFER == *$'\n'* ]]; then
         zle .down-line-or-history
     else
@@ -144,9 +146,9 @@ my-history-up-line-or-search-forward() {
     fi
 }
 zle -N my-up-line-or-history-search-backward
-zle -N my-history-up-line-or-search-forward
+zle -N my-down-line-or-history-search-forward
 bindkey "^[[A" my-up-line-or-history-search-backward
-bindkey "^[[B" my-history-up-line-or-search-forward
+bindkey "^[[B" my-down-line-or-history-search-forward
 
 bindkey '^O' accept-and-infer-next-history
 bindkey ' ' magic-space
