@@ -148,6 +148,7 @@ zle -N my-history-up-line-or-search-forward
 bindkey "^[[A" my-up-line-or-history-search-backward
 bindkey "^[[B" my-history-up-line-or-search-forward
 
+bindkey '^O' accept-and-infer-next-history
 bindkey ' ' magic-space
 bindkey '\e#' pound-insert
 bindkey -s "\C-s" "\C-a\e[1;5C"
