@@ -164,6 +164,11 @@ expand-or-complete-with-dots() {
 zle -N expand-or-complete-with-dots
 bindkey "^I" expand-or-complete-with-dots
 
+# Edit command with vim.
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey '\C-x\C-e' edit-command-line
+
 # map alt-, to complete files regardless of context
 zle -C complete-files complete-word _generic
 zstyle ':completion:complete-files:*' completer _files
