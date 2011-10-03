@@ -328,6 +328,8 @@ bindkey "^D" bash-ctrl-d
 
 # allow comments in the shell
 setopt interactive_comments
+# allow short loop syntax
+setopt short_loops
 
 # fancy mv
 autoload -U zmv
