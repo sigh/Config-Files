@@ -309,6 +309,10 @@ setopt cdable_vars
 setopt correct
 # case insensitive globbing
 setopt no_case_glob
+# don't print an error when there are no glob matches
+setopt no_nomatch
+# More globbing stuff.
+setopt extended_glob
 
 alias d="dirs -v"
 mcd() { mkdir -p "$@" && cd "${@:$#}" ; }
