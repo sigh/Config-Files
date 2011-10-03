@@ -5,7 +5,7 @@
 unhash -am '*'
 
 # warn me if I create globals in a function
-setopt warn_create_global
+# setopt warn_create_global
 
 # advanced input redirection (no need for tee)
 setopt multios
@@ -556,9 +556,9 @@ else
     fi
 fi
 
-# reload the bashrc for the current shell
+# reload zshrc for the current shell
 reload() { . ~/.zshrc }
-# use SIGCONT because it is does not terminate bash by default
+# use SIGCONT because it is does not terminate the shell by default
 trap reload CONT
 
 # full history file is used to create a verbose detailed record of my commands.
