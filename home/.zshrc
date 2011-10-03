@@ -8,6 +8,9 @@ trap -
 zstyle -d
 bindkey -d
 
+# Ensure path only has unique entries.
+typeset -gU PATH
+
 # warn me if I create globals in a function
 # setopt warn_create_global
 
