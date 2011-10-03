@@ -67,6 +67,9 @@ zstyle ':completion:history-words:*' list no
 # we want the options to be filled in immediatly.
 zstyle ':completion:*:history-words' menu yes
 
+# This stops completion if we paste text into the terminal which has tabs.
+zstyle ':completion:*' insert-tab pending
+
 # tab completion
 autoload -U compinit && compinit
 source ~/.git-completion.bash
