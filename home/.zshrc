@@ -1,8 +1,12 @@
 # populate our path properly
 [[ -f ~/.profile ]] && . ~/.profile
 
-# clean up all existing aliases
-unhash -am '*'
+# reset as much as possible (mostly this is for when we are reloading).
+# do NOT unset functions, zsh does some magic with them.
+unhash -am '*' # aliases
+trap -
+zstyle -d
+bindkey -d
 
 # warn me if I create globals in a function
 # setopt warn_create_global
