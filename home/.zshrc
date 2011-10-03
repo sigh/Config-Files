@@ -350,9 +350,10 @@ setopt long_list_jobs
 setopt notify
 
 # empty input redirection goes to less
-export READNULLCMD=less
-# Report timing stats for any command longer than 10 seconds
-export REPORTTIME=10
+READNULLCMD=less
+# Report timing stats for any command longer than 1 second
+REPORTTIME=1
+TIMEFMT='%U user  %S system  %E real  %P cpu  %MkB mem $ %J'
 
 # config for python interactive shell
 export PYTHONSTARTUP="$HOME/.pystartup"
