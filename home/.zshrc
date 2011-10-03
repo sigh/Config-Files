@@ -381,7 +381,7 @@ setopt notify
 READNULLCMD=less
 # Report timing stats for any command longer than 1 second
 REPORTTIME=1
-TIMEFMT='%U user  %S system  %E real  %P cpu  %MkB mem $ %J'
+TIMEFMT="$(tput setf 4)%E real  %U user  %S system  %P cpu  %MkB mem $(tput sgr0)$ %J"
 
 # config for python interactive shell
 export PYTHONSTARTUP="$HOME/.pystartup"
