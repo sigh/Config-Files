@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 port="${1:-8000}"
 iplist "%s: http://$(tput setf 3)%s$(tput sgr0):$port/"

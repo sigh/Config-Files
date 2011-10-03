@@ -86,6 +86,7 @@ export FIGNORE='.swp:.svn:.0:~';
 # make a colorful prompt
 # (this must be done after git-completion has been initialised)
 
+
 NONE="\[$(tput sgr0)\]"    # reset formatting to default
 
 if [[ "$USER" == root ]] ; then

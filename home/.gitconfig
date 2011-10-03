@@ -46,7 +46,7 @@
     safe-reset = "!f() { git save -f __before_reset && git reset --hard HEAD; }; f"
 
     # share the repo on the network.
-    share = "!f() { git update-server-info && cd $(git rev-parse --git-dir) && webshare \"$@\"; }; f"
+    share = "!f() { git update-server-info && cd \"$(git rev-parse --git-dir)\" && webshare \"$@\"; }; f"
 [color]
     ui = true
 [branch]

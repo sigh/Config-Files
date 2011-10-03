@@ -75,6 +75,10 @@ function! <SID>CurrentWorkingDir()
     endif
 endfunction
 
+nore ; :
+" Later change this to something useful (like ;)
+nore : :echoerr ': disabled. Use ;'<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Theme/Colors
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -256,11 +260,15 @@ noremap <silent> <Nul>   <Esc>:call <SID>ResetAll()<Bar>:nohlsearch<Bar>:pwd<CR>
 
 " Reset only somethings
 function! <SID>ResetSome()
+    " Close minibuf
     CMiniBufExplorer
     set laststatus=2
+    " Update diff
     if &diff
         diffu
     endif
+    " Move screen to the left
+    normal zH
 endfunction
 
 " Reset most things that we could have opened
