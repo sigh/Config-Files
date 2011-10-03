@@ -299,11 +299,6 @@ set laststatus=2
 " always show the mode we are in
 set showmode
 
-" make C-u and C-d scroll more slowly
-" set scroll=3   " This keeps being reset so overwrite c-u c-d
-noremap <C-U> 3<C-Y>
-noremap <C-D> 3<C-E>
-
 " Highlight whitespace at the end of the line
 " (source: http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html)
 autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl /\s\+\%#\@!$/
