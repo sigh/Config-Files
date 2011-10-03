@@ -583,6 +583,9 @@ PS2=$'%F{blue}> %f'
 PS4=$'%F{magenta}+%N:%i> %f'
 export GIT_PS1_SHOWDIRTYSTATE=true
 
+# Show this at the end of commands which don't output a newline at the end.
+PROMPT_EOL_MARK='%B%S %s%b'
+
 _PS1_NEW_CMD=2
 precmd() {
     # helper to let us know the first time we show the prompt after a command finishs.
