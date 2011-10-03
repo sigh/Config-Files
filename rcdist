@@ -19,7 +19,7 @@ hosts=(
 # change into home dir (which will be synced to $HOME)
 cd home
 
-options="--compress --stats --recursive --perms --times --rsh=ssh"
+options="--compress --stats --recursive --perms --times --links --rsh=ssh"
 
 # sync with localhost
 rsync $options . "$HOME" && [[ ! $no_reload ]] && reload-all

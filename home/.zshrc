@@ -16,6 +16,10 @@ stty -ixon
 # don't echo control characters (in particular don't echo ^C on the command line).
 stty -ctlecho
 
+# Turn caching on
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
+
 # allow me to use arrow keys to select items.
 zstyle ':completion:*' menu select
 # case-insensitive completion. Partial-word and then substring completion commented out
@@ -32,6 +36,18 @@ zstyle ':completion:*' completer _complete _match _approximate
 # zstyle ':completion:*:match:*' original only
 zstyle ':completion:*:approximate:*' max-errors 1 numeric
 
+# Stop trying to complete things in the path which already match!
+zstyle ':completion:*' accept-exact-dirs true
+# The following option is a stricter version of the above which prohibits
+# *any* completion on the path.
+# zstyle ':completion:*' path-completion false
+
+# Don't complete usernames without a ~
+zstyle ':completion::complete:(mcd|chdir)::' tag-order '! users' -
+zstyle ':completion::complete:cd::' tag-order local-directories named-directories directory-stack
+# tab through previous directories automatically
+zstyle ':completion::complete:cd::directory-stack' menu yes select
+
 # tab completion
 autoload -U compinit && compinit
 source ~/.git-completion.bash
@@ -42,6 +58,37 @@ setopt complete_in_word
 setopt list_types
 # if there are other completions, always show them
 unsetopt rec_exact
+# don't expand glob automatically when completing.
+setopt glob_complete
+
+# run-help is awesome... get help about the current command.
+# By default it is bound to ESC-h (Alt-h)
+autoload -U run-help
+HELPDIR=~/.zsh/help
+
+# Make run help understand git subcommands
+run-help-git() {
+    if (( $# == 0 )); then
+        man git
+    else
+        local al
+        local subcmd="$1"
+        if al=$(git config --get "alias.$1"); then
+            subcmd="${al%% *}"
+            echo "$1 is an alias for $al"
+        fi
+        man git-"$subcmd" 2> /dev/null
+    fi
+}
+
+# Sudo should get help for the actual command
+run-help-sudo() {
+    if (( $# == 0 )); then
+        man sudo
+    else
+        man "$1"
+    fi
+}
 
 # Other global aliases
 alias -g C='| wc -l'
@@ -71,57 +118,126 @@ setopt hist_save_no_dups
 setopt inc_append_history
 
 bindkey -e # use emacs mode by default
-bindkey "^[[A" history-beginning-search-backward
-bindkey "^[[B" history-beginning-search-forward
+
+# Up and down move through multi-line buffer or through history using LBUFFER
+# as a prefix.
+my-up-line-or-history-search-backward() {
+    if (( CURSOR == 0 )) ; then
+        zle .up-history
+    elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
+        zle .up-history
+    elif [[ $LBUFFER == *$'\n'* ]]; then
+        zle .up-line-or-history
+    else
+        zle .history-beginning-search-backward
+    fi
+}
+my-down-line-or-history-search-forward() {
+    if (( CURSOR == 0 )) ; then
+        zle .down-history
+    elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
+        zle .down-history
+    elif [[ $LBUFFER != *$'\n'* && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
+        zle .history-beginning-search-forward
+    elif [[ $RBUFFER == *$'\n'* ]]; then
+        zle .down-line-or-history
+    else
+        zle .history-beginning-search-forward
+    fi
+}
+zle -N my-up-line-or-history-search-backward
+zle -N my-down-line-or-history-search-forward
+bindkey "^[[A" my-up-line-or-history-search-backward
+bindkey "^[[B" my-down-line-or-history-search-forward
+
+bindkey '^O' accept-and-infer-next-history
 bindkey ' ' magic-space
 bindkey '\e#' pound-insert
 bindkey -s "\C-s" "\C-a\e[1;5C"
 bindkey "\e[Z" reverse-menu-complete # Shift-tab
 
+# Show dots when the command line is completing so that
+# we have some visual indication of when the shell is busy.
+expand-or-complete-with-dots() {
+    echo -n "$(tput setf 4)...$(tput sgr0)"
+    zle expand-or-complete
+    zle redisplay
+}
+zle -N expand-or-complete-with-dots
+bindkey "^I" expand-or-complete-with-dots
+
+# Edit command with vim.
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey '\C-x\C-e' edit-command-line
+
+# map alt-, to complete files regardless of context
+zle -C complete-files complete-word _generic
+zstyle ':completion:complete-files:*' completer _files
+bindkey '^[,' complete-files
+
+# quote chars and keep cursor on the same character that it
+# was before (not necessarily the same position).
+# Characters are quoted in the range [$1, $2)
+# Whitespace is ignored unless $3 is set.
+_quote-chars-follow-cursor() {
+    local new_cursor=$CURSOR
+    local new_buffer=${BUFFER:0:$1}
+    integer i
+
+    for (( i = $1; i < $2; i++ )) ; do
+        if [[ -z $3 && ${BUFFER:$i:1} =~ $'[ \t\n\r]' ]] ; then
+            new_buffer+=${BUFFER:$i:1}
+        else
+            new_buffer+=${(q)BUFFER:$i:1}
+        fi
+        if [[ $i == $CURSOR ]] ; then
+            new_cursor=$(( ${#new_buffer} - 1 ))
+        fi
+    done
+
+    new_buffer+=${BUFFER:$2}
+
+    # If the cursor is after the end of the region, then
+    # move it forward by however much the buffer has increased.
+    if (( CURSOR >= $2 )) ; then
+        new_cursor=$(( CURSOR + ${#new_buffer} - ${#BUFFER} ))
+    fi
+
+    BUFFER=$new_buffer
+    CURSOR=$new_cursor
+}
+# find the position of the current arg
+_current-arg-position() {
+    local start=0 end=${#BUFFER}
+    integer i
+
+    for (( i=0; i < ${#BUFFER}; i++ )) ; do
+        if [[ ${BUFFER:$i:1} =~ $'[ \t\r\n]' ]] ; then
+            if (( i >= CURSOR )) ; then
+                end=$i
+            else
+                start=$i
+            fi
+        fi
+    done
+    echo -n "$start $end"
+}
+
 # Alt-' quotes current argument
 # Alt-' Alt-' quote entire line
-quote-after() {
-    local result i
-    for (( i=0; i < ${#RBUFFER}; i++ )) ; do
-        if [[ ${RBUFFER:$i:1} == ' ' ]] ; then
-            if [[ $1 == 'arg' ]]; then
-                RBUFFER="$result${RBUFFER:$i}"
-                return
-            fi
-            result+=' '
-        else
-            result+="${(q)RBUFFER:$i:1}"
-        fi
-    done
-    RBUFFER="$result"
-}
-quote-before() {
-    local result i
-    for (( i=${#LBUFFER}-1; i >= 0; i-- )) ; do
-        if [[ ${LBUFFER:$i:1} == ' ' ]] ; then
-            if [[ $1 == 'arg' ]]; then
-                LBUFFER="${LBUFFER:0:$i} $result"
-                return
-            fi
-            result=" $result"
-        else
-            result="${(q)LBUFFER:$i:1}$result"
-        fi
-    done
-    LBUFFER="$result"
-}
 quote-current-line() {
-    quote-before
-    quote-after
+    _quote-chars-follow-cursor 0 ${#BUFFER}
 }
 quote-current-arg() {
-    quote-before arg
-    quote-after arg
+    _quote-chars-follow-cursor $(_current-arg-position)
 }
 zle -N quote-current-arg
 zle -N quote-current-line
 bindkey "\e'" quote-current-arg
 bindkey "\e'\e'" quote-current-line
+# Alt enter just accepts the line like normal.
+bindkey '^[^M' accept-line
 
 # move with control
 bindkey "\e[1;5C" forward-word
@@ -187,7 +303,7 @@ setopt auto_cd
 setopt auto_pushd
 # Don’t push multiple copies of the same directory onto the directory stack.
 setopt pushd_ignore_dups
-# iallow cd to variables
+# allow cd to variables
 setopt cdable_vars
 # Allow for correction of inaccurate commands
 setopt correct
@@ -198,10 +314,11 @@ alias d="dirs -v"
 mcd() { mkdir -p "$@" && cd "${@:$#}" ; }
 compdef _cd mcd
 
-# strings of dots are expanded to parents
+# strings of dots are expanded to parents if they form the start of a word.
 # TODO: Is there a way to make this display the target directory as a side effect?
+# TODO: Look at the docs for recursive-edit
 rationalise-dot() {
-  if [[ $LBUFFER = *.. ]]; then
+  if [[ $LBUFFER =~ ' \.\.(/\.\.)*$' ]]; then
     LBUFFER+=/..
     # Make this work in a more robust way
     # PREDISPLAY="${LBUFFER% *} $(cd ${LBUFFER##* } 2> /dev/null && pwd)"$'\n'"$HISTCMD \$ "
@@ -225,7 +342,7 @@ setopt long_list_jobs
 setopt notify
 
 # empty input redirection goes to less
-export READNULLCMD="less -Ri"
+export READNULLCMD=less
 # Report timing stats for any command longer than 10 seconds
 export REPORTTIME=10
 
@@ -234,6 +351,7 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 
 # editor setup
 export EDITOR=vim
+export VISUAL=vim
 alias vi=vim
 alias v=vim
 # ignores for vim
@@ -253,9 +371,12 @@ _unmount() {
 compdef _unmount unmount
 
 alias e=echo
-# make less display colors
-alias less="less -Ri"
 alias g=git
+
+# make less display colors, have case insensitive search, quit on Ctrl-C
+# and skip search results on the current screen.
+export LESS=RiKa
+export PAGER=less
 
 # Handy Extract Program.
 extract()
@@ -292,7 +413,15 @@ alias du="du -hc --max-depth=1"
 alias dus="command du -hs"
 
 # display full paths
-realpath() { readlink --verbose -e "${1:-.}" ; }
+realpath() {
+    if (( $# == 0 )) ; then
+        readlink --verbose -e .
+        return
+    fi
+    for p in "$@" ; do
+        readlink --verbose -e "$p"
+    done
+}
 alias rp=realpath
 
 # colorize search results for grep
@@ -445,7 +574,6 @@ export GIT_PS1_SHOWDIRTYSTATE=true
 _PS1_NEW_CMD=2
 precmd() {
     # helper to let us know the first time we show the prompt after a command finishs.
-
     local exit_status=$?
     # This value is set to 1 in preexec
     if [[ $_PS1_NEW_CMD == 1 ]] ; then
@@ -461,3 +589,4 @@ preexec() {
     awk -v prefix="$$ $_FULL_HIST_LINENO $(date +%FT%T) $PWD \$" "{ print prefix, \$0 }" <<<"$1" >> "$FULLHISTFILE"
     _PS1_NEW_CMD=1
 }
+
