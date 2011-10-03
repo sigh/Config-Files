@@ -51,6 +51,8 @@ zstyle ':completion::complete:(mcd|chdir)::' tag-order '! users' -
 zstyle ':completion::complete:cd::' tag-order local-directories named-directories directory-stack
 # tab through previous directories automatically
 zstyle ':completion::complete:cd::directory-stack' menu yes select
+# tab through fg process automatically
+zstyle ':completion::complete:fg:*:*' menu yes select
 
 # tab completion
 autoload -U compinit && compinit
@@ -585,6 +587,9 @@ export GIT_PS1_SHOWDIRTYSTATE=true
 
 # Show this at the end of commands which don't output a newline at the end.
 PROMPT_EOL_MARK='%B%S %s%b'
+
+# Only show right prompt for current line.
+setopt TRANSIENT_RPROMPT
 
 _PS1_NEW_CMD=2
 precmd() {
