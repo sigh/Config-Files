@@ -64,6 +64,16 @@ setopt list_types
 unsetopt rec_exact
 # don't expand glob automatically when completing.
 setopt glob_complete
+# case insensitive globbing
+setopt no_case_glob
+# don't print an error when there are no glob matches
+setopt no_nomatch
+# More globbing stuff.
+setopt extended_glob
+# Allow for correction of inaccurate commands
+setopt correct
+# Don't offer values starting with _ as corrections.
+CORRECT_IGNORE='_*'
 
 # run-help is awesome... get help about the current command.
 # By default it is bound to ESC-h (Alt-h)
@@ -309,14 +319,6 @@ setopt auto_pushd
 setopt pushd_ignore_dups
 # allow cd to variables
 setopt cdable_vars
-# Allow for correction of inaccurate commands
-setopt correct
-# case insensitive globbing
-setopt no_case_glob
-# don't print an error when there are no glob matches
-setopt no_nomatch
-# More globbing stuff.
-setopt extended_glob
 
 alias d="dirs -v"
 mcd() { mkdir -p "$@" && cd "${@:$#}" ; }
