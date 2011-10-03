@@ -376,6 +376,7 @@ compdef _unmount unmount
 
 alias e=echo
 alias g=git
+alias p=python2.7
 
 # make less display colors, have case insensitive search, quit on Ctrl-C
 # and skip search results on the current screen.
