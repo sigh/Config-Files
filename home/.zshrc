@@ -414,6 +414,15 @@ alias p=python2.7
 export LESS=RiKa
 export PAGER=less
 
+# This is mostly used to color man pages.
+export LESS_TERMCAP_mb=$(tput setaf 3) # yellow
+export LESS_TERMCAP_md=$(tput bold; tput setaf 1) # red
+export LESS_TERMCAP_me=$(tput sgr0)
+export LESS_TERMCAP_so=$(tput bold; tput setaf 3; tput setab 4) # yellow on blue
+export LESS_TERMCAP_se=$(tput rmso; tput sgr0)
+export LESS_TERMCAP_us=$(tput smul; tput setaf 2) # green
+export LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
+
 # Handy Extract Program.
 extract()
 {
