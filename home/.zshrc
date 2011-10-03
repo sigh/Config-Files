@@ -54,6 +54,15 @@ zstyle ':completion::complete:cd::directory-stack' menu yes select
 # tab through fg process automatically
 zstyle ':completion::complete:fg:*:*' menu yes select
 
+# stop when reaching beginning/end of history (further attempts then wrap)
+zstyle ':completion:*:history-words' stop yes
+# remove all duplicate words
+zstyle ':completion:*:history-words' remove-all-dups yes
+# don't list all the options (will often get the "too many options" prompt)
+zstyle ':completion:history-words:*' list no
+# we want the options to be filled in immediatly.
+zstyle ':completion:*:history-words' menu yes
+
 # tab completion
 autoload -U compinit && compinit
 source ~/.git-completion.bash
@@ -165,6 +174,9 @@ zle -N my-up-line-or-history-search-backward
 zle -N my-down-line-or-history-search-forward
 bindkey "^[[A" my-up-line-or-history-search-backward
 bindkey "^[[B" my-down-line-or-history-search-forward
+# Complete using words from history (Ctrl-N, Ctrl-P are to mimic vi bindings).
+bindkey "\C-n" _history-complete-older
+bindkey "\C-p" _history-complete-newer
 
 bindkey '^O' accept-and-infer-next-history
 bindkey ' ' magic-space
