@@ -75,6 +75,10 @@ function! <SID>CurrentWorkingDir()
     endif
 endfunction
 
+nore ; :
+" Later change this to something useful (like ;)
+nore : :echoerr ': disabled. Use ;'<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Theme/Colors
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
