@@ -221,21 +221,21 @@ bindkey '^[,' complete-files
 # Whitespace is ignored unless $3 is set.
 _quote-chars-follow-cursor() {
     local new_cursor=$CURSOR
-    local new_buffer=${BUFFER:0:$1}
+    local new_buffer=$BUFFER[1,$1]
     integer i
 
     for (( i = $1; i < $2; i++ )) ; do
-        if [[ -z $3 && ${BUFFER:$i:1} =~ $'[ \t\n\r]' ]] ; then
-            new_buffer+=${BUFFER:$i:1}
+        if [[ -z $3 && $BUFFER[$i+1] =~ $'[ \t\n\r]' ]] ; then
+            new_buffer+=$BUFFER[$i+1]
         else
-            new_buffer+=${(q)BUFFER:$i:1}
+            new_buffer+=${(q)BUFFER[$i+1]}
         fi
         if [[ $i == $CURSOR ]] ; then
             new_cursor=$(( ${#new_buffer} - 1 ))
         fi
     done
 
-    new_buffer+=${BUFFER:$2}
+    new_buffer+=$BUFFER[$2+1,$#BUFFER]
 
     # If the cursor is after the end of the region, then
     # move it forward by however much the buffer has increased.
@@ -252,7 +252,7 @@ _current-arg-position() {
     integer i
 
     for (( i=0; i < ${#BUFFER}; i++ )) ; do
-        if [[ ${BUFFER:$i:1} =~ $'[ \t\r\n]' ]] ; then
+        if [[ $BUFFER[$i+1] =~ $'[ \t\r\n]' ]] ; then
             if (( i >= CURSOR )) ; then
                 end=$i
             else
