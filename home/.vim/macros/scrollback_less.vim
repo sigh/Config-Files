@@ -1,6 +1,17 @@
 " delete all blank lines at the start of the file
 1;/./-1d
 
+" Clear the undo history (so that we can't undo past our modifications).
+" (From :h clear-undo)
+let old_undolevels = &undolevels
+set undolevels=-1
+exe "normal a \<BS>\<Esc>"
+let &undolevels = old_undolevels
+unlet old_undolevels
+
+" Don't consider the file modified.
+set nomod
+
 set nocp
 set so=0
 set hlsearch
@@ -60,7 +71,6 @@ else
     vnoremap <silent> S <Nop>
 endif
 
-
 " Q{motion} escapes the text for the shell.
 function! ShellEscape(type, ...)
     let reg_save = @@
@@ -113,9 +123,6 @@ set foldlevel=0
 
 " all filchars blank
 set fillchars=vert:\ ,stl:\ ,stlnc:\ ,diff:\ ,fold:\ 
-
-" Don't consider the file modified.
-set nomod
 
 " Syntax highlighting
 set background=light
