@@ -551,17 +551,31 @@ else
     }
     zstyle ':completion:*:*:chdir:*' file-patterns 'files *(-/):directories'
 
-    # print entire scrollback to stdout
+    # Display entire scrollback in vim.
     scrollback() {
-        (
-            local filename="$(mktemp)"
-            trap "rm -f -- '$filename'" 0
-            trap 'exit 2' 1 2 3 15
-            command screen -X hardcopy -h "$filename"
-            vim -u NONE -c "runtime! macros/scrollback_less.vim" "$filename"
-        )
+        setopt localtraps
+        local filename="$(mktemp)"
+        trap "rm -f -- '$filename'" 0
+        trap 'exit 2' 1 2 3 15
+        command screen -X hardcopy -h "$filename"
+        # Use - because we want to call scrollback from within zle
+        OUTPUT_FILE="$1" command vim -u NONE -c "runtime! macros/scrollback_less.vim" - < "$filename"
+        # Move back up over the annoying text which vim writes.
+        tput cuu 2
     }
     alias sb=scrollback
+    # Access scrollback with Alt-s, use S within vim to write to command line.
+    inline-screen-scrollback() {
+        setopt localtraps
+        local filename="$(mktemp)"
+        trap "rm -f -- '$filename'" 0
+        trap 'exit 2' 1 2 3 15
+        scrollback "$filename"
+        LBUFFER+="$(<$filename)"
+        zle redisplay
+    }
+    zle -N inline-screen-scrollback
+    bindkey '\es' inline-screen-scrollback
 
     # revert titlebar if screen messes with it
     printf "\033];$USER@${HOSTNAME%%.*}\007"
