@@ -135,3 +135,6 @@ set laststatus=2
 " Go to the end of a buffer when loading a page
 normal GL
 
+" Open the first previous.
+normal kzO
+
