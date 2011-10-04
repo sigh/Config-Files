@@ -1,12 +1,5 @@
-" This only works with one file given on the command line
-if argc() != 1
-  qa
-endif
-
 " delete all blank lines at the start of the file
-set noreadonly
 1;/./-1d
-set readonly
 
 set nocp
 set so=0
@@ -24,6 +17,10 @@ set nolist
 
 set mouse=a
 set ttymouse=xterm2
+
+if $OUTPUT_FILE != ''
+    vnoremap S :w! $OUTPUT_FILE<CR>:q!<CR>
+endif
 
 function FoldLevel(line)
   if getline(a:line) =~ '^\[\d\d:\d\d\] \[\d\+\] dilshan@[^:]\+:'
@@ -58,8 +55,6 @@ set foldmethod=expr
 set foldexpr=FoldLevel(v:lnum)
 set foldtext=DiffFoldText()
 set foldlevel=0
-set readonly
-set nomodifiable
 
 " all filchars blank
 set fillchars=vert:\ ,stl:\ ,stlnc:\ ,diff:\ ,fold:\ 
@@ -79,6 +74,14 @@ hi FoldColumn ctermfg=4 ctermbg=7
 " for the statusline.
 hi User1 ctermfg=3 ctermbg=0
 
+function ToggleFold()
+  if foldclosed('.') == -1
+    foldclose
+  else
+    foldopen
+  endif
+endfunction
+
 " mouse clicks opens folds
 nnoremap <silent> <LeftRelease> :foldopen<CR>
 
@@ -92,7 +95,7 @@ else
   noremap <SID>L Lg0zb<CR>
 endif
 
-noremap q <Esc>:q<CR>
+noremap q <Esc>:q!<CR>
 
 function MyStatusLine()
   let l:start = '[scrollback]%<'
@@ -132,4 +135,3 @@ normal GL
 
 " Open the first previous.
 normal kzO
-
