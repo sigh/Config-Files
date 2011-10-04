@@ -79,16 +79,11 @@ hi FoldColumn ctermfg=4 ctermbg=7
 " for the statusline.
 hi User1 ctermfg=3 ctermbg=0
 
-function ToggleFold()
-  if foldclosed('.') == -1
-    foldclose
-  else
-    foldopen
-  endif
-endfunction
+" mouse clicks opens folds
+nnoremap <silent> <LeftRelease> :foldopen<CR>
 
-" mouse clicks open and close folds
-nnoremap <silent> <LeftRelease> :call ToggleFold()<CR>
+" double mouse click closes fold.
+nnoremap <silent> <2-LeftMouse> :foldclose<CR>
 
 " Put cursor at end and display position
 if &wrap
