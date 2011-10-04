@@ -18,9 +18,64 @@ set nolist
 set mouse=a
 set ttymouse=xterm2
 
+function! Selector(type, ...)
+    if a:0  " Invoked from Visual mode, use '< and '> marks.
+        return "`<" . a:type . "`>"
+    elseif a:type == 'line'
+        return "'[V']"
+    elseif a:type == 'block'
+        return "`[\<C-V>`]"
+    else
+        return "`[v`]"
+    endif
+endfunction
+
 if $OUTPUT_FILE != ''
-    vnoremap S :w! $OUTPUT_FILE<CR>:q!<CR>
+    " S{motion} outputs the text and quits.
+    function! OutputCommand(type, ...)
+        let reg_save = @@
+        let selector = ""
+        if a:0
+            let selector = Selector(a:type, a:0)
+        else
+            let selector = Selector(a:type)
+        endif
+        silent exec "normal! " . selector . "y"
+        if strlen(@@) > 0
+            enew
+            normal! p
+            w! $OUTPUT_FILE
+            q!
+        else
+            let @@ = reg_save
+            echoerr "Empty selection"
+        endif
+    endfunction
+
+    nnoremap <silent> S :set opfunc=OutputCommand<CR>g@
+    vnoremap <silent> S :<C-U>call OutputCommand(visualmode(), 1)<CR>
+else
+    " Don't want to confuse myself
+    nnoremap <silent> S <Nop>
+    vnoremap <silent> S <Nop>
 endif
+
+
+" Q{motion} escapes the text for the shell.
+function! ShellEscape(type, ...)
+    let reg_save = @@
+    let selector = ""
+    if a:0
+        let selector = Selector(a:type, a:0)
+    else
+        let selector = Selector(a:type)
+    endif
+    silent exec "normal! " . selector . "d"
+    silent exec "normal! i" . shellescape(@@)
+    let @@ = reg_save
+endfunction
+nnoremap <silent> Q :set opfunc=ShellEscape<CR>g@
+vnoremap <silent> Q :<C-U>call ShellEscape(visualmode(), 1)<CR>
 
 function FoldLevel(line)
   if getline(a:line) =~ '^\[\d\d:\d\d\] \[\d\+\] dilshan@[^:]\+:'
