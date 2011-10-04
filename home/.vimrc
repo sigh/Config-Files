@@ -358,7 +358,7 @@ nmap <silent> <Leader>p :call <SID>MyPasteMode()<CR>i
 function! <SID>MyPasteMode()
     tab split
     TName 'Paste'
-    setlocal paste nonumber
+    setlocal paste nonumber nolist
     augroup my_paste
         autocmd!
         autocmd InsertLeave <buffer> call <SID>MyPasteModeEnd()
@@ -373,7 +373,7 @@ function! <SID>MyPasteModeEnd()
     autocmd! my_paste
     " Delete the group
     augroup! my_paste
-    setlocal nopaste number
+    setlocal nopaste number list
     tabclose
 endfunction
 
