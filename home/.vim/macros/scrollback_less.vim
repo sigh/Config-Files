@@ -167,18 +167,22 @@ function MyStatusLine()
   call setpos('.', l:save_cursor)
 
   let l:parts = matchlist(l:text, '\$\(.*\) (\(\d\+\) lines)$')
-  let l:cmd = l:parts[1]
-  let l:lines = l:parts[2]
+  if len(l:parts) > 0
+      let l:cmd = l:parts[1]
+      let l:lines = l:parts[2]
 
-  " Calculate the current line. Lines in the header are all line 0.
-  let l:curline = l:lines - (l:lastline - line('.'))
-  if l:curline < 0
-    let l:curline = 0
-  endif
+      " Calculate the current line. Lines in the header are all line 0.
+      let l:curline = l:lines - (l:lastline - line('.'))
+      if l:curline < 0
+        let l:curline = 0
+      endif
 
-  let l:percent = l:curline <= 0 ? 0 : (l:lines == 1 ? 100 : (l:curline-1) * 100 / (l:lines - 1))
+      let l:percent = l:curline <= 0 ? 0 : (l:lines == 1 ? 100 : (l:curline-1) * 100 / (l:lines - 1))
 
-  return l:start . '%1*' . l:cmd . '%*%= ' . l:curline . '/' . l:lines . ' [' . l:percent . '%%]' . l:end
+      return l:start . '%1*' . l:cmd . '%*%= ' . l:curline . '/' . l:lines . ' [' . l:percent . '%%]' . l:end
+    else
+      return l:start . '%=' .l:end
+    fi
 endfunction
 
 " Set the status line
