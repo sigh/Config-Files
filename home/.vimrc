@@ -3,6 +3,16 @@
 "   http://www.derekwyatt.org/vim/the-vimrc-file/
 "   http://vim.wikia.com/wiki/Highlight_all_search_pattern_matches
 
+" Time to try an experiment... No arrow keys!
+inoremap  <Up>     <NOP>
+inoremap  <Down>   <NOP>
+inoremap  <Left>   <NOP>
+inoremap  <Right>  <NOP>
+noremap   <Up>     <NOP>
+noremap   <Down>   <NOP>
+noremap   <Left>   <NOP>
+noremap   <Right>  <NOP>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
