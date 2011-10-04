@@ -73,8 +73,8 @@ zstyle ':completion:*:history-words' menu yes
 # This stops completion if we paste text into the terminal which has tabs.
 zstyle ':completion:*' insert-tab pending
 
-# tab completion
-autoload -U compinit && compinit
+# tab completion # -u avoid unnecessary security check.
+autoload -U compinit && compinit -u
 source ~/.git-completion.bash
 
 # Completion is done from both ends.
