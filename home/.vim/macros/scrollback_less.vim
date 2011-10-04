@@ -196,8 +196,14 @@ endfunction
 set statusline=%!MyStatusLine()
 set laststatus=2
 
-" Go to the end of a buffer when loading a page
-normal GL
+" Go to the end of a buffer then go up to the previous command.
+normal GLk
 
-" Open the first previous.
-normal kzO
+" Find the start of the output, if possible
+let start_line = min([foldclosedend('.'), line('.') + 2])
+
+" Open the fold
+normal zO
+
+" Go to our desired start line
+exec start_line
