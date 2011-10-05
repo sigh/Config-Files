@@ -204,7 +204,12 @@ map <silent> <C-Q> <Esc>:BD<CR>
 " Always split on right when vertical
 set splitright
 
+" Y yanks to the end of the line (more consistent with other capital letter
+" commands.
 noremap Y y$
+
+" Ctrl-A on the command line goes to the start of the line (like in shell).
+cnoremap <C-A> <Home>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swith buffer with alt keys
