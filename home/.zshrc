@@ -348,7 +348,7 @@ setopt pushd_ignore_dups
 setopt cdable_vars
 
 alias d="dirs -v"
-mcd() { mkdir -p "$@" && cd "${@:$#}" ; }
+mcd() { mkdir -p "$@" && cd "$@[-1]" ; }
 compdef _cd mcd
 
 # strings of dots are expanded to parents if they form the start of a word.
