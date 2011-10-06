@@ -382,7 +382,7 @@ setopt notify
 READNULLCMD=less
 # Report timing stats for any command longer than 1 second
 REPORTTIME=1
-TIMEFMT="$(tput setf 4)%E real  %U user  %S system  %P cpu  %MkB mem $(tput sgr0)$ %J"
+TIMEFMT="$(tput setf 1)%E real  %U user  %S system  %P cpu  %MkB mem $(tput sgr0)$ %J"
 
 # config for python interactive shell
 export PYTHONSTARTUP="$HOME/.pystartup"
@@ -595,7 +595,7 @@ fi
 # reload zshrc for the current shell
 reload() { . ~/.zshrc }
 # use SIGCONT because it is does not terminate the shell by default
-trap reload CONT
+trap 'touch "$HOME/.zshrc"' CONT
 
 # full history file is used to create a verbose detailed record of my commands.
 if [[ -z $FULLHISTFILE ]] ; then
@@ -628,9 +628,14 @@ _status_ps1() {
         echo -n "%(?..  %F{red}[exit %?]\n)"
     fi
 }
-PS1=$'$(_status_ps1)%F{blue}[%D{%H:%M}] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
-PS2=$'%F{blue}> %f'
-PS4=$'%F{magenta}+%N:%i> %f'
+
+# For debugging bash scripts (must be defined before PROMPT4)
+export PS4="\[$(tput setf 5)\]+\[$(tput sgr0)\] "
+
+# Rename prompt variables so that they don't confuse other subshells.
+PROMPT=$'$(_status_ps1)%F{blue}[%D{%H:%M}] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
+PROMPT2=$'%F{blue}> %f'
+PROMPT4=$'%F{magenta}+%N:%i> %f'
 export GIT_PS1_SHOWDIRTYSTATE=true
 
 # Show this at the end of commands which don't output a newline at the end.
@@ -640,6 +645,7 @@ PROMPT_EOL_MARK='%B%S %s%b'
 setopt TRANSIENT_RPROMPT
 
 _PS1_NEW_CMD=2
+_ZSHRC_LAST_MODIFIED_TIME="$(stat -c %Y $HOME/.zshrc)"
 precmd() {
     # helper to let us know the first time we show the prompt after a command finishs.
     local exit_status=$?
@@ -649,6 +655,9 @@ precmd() {
         _PS1_NEW_CMD=2
     else
         _PS1_NEW_CMD=0
+    fi
+    if (( _ZSHRC_LAST_MODIFIED_TIME < $(stat -c %Y $HOME/.zshrc) )) ; then
+        reload
     fi
 }
 preexec() {
