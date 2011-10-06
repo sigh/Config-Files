@@ -628,9 +628,14 @@ _status_ps1() {
         echo -n "%(?..  %F{red}[exit %?]\n)"
     fi
 }
-PS1=$'$(_status_ps1)%F{blue}[%D{%H:%M}] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
-PS2=$'%F{blue}> %f'
-PS4=$'%F{magenta}+%N:%i> %f'
+
+# For debugging bash scripts (must be defined before PROMPT4)
+export PS4="\[$(tput setf 5)\]+\[$(tput sgr0)\] "
+
+# Rename prompt variables so that they don't confuse other subshells.
+PROMPT=$'$(_status_ps1)%F{blue}[%D{%H:%M}] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
+PROMPT2=$'%F{blue}> %f'
+PROMPT4=$'%F{magenta}+%N:%i> %f'
 export GIT_PS1_SHOWDIRTYSTATE=true
 
 # Show this at the end of commands which don't output a newline at the end.
