@@ -432,8 +432,9 @@ silent ! mkdir -p ~/.vim/.swap
 
 " set backup to go to backup directories
 set backup
-set backupdir=~/.vim/.backup
-set directory=~/.vim/.swap
+set backupdir=~/.vim/.backup//
+set directory=~/.vim/.swap// " the slashes at the end mean that the files are
+                             " stored with the full path
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tabs
