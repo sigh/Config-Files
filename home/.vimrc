@@ -158,8 +158,8 @@ set fillchars=vert:\ ,stl:\ ,stlnc:\ ,diff:\ ,fold:\
 set virtualedit=all
 
 " cursor doesn't honor lines
-nmap j gj
-nmap k gk
+map j gj
+map k gk
 
 " set history to something large
 set history=1000
