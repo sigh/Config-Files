@@ -389,7 +389,7 @@ if executable("pbcopy")
 endif
 
 " Set text wrapping toggles
-nmap <silent> <Leader>w :set invwrap wrap?<CR>
+nmap <silent> <Leader>r :set invwrap wrap?<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Folding
