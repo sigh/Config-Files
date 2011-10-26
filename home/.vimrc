@@ -67,6 +67,9 @@ set ffs=unix,dos,mac
 " make vim smoother
 set ttyfast
 
+" Try to preserve the cursor column even if it is not Vi compatible.
+set nostartofline
+
 " Keyword lookup
 autocmd FileType * exec "setlocal keywordprg=vimdoc\\ -" . &ft
 
