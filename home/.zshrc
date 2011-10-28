@@ -645,7 +645,6 @@ PROMPT_EOL_MARK='%B%S %s%b'
 setopt TRANSIENT_RPROMPT
 
 _PS1_NEW_CMD=2
-_ZSHRC_LAST_MODIFIED_TIME="$(stat -c %Y $HOME/.zshrc)"
 precmd() {
     # helper to let us know the first time we show the prompt after a command finishs.
     local exit_status=$?
@@ -655,9 +654,6 @@ precmd() {
         _PS1_NEW_CMD=2
     else
         _PS1_NEW_CMD=0
-    fi
-    if (( _ZSHRC_LAST_MODIFIED_TIME < $(stat -c %Y $HOME/.zshrc) )) ; then
-        reload
     fi
 }
 preexec() {
