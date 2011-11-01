@@ -214,6 +214,9 @@ noremap Y y$
 " Ctrl-A on the command line goes to the start of the line (like in shell).
 cnoremap <C-A> <Home>
 
+" Allow Ctrl-Z even in insert mode.
+imap <C-Z> <C-O><C-Z>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swith buffer with alt keys
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
