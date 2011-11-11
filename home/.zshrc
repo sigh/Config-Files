@@ -77,6 +77,11 @@ zstyle ':completion:*' insert-tab pending
 autoload -U compinit && compinit -u
 source ~/.git-completion.bash
 
+_git-restore() {
+    compadd - $( git tag -l )
+}
+compdef _git-restore git-restore
+
 # Completion is done from both ends.
 setopt complete_in_word
 # Show the type of each file with a trailing identifying mark.

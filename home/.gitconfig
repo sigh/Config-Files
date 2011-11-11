@@ -34,9 +34,6 @@
     # commit all with an message (which need not be quoted)
     cm = "!f() { git commit -a -m \"$*\" ; }; f"
 
-    # Restort stash from tag
-    restore = stash apply
-
     # force an action on a dirty working set
     #  if there are local changes then we stash them first
     force = "!f() { if git save -fad __force ; then git reset --hard HEAD && git \"$@\" && git restore --quiet __force ; else git \"$@\"; fi ; }; f"

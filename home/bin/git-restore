@@ -1,0 +1,4 @@
+#!/bin/sh
+# This is a standalone script so that zsh completion works correctly on it.
+
+git stash apply "$1"
