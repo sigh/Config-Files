@@ -1,0 +1,49 @@
+#!/bin/sh
+
+force=
+all=
+untracked=
+delete=
+
+while getopts "faud" flag ; do
+    case $flag in
+        f)  force=-f ;;
+        a)  all=--all ;;
+        u)  untracked=--include-untracked ;;
+        d)  delete=1 ;;
+    esac
+done
+shift $(( $OPTIND - 1 ))
+
+tag_name="$1"
+
+# make sure that a tag name is given.
+if [[ -z $tag_name ]]; then
+    echo "Not tag name given" 1>&2
+    exit 1
+fi
+
+# Ensure that the tag name doesn't exist (unless we have force set).
+if [[ -z $force && -n $(git tag -l "$tag_name") ]]; then
+    echo "Tag $tag_name already exists" 1>&2
+    exit 1
+fi
+
+# Try to create the stash.
+if [[ -z $(git stash save $all $untracked | grep '^HEAD is now at') ]]; then
+    echo "Stash could not be created" 1>&2
+    exit 1
+fi
+
+stash_sha=$(git rev-list --max-count=1 stash@{0})
+
+# We want to return the stash back to the original state. The only questions is
+# if the working directory and index should be changed back.
+if [[ -n $delete ]]; then
+    git stash drop -q > /dev/null
+else
+    git stash pop -q > /dev/null
+fi
+
+# create the tag
+git tag $force "$tag_name" "$stash_sha"

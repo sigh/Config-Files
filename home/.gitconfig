@@ -34,17 +34,15 @@
     # commit all with an message (which need not be quoted)
     cm = "!f() { git commit -a -m \"$*\" ; }; f"
 
-    # Stash current working directory but save it as a tag
-    save = "!f() { git tag \"$@\" \"$(git stash create)\" 2> /dev/null ; }; f"
     # Restort stash from tag
     restore = stash apply
 
     # force an action on a dirty working set
     #  if there are local changes then we stash them first
-    force = "!f() { if git save -f __force ; then git reset --hard HEAD && git \"$@\" && git restore --quiet __force ; else git \"$@\"; fi ; }; f"
+    force = "!f() { if git save -fad __force ; then git reset --hard HEAD && git \"$@\" && git restore --quiet __force ; else git \"$@\"; fi ; }; f"
 
     # reset to HEAD while saving the working directory.
-    safe-reset = "!f() { git save -f __before_reset && git reset --hard HEAD; }; f"
+    safe-reset = "!f() { git save -fd "$@" __before_reset ; }; f"
 
     # share the repo on the network.
     share = "!f() { git update-server-info && cd \"$(git rev-parse --git-dir)\" && webshare \"$@\"; }; f"
