@@ -491,11 +491,10 @@ endfunction
 autocmd FileType python,haskell,lisp setlocal expandtab nocindent
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" PLugin options
+" Plugin options
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Mini-buffer explorer
-
 let g:miniBufExplMaxSize = 1
 let g:miniBufExplModSelTarget = 1
 let g:miniBufExplUseSingleClick = 1
@@ -503,7 +502,6 @@ let g:miniBufExplorerMoreThanOne = 1
 let g:miniBufExplSplitBelow = 1
 
 " NERD_commenter
-
 let g:NERDCreateDefaultMappings = 0
 let g:NERDSpaceDelims = 1
 map  <silent> <Leader>cc <plug>NERDCommenterAlignBoth
@@ -514,6 +512,9 @@ nmap <silent> <Leader>ca <plug>NERDCommenterAppend
 nmap <silent> <C-c> <plug>NERDCommenterTogglej
 vmap <silent> <C-c> <plug>NERDCommenterToggle
 imap <silent> <C-c> <plug>NERDCommenterInInsert
+
+" EasyMotion
+let g:EasyMotion_keys = "abcdefghijklmnopqrstuvwxyz"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spelling
