@@ -256,12 +256,6 @@ endfunction
 " Visual Cues
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" show matching brackets for a moment
-set showmatch
-
-" how many tenths of a second to blink matching brackets for
-set matchtime=5
-
 " highlight searched phrases
 set hlsearch
 
