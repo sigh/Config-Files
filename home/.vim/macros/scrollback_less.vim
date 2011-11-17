@@ -199,6 +199,9 @@ set laststatus=2
 " Go to the end of a buffer then go up to the previous command.
 normal GLk
 
+" Ensure that we can see as much of the current command as possible.
+normal zt
+
 " Find the start of the output, if possible
 let start_line = min([foldclosedend('.'), line('.') + 2])
 
