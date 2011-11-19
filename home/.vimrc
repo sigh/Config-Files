@@ -94,6 +94,9 @@ function! <SID>CurrentWorkingDir()
     endif
 endfunction
 
+" Sudo to write
+cmap w!! w !sudo tee % >/dev/null
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Theme/Colors
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
