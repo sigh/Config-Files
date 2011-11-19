@@ -76,6 +76,9 @@ autocmd FileType * exec "setlocal keywordprg=vimdoc\\ -" . &ft
 " Set leader to ","
 let mapleader = ","
 
+" Better Completion
+set completeopt=longest,menuone,preview
+
 " Shortcut to get current file's directory
 cabbr <expr> %% <SID>CurrentWorkingDir()
 
