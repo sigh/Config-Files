@@ -70,6 +70,9 @@ set ttyfast
 " Try to preserve the cursor column even if it is not Vi compatible.
 set nostartofline
 
+" Set default textwidth to 80
+set textwidth=80
+
 " Keyword lookup
 autocmd FileType * exec "setlocal keywordprg=vimdoc\\ -" . &ft
 
@@ -322,7 +325,7 @@ function! <SID>ResetAll()
 endfunction
 
 " what to show when I hit :set list
-set listchars=tab:·\ ,trail:…,extends:»,precedes:«
+set listchars=tab:·\ ,extends:»,precedes:«
 set list
 
 set scrolloff=4
@@ -347,6 +350,7 @@ set showmode
 " (source: http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html)
 autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl /\s\+\%#\@!$/
 autocmd InsertLeave * syn clear EOLWS | syn match EOLWS excludenl /\s\+$/
+autocmd BufRead,BufNewFile * syn match EOLWS excludenl /\s\+$/
 highlight EOLWS ctermbg=red guibg=red
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -571,9 +575,7 @@ imap <Leader>s <Esc>:call <SID>spell()<CR>
 " Detect Go filetype
 autocmd BufNewFile,BufRead *.go set ft=go
 
-highlight def link TooLongLine Error
-autocmd BufRead,BufNewFile * match none TooLongLine
-autocmd BufRead,BufNewFile *.c,*.cc,*.cpp,*.h,*.js,*.py match TooLongLine /\%>80v./
+autocmd BufRead,BufNewFile *.c,*.cc,*.cpp,*.h,*.js,*.py set colorcolumn=+1
 
 " Set some settings for editing makefiles
 augroup makefile
