@@ -226,6 +226,21 @@ nnoremap VaB vaBV
 nnoremap Va{ va{V
 nnoremap Va( va(V
 
+" New line while in normal mode.
+map <CR> o<Esc>
+
+" Delete entire line except indenting.
+map <Leader>d ^d$
+
+" Easy window navigation.
+noremap <C-h>  <C-w>h
+noremap <C-j>  <C-w>j
+noremap <C-k>  <C-w>k
+noremap <C-l>  <C-w>l
+
+" Stop hash key removing indenting.
+inoremap # X<C-O>h<C-O>r#<C-O>l
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swith buffer with alt keys
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
