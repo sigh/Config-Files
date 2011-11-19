@@ -217,6 +217,15 @@ cnoremap <C-A> <Home>
 " Allow Ctrl-Z even in insert mode.
 imap <C-Z> <C-O><C-Z>
 
+" Fix linewise visual selection of various text objects
+nnoremap VV V
+nnoremap Vit vitVkoj
+nnoremap Vat vatV
+nnoremap Vab vabV
+nnoremap VaB vaBV
+nnoremap Va{ va{V
+nnoremap Va( va(V
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swith buffer with alt keys
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
