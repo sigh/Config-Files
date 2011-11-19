@@ -235,8 +235,13 @@ nnoremap VaB vaBV
 nnoremap Va{ va{V
 nnoremap Va( va(V
 
-" New line while in normal mode.
-map <CR> o<Esc>
+" New line while in normal mode
+autocmd BufRead,BufNewFile * call <SID>SmartCRMapping()
+function s:SmartCRMapping()
+    if &buftype != "quickfix" && &buftype != "help"
+        map <buffer> <CR> o<Esc>
+    endif
+endfunction
 
 " Delete entire line except indenting.
 map <Leader>d ^d$
