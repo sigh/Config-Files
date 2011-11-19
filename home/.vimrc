@@ -579,6 +579,7 @@ imap <Leader>s <Esc>:call <SID>spell()<CR>
 autocmd BufNewFile,BufRead *.go set ft=go
 
 autocmd BufRead,BufNewFile *.c,*.cc,*.cpp,*.h,*.js,*.py set colorcolumn=+1
+highlight ColorColumn ctermbg=blue ctermfg=white
 
 " Set some settings for editing makefiles
 augroup makefile
