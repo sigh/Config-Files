@@ -247,6 +247,9 @@ noremap <C-l>  <C-w>l
 " Stop hash key removing indenting.
 inoremap # X<C-O>h<C-O>r#<C-O>l
 
+" Resize splits when the window is resized
+au VimResized * exe "normal! \<c-w>="
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swith buffer with alt keys
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
