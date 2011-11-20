@@ -285,9 +285,22 @@ function s:OpenQuickfixWindow()
 endfunction
 
 " Use ack for grep (for some reason set greprg didn't like the space)
-let &grepprg="ack --column"
+let &grepprg="ack --column -H"
 set grepformat=%f:%l:%c:%m
-command -nargs=* A silent grep! <args> | redraw! | normal <Leader>qq
+command -bang -complete=shellcmd -nargs=* A call s:Ack(<q-args>, "<bang>")
+
+function! s:Ack(query, async)
+    if a:async != ""
+        let grep_cmd = &grepprg . ' ' . a:query
+        call asynccommand#run(grep_cmd, asynchandler#quickfix(&grepformat, '[Found: %s] ack ' . a:query))
+        redraw!
+    else
+        exec 'silent grep! ' . a:query
+        redraw!
+        " Couldn't get <Leader> to work
+        exec 'normal ,qq'
+    endif
+endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swith buffer with alt keys

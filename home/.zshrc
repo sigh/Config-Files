@@ -395,6 +395,15 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 # editor setup
 export EDITOR=vim
 export VISUAL=vim
+if [[ -n $(vim --version | grep +clientserver) ]] ; then
+    vim() {
+        local server_name=$$
+        if [[ -n $STY ]] ; then
+            server_name="$STY-$WINDOW-$$"
+        fi
+        command vim --servername "$server_name" "$@"
+    }
+fi
 alias vi=vim
 alias v=vim
 # ignores for vim
