@@ -236,12 +236,7 @@ nnoremap Va{ va{V
 nnoremap Va( va(V
 
 " New line while in normal mode
-autocmd BufRead,BufNewFile * call <SID>SmartCRMapping()
-function s:SmartCRMapping()
-    if &buftype != "quickfix" && &buftype != "help"
-        map <buffer> <CR> o<Esc>
-    endif
-endfunction
+map <CR> o<Esc>
 
 " Delete entire line except indenting.
 map <Leader>d ^d$
@@ -282,6 +277,7 @@ endfunction
 
 autocmd BufReadPost quickfix map <buffer> <Tab> <Enter><Leader>qq
 autocmd BufReadPost quickfix map <buffer> <S-Tab> <Nop>
+autocmd BufReadPost quickfix noremap <buffer> <CR> <CR>
 autocmd BufReadPost quickfix setlocal nobuflisted
 autocmd BufReadPost quickfix setlocal nocursorline
 map <silent> <Leader>qq :call <SID>OpenQuickfixWindow()<CR>
