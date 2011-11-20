@@ -277,6 +277,20 @@ function! s:NextTextObject(motion, dir)
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Quickfix
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+autocmd BufReadPost quickfix map <buffer> <Tab> <Enter><Leader>qq
+autocmd BufReadPost quickfix map <buffer> <S-Tab> <Nop>
+autocmd BufReadPost quickfix setlocal nobuflisted
+map <silent> <Leader>qq :call <SID>OpenQuickfixWindow()<CR>
+map <silent> <Leader>qc :cclose
+function s:OpenQuickfixWindow()
+    CMiniBufExplorer
+    botright copen
+endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swith buffer with alt keys
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
