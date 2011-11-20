@@ -9,9 +9,11 @@ if !exists("b:quickfix_settings_loaded")
   setlocal nocursorline
 
   " Folding
-  setlocal foldlevel=0
-  setlocal foldmethod=expr
   setlocal foldexpr=matchstr(getline(v:lnum),'^[^\|]\\+')==#matchstr(getline(v:lnum+1),'^[^\|]\\+')?1:'<1'
+  setlocal foldlevel=0
 
   let b:quickfix_settings_loaded=1
 endif
+
+" For some reason async doesn't work if this is inside the if.
+setlocal foldmethod=expr
