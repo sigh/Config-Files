@@ -275,13 +275,10 @@ endfunction
 " Quickfix
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-autocmd BufReadPost quickfix map <buffer> <Tab> <Enter><Leader>qq
-autocmd BufReadPost quickfix map <buffer> <S-Tab> <Nop>
-autocmd BufReadPost quickfix noremap <buffer> <CR> <CR>
-autocmd BufReadPost quickfix setlocal nobuflisted
-autocmd BufReadPost quickfix setlocal nocursorline
 map <silent> <Leader>qq :call <SID>OpenQuickfixWindow()<CR>
-map <silent> <Leader>qc :cclose
+map <silent> <Leader>qc :cclose<CR>
+map <silent> <Leader>qn :cnext<CR>
+map <silent> <Leader>qp :cprev<CR>
 function s:OpenQuickfixWindow()
     CMiniBufExplorer
     botright copen
