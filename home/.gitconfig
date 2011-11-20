@@ -22,6 +22,9 @@
     # short but comprehensive log
     l = log --date=short --first-parent --pretty=format:'%C(ul)%s%Creset%n%C(yellow)%h %Creset%ad %Cblue%ae %Cgreen(%cr)%Creset%Cred%d%n' --stat
 
+    # display of branch & tag topology
+    graph = log --graph --branches --date=short --pretty=format:'%C(ul)%s%Creset%n%C(yellow)%h %Creset%ad %Cgreen(%cr)%Creset%Cred%d%n' --simplify-by-decoration
+
     # display all commits in all branches
     rl = rev-list --pretty=oneline --all --graph --abbrev-commit --color=auto -n 100
 
