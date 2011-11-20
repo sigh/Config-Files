@@ -328,12 +328,6 @@ endfunction
 " Visual Cues
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" show matching brackets for a moment
-set showmatch
-
-" how many tenths of a second to blink matching brackets for
-set matchtime=5
-
 " highlight searched phrases
 set hlsearch
 
@@ -398,6 +392,9 @@ autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl /\s\+\%#\@!$/
 autocmd InsertLeave * syn clear EOLWS | syn match EOLWS excludenl /\s\+$/
 autocmd BufRead,BufNewFile * syn match EOLWS excludenl /\s\+$/
 highlight EOLWS ctermbg=red guibg=red
+
+" Make matching paren less distracting.
+highlight MatchParen ctermbg=yellow
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Text Formatting/Layout
@@ -568,11 +565,10 @@ endfunction
 autocmd FileType python,haskell,lisp setlocal expandtab nocindent
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" PLugin options
+" Plugin options
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Mini-buffer explorer
-
 let g:miniBufExplMaxSize = 1
 let g:miniBufExplModSelTarget = 1
 let g:miniBufExplUseSingleClick = 1
@@ -580,7 +576,6 @@ let g:miniBufExplorerMoreThanOne = 1
 let g:miniBufExplSplitBelow = 1
 
 " NERD_commenter
-
 let g:NERDCreateDefaultMappings = 0
 let g:NERDSpaceDelims = 1
 map  <silent> <Leader>cc <plug>NERDCommenterAlignBoth
@@ -591,6 +586,9 @@ nmap <silent> <Leader>ca <plug>NERDCommenterAppend
 nmap <silent> <C-c> <plug>NERDCommenterTogglej
 vmap <silent> <C-c> <plug>NERDCommenterToggle
 imap <silent> <C-c> <plug>NERDCommenterInInsert
+
+" EasyMotion
+let g:EasyMotion_keys = "abcdefghijklmnopqrstuvwxyz"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spelling
