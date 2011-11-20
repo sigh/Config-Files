@@ -283,6 +283,7 @@ endfunction
 autocmd BufReadPost quickfix map <buffer> <Tab> <Enter><Leader>qq
 autocmd BufReadPost quickfix map <buffer> <S-Tab> <Nop>
 autocmd BufReadPost quickfix setlocal nobuflisted
+autocmd BufReadPost quickfix setlocal nocursorline
 map <silent> <Leader>qq :call <SID>OpenQuickfixWindow()<CR>
 map <silent> <Leader>qc :cclose
 function s:OpenQuickfixWindow()
@@ -388,6 +389,10 @@ set laststatus=2
 
 " always show the mode we are in
 set showmode
+
+" Underline the current line. Especially useful for knowing the current line
+" of an inactive window.
+set cursorline
 
 " Highlight whitespace at the end of the line
 " (source: http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html)
