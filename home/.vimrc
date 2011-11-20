@@ -604,7 +604,9 @@ imap <Leader>s <Esc>:call <SID>spell()<CR>
 " Detect Go filetype
 autocmd BufNewFile,BufRead *.go set ft=go
 
-autocmd BufRead,BufNewFile *.c,*.cc,*.cpp,*.h,*.js,*.py set colorcolumn=+1
+" For some reason setlocal on the filetypes isn't working properly.
+autocmd BufRead,BufNewFile * setlocal colorcolumn=
+autocmd BufRead,BufNewFile *.c,*.cc,*.cpp,*.h,*.js,*.py setlocal colorcolumn=+1
 highlight ColorColumn ctermbg=blue ctermfg=white
 
 " Set some settings for editing makefiles
