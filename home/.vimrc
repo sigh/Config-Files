@@ -284,6 +284,11 @@ function s:OpenQuickfixWindow()
     botright copen
 endfunction
 
+" Use ack for grep (for some reason set greprg didn't like the space)
+let &grepprg="ack --column"
+set grepformat=%f:%l:%c:%m
+command -nargs=* A silent grep! <args> | redraw! | normal <Leader>qq
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Swith buffer with alt keys
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
