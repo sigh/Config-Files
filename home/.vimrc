@@ -236,7 +236,8 @@ nnoremap Va{ va{V
 nnoremap Va( va(V
 
 " New line while in normal mode
-map <CR> o<Esc>
+map <Leader>o o<Esc>
+map <Leader>O O<Esc>
 
 " Delete entire line except indenting.
 map <Leader>d ^d$
