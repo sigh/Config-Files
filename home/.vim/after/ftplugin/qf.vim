@@ -3,7 +3,6 @@
 if !exists("b:quickfix_settings_loaded")
   map <buffer> <Tab> <Enter><Leader>qq
   map <buffer> <S-Tab> <Nop>
-  noremap <buffer> <CR> <CR>
 
   setlocal nobuflisted
   setlocal nocursorline
