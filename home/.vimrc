@@ -249,7 +249,6 @@ noremap <C-k>  <C-w>k
 noremap <C-l>  <C-w>l
 
 " Stop hash key removing indenting.
-inoremap # X<C-O>h<C-O>r#<C-O>l
 
 " Resize splits when the window is resized
 au VimResized * exe "normal! \<c-w>="
@@ -423,9 +422,6 @@ set autoindent
 " keep the existing indent structure when autoindenting
 set copyindent
 
-" do c-style indenting
-set cindent
-
 " Tab and Shift-Tab indent in visual mode
 vnoremap <Tab> >gv
 vnoremap <S-Tab> <gv
@@ -572,11 +568,6 @@ function! <SID>SetDiffMaps()
     " TODO: when diff_changes can take patches:
     "  <Leader>dd when there is no diff window should do a diff using VCS
 endfunction
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Language specific
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-autocmd FileType python,haskell,lisp setlocal expandtab nocindent
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugin options
