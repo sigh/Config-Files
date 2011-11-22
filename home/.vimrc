@@ -279,7 +279,10 @@ endfunction
 map <silent> <Leader>qq :call <SID>OpenQuickfixWindow()<CR>
 map <silent> <Leader>qc :cclose<CR>
 map <silent> <Leader>qn :cnext<CR>
+map <silent> <Leader>q<Tab> :cnext<CR>
 map <silent> <Leader>qp :cprev<CR>
+map <silent> <Leader>q<S-Tab> :cprev<CR>
+map <silent> <Leader>Q<S-Tab> :cprev<CR>
 function s:OpenQuickfixWindow()
     CMiniBufExplorer
     botright copen
@@ -299,7 +302,7 @@ function! s:Ack(query, async)
         exec 'silent grep! ' . a:query
         redraw!
         " Couldn't get <Leader> to work
-        exec 'normal ,qq'
+        normal ,qq
     endif
 endfunction
 
