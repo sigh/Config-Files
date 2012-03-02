@@ -248,7 +248,8 @@ noremap <C-j>  <C-w>j
 noremap <C-k>  <C-w>k
 noremap <C-l>  <C-w>l
 
-" Stop hash key removing indenting.
+" allow the . to execute once for each line of a visual selection
+vnoremap . :normal .<CR>
 
 " Resize splits when the window is resized
 au VimResized * exe "normal! \<c-w>="
