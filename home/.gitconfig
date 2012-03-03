@@ -19,6 +19,9 @@
     co = checkout
     ls = ls-files
 
+    # worddiff
+    wd = --word-diff-regex='[a-zA-Z0-9_]+|.' --color-words
+
     # short but comprehensive log
     l = log --date=short --first-parent --pretty=format:'%C(ul)%s%Creset%n%C(yellow)%h %Creset%ad %Cblue%ae %Cgreen(%cr)%Creset%Cred%d%n' --stat
 
