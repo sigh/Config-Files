@@ -58,3 +58,5 @@
 [diff]
     renames = copies
     mnemonicprefix = true
+[rerere]
+    enabled = true
