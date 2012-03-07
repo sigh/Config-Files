@@ -23,7 +23,7 @@
     wd = --word-diff-regex='[a-zA-Z0-9_]+|.' --color-words
 
     # short but comprehensive log
-    l = log --date=short --first-parent --pretty=format:'%C(ul)%s%Creset%n%C(yellow)%h %Creset%ad %Cblue%ae %Cgreen(%cr)%Creset%Cred%d%n' --stat
+    l = log --date=short --first-parent --pretty=format:'%C(ul)%C(blue)%s%+gs%Creset%n%C(yellow)%h %Creset%ad %C(magenta)%ae %Cgreen(%cr)%Creset%Cred%d%n' --stat -g
 
     # display of branch & tag topology
     graph = log --graph --branches --date=short --pretty=format:'%C(ul)%s%Creset%n%C(yellow)%h %Creset%ad %Cgreen(%cr)%Creset%Cred%d%n' --simplify-by-decoration
