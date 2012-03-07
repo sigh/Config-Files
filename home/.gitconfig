@@ -19,14 +19,16 @@
     co = checkout
     ls = ls-files
 
+    amend = commit --amend -C HEAD
+
     # worddiff
     wd = diff --word-diff-regex='[a-zA-Z0-9_]+|.' --color-words
 
-    # short but comprehensive log
-    l = log --date=short --first-parent --pretty=format:'%C(ul)%C(blue)%s%+gs%Creset%n%C(yellow)%h %Creset%ad %C(magenta)%ae %Cgreen(%cr)%Creset%Cred%d%n' --stat -g
+    # Nicely formatted log
+    l = log --date=short --first-parent --pretty=format:'%C(bold)%C(ul)%C(blue)%s%+gs%Creset%n%C(yellow)%h %Creset%ad %C(magenta)%ae %Cgreen(%cr)%Creset%Cred%d%n' --stat -g
 
     # display of branch & tag topology
-    graph = log --graph --branches --date=short --pretty=format:'%C(ul)%s%Creset%n%C(yellow)%h %Creset%ad %Cgreen(%cr)%Creset%Cred%d%n' --simplify-by-decoration
+    graph = log --graph --branches --date=short --pretty=format:'%C(bold)%C(ul)%C(blue)%s%Creset%n%C(yellow)%h %Creset%ad %Cgreen(%cr)%Creset%Cred%d%n' --simplify-by-decoration
 
     # display all commits in all branches
     rl = rev-list --pretty=oneline --all --graph --abbrev-commit --color=auto -n 100
