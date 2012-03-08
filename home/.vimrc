@@ -310,7 +310,7 @@ function! s:Ack(query, async)
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Swith buffer with alt keys
+" Swith buffer
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " NORMAL mode bindings
@@ -323,7 +323,13 @@ noremap <unique> <script> 6 :b! 6<CR>
 noremap <unique> <script> 7 :b! 7<CR>
 noremap <unique> <script> 8 :b! 8<CR>
 noremap <unique> <script> 9 :b! 9<CR>
-noremap <unique> <script> <silent> - :call <SID>SwitchToBuffer()<CR>
+
+" <count>- swithes to buffer <count>. With no count it switches the the previous
+" buffer.
+" NOTE: <C-U> is required is required to remove the line range that you get
+"       when typing ':' after a count.
+noremap <unique> <script> <silent> - :<C-U>call <SID>SwitchToBuffer()<CR>
+
 " INSERT mode bindings
 inoremap <unique> <script> 1 <esc>:b! 1<CR>
 inoremap <unique> <script> 2 <esc>:b! 2<CR>
@@ -338,9 +344,19 @@ inoremap <unique> <script> 0 <esc>:b! 10<CR>
 
 function! <SID>SwitchToBuffer()
     if v:count == 0
-        e # " edit previous buffer
-    else
+        if buffer_exists('#')
+            e # " edit previous buffer
+        else
+            echohl Error
+            echo "No previous buffer"
+            echohl None
+        endif
+    elseif buffer_exists(v:count)
         exec "b! " . v:count
+    else
+        echohl Error
+        echo "Buffer " . v:count . " does not exist"
+        echohl None
     endif
 endfunction
 
