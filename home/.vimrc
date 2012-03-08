@@ -424,9 +424,9 @@ set cursorline
 
 " Highlight whitespace at the end of the line
 " (source: http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html)
-autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl /\s\+\%#\@!$/
-autocmd InsertLeave * syn clear EOLWS | syn match EOLWS excludenl /\s\+$/
-autocmd BufRead,BufNewFile * syn match EOLWS excludenl /\s\+$/
+autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl containedin=ALL /\s\+\%#\@!$/
+autocmd InsertLeave * syn clear EOLWS | syn match EOLWS excludenl containedin=ALL /\s\+$/
+autocmd BufRead,BufNewFile * syn match EOLWS excludenl containedin=ALL /\s\+$/
 highlight EOLWS ctermbg=red guibg=red
 
 " Make matching paren less distracting.
