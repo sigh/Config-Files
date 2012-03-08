@@ -223,6 +223,9 @@ noremap Y y$
 " Ctrl-A on the command line goes to the start of the line (like in shell).
 cnoremap <C-A> <Home>
 
+" Ctrl-S on the command line is a shortcut for the smartcase function.
+cnoremap <C-S> \=SC("")<Left><Left>
+
 " Allow Ctrl-Z even in insert mode.
 imap <C-Z> <C-O><C-Z>
 
