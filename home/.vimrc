@@ -488,6 +488,20 @@ endif
 " Set text wrapping toggles
 nmap <silent> <Leader>r :set invwrap wrap?<CR>
 
+" Strip trailing whitespace
+function! <SID>StripTrailingWhitespace()
+    " Preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+    " Do the business:
+    %s/\s\+$//e
+    " Clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+endfunction
+nmap <silent> <Leader><space> :call <SID>StripTrailingWhitespace()<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Folding
 " Enable folding, but by default make it act like folding is off, because
@@ -641,6 +655,9 @@ augroup makefile
   autocmd!
   autocmd BufRead,BufNewFile ?akefile* set noexpandtab
 augroup END
+
+" Strip trailing whitespace before writing to programming filetypes.
+autocmd BufWritePre *.c,*.cc,*.cpp,*.h,*.js,*.py :call <SID>StripTrailingWhitespace()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Filetype switching
