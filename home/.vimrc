@@ -344,14 +344,14 @@ inoremap <unique> <script> 0 <esc>:b! 10<CR>
 
 function! <SID>SwitchToBuffer()
     if v:count == 0
-        if buffer_exists('#')
+        if bufexists(bufname('#'))
             e # " edit previous buffer
         else
             echohl Error
             echo "No previous buffer"
             echohl None
         endif
-    elseif buffer_exists(v:count)
+    elseif bufexists(v:count)
         exec "b! " . v:count
     else
         echohl Error
