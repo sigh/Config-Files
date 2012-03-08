@@ -223,6 +223,9 @@ noremap Y y$
 " Ctrl-A on the command line goes to the start of the line (like in shell).
 cnoremap <C-A> <Home>
 
+" Ctrl-S on the command line is a shortcut for the smartcase function.
+cnoremap <C-S> \=SC("")<Left><Left>
+
 " Allow Ctrl-Z even in insert mode.
 imap <C-Z> <C-O><C-Z>
 
@@ -307,7 +310,7 @@ function! s:Ack(query, async)
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Swith buffer with alt keys
+" Swith buffer
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " NORMAL mode bindings
@@ -320,7 +323,13 @@ noremap <unique> <script> 6 :b! 6<CR>
 noremap <unique> <script> 7 :b! 7<CR>
 noremap <unique> <script> 8 :b! 8<CR>
 noremap <unique> <script> 9 :b! 9<CR>
-noremap <unique> <script> <silent> - :call <SID>SwitchToBuffer()<CR>
+
+" <count>- swithes to buffer <count>. With no count it switches the the previous
+" buffer.
+" NOTE: <C-U> is required is required to remove the line range that you get
+"       when typing ':' after a count.
+noremap <unique> <script> <silent> - :<C-U>call <SID>SwitchToBuffer()<CR>
+
 " INSERT mode bindings
 inoremap <unique> <script> 1 <esc>:b! 1<CR>
 inoremap <unique> <script> 2 <esc>:b! 2<CR>
@@ -335,9 +344,19 @@ inoremap <unique> <script> 0 <esc>:b! 10<CR>
 
 function! <SID>SwitchToBuffer()
     if v:count == 0
-        e # " edit previous buffer
-    else
+        if bufexists(bufname('#'))
+            e # " edit previous buffer
+        else
+            echohl Error
+            echo "No previous buffer"
+            echohl None
+        endif
+    elseif bufexists(v:count)
         exec "b! " . v:count
+    else
+        echohl Error
+        echo "Buffer " . v:count . " does not exist"
+        echohl None
     endif
 endfunction
 
@@ -405,9 +424,9 @@ set cursorline
 
 " Highlight whitespace at the end of the line
 " (source: http://sartak.org/2011/03/end-of-line-whitespace-in-vim.html)
-autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl /\s\+\%#\@!$/
-autocmd InsertLeave * syn clear EOLWS | syn match EOLWS excludenl /\s\+$/
-autocmd BufRead,BufNewFile * syn match EOLWS excludenl /\s\+$/
+autocmd InsertEnter * syn clear EOLWS | syn match EOLWS excludenl containedin=ALL /\s\+\%#\@!$/
+autocmd InsertLeave * syn clear EOLWS | syn match EOLWS excludenl containedin=ALL /\s\+$/
+autocmd BufRead,BufNewFile * syn match EOLWS excludenl containedin=ALL /\s\+$/
 highlight EOLWS ctermbg=red guibg=red
 
 " Make matching paren less distracting.
@@ -484,6 +503,20 @@ endif
 
 " Set text wrapping toggles
 nmap <silent> <Leader>r :set invwrap wrap?<CR>
+
+" Strip trailing whitespace
+function! <SID>StripTrailingWhitespace()
+    " Preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+    " Do the business:
+    %s/\s\+$//e
+    " Clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+endfunction
+nmap <silent> <Leader><space> :call <SID>StripTrailingWhitespace()<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Folding
@@ -638,6 +671,9 @@ augroup makefile
   autocmd!
   autocmd BufRead,BufNewFile ?akefile* set noexpandtab
 augroup END
+
+" Strip trailing whitespace before writing to programming filetypes.
+autocmd BufWritePre *.c,*.cc,*.cpp,*.h,*.js,*.py :call <SID>StripTrailingWhitespace()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Filetype switching
