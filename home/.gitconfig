@@ -51,6 +51,9 @@
 
     # share the repo on the network.
     share = "!f() { git update-server-info && cd \"$(git rev-parse --git-dir)\" && webshare \"$@\"; }; f"
+
+    # Git init this directory with existing files commited.
+    this = !git init && git add . && git commit -m \"initial commit\"
 [color]
     ui = true
 [branch]
