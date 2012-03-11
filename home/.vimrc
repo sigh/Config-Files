@@ -632,6 +632,10 @@ imap <silent> <C-c> <plug>NERDCommenterInInsert
 " EasyMotion
 let g:EasyMotion_keys = "abcdefghijklmnopqrstuvwxyz"
 
+" Command-T
+let g:CommandTMatchWindowReverse=1
+map <silent> <Leader>t :CMiniBufExplorer<CR>:CommandT<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spelling
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
