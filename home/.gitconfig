@@ -54,6 +54,10 @@
 
     # Git init this directory with existing files commited.
     this = !git init && git add . && git commit -m \"initial commit\"
+
+    # Add image diff commands which mirror diff and d
+    idiff = difftool --extcmd 'imagediff $LOCAL $REMOTE $MERGED' --no-prompt
+    id = difftool --extcmd 'imagediff $LOCAL $REMOTE $MERGED' --no-prompt --relative
 [color]
     ui = true
 [branch]
