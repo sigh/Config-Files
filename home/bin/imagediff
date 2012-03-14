@@ -1,0 +1,34 @@
+#!/bin/sh
+
+imagefile="$2"
+single=""
+
+if [[ $2 == /dev/null ]] ; then
+    imagefile="$1"
+    single="removed\n"
+fi
+
+if [[ $1 == /dev/null ]] ; then
+    imagefile="$2"
+    single="added\n"
+fi
+
+# skip any non images
+if [[ $(identify -format '%m' "$imagefile" 2> /dev/null) != TXT ]] ; then
+    [[ -n $3 ]] && echo Displaying "$3"
+else
+    [[ -n $3 ]] && echo Skipping "  $3"
+    exit 0
+fi
+
+if [[ -z $single ]] ; then
+    # Create a temp file and make sure it is deleted when the script ends
+    diff=$(mktemp --suffix=.png)
+    trap "rm -f -- '$diff'" 0
+    trap 'exit 2' 1 2 3 15
+
+    compare "$1" "$2" "$diff"
+    montage "$1" \( "$diff" -set label "$3" \) "$2" -geometry +4+4 x:
+else
+    montage -label "$single$3" "$imagefile" -geometry +4+4 x:
+fi
