@@ -51,8 +51,16 @@ bind q  # xon
 bind ^G # visual bell
 bind D  # power detach
 bind d  # detach
+bind x  # lock
+bind ^X # lock
 
 # I still want to be able to kill (just make it harder to do accidentally).
 bind K kill
 # I still want to be able to detach.
 bind D detach
+
+# Easier to access screen split commands
+bind x remove
+bind q only
+bind s split
+bind ' ' focus
