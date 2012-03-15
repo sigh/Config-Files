@@ -19,6 +19,7 @@
     co = checkout
     ls = ls-files
 
+    # simple amend
     amend = commit --amend -C HEAD
 
     # worddiff
@@ -29,9 +30,6 @@
 
     # display of branch & tag topology
     graph = log --graph --branches --date=short --pretty=format:'%C(bold)%C(ul)%C(blue)%s%Creset%n%C(yellow)%h %Creset%ad %Cgreen(%cr)%Creset%Cred%d%n' --simplify-by-decoration
-
-    # display all commits in all branches
-    rl = rev-list --pretty=oneline --all --graph --abbrev-commit --color=auto -n 100
 
     # open a github url for the current git repo
     hub = !git remote -v|sed "'s|.*git[:@]\\(.*\\).git.*|http://\\1|;s|m:|m/|'"|uniq|xargs open
