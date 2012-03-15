@@ -3,16 +3,6 @@
 "   http://www.derekwyatt.org/vim/the-vimrc-file/
 "   http://vim.wikia.com/wiki/Highlight_all_search_pattern_matches
 
-" Time to try an experiment... No arrow keys!
-inoremap  <Up>     <NOP>
-inoremap  <Down>   <NOP>
-inoremap  <Left>   <NOP>
-inoremap  <Right>  <NOP>
-noremap   <Up>     <NOP>
-noremap   <Down>   <NOP>
-noremap   <Left>   <NOP>
-noremap   <Right>  <NOP>
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -694,6 +684,33 @@ function s:fileswitch(ext)
     endif
     let b:fileswitch_prev = l:fileswitch_prev
 endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Command line window
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Set Ctrl-C back to normal (not comment plugin)
+autocmd CmdwinEnter * noremap <buffer> <C-c> <C-c>
+autocmd CmdwinEnter * inoremap <buffer> <C-c> <C-c>
+
+" Ctrl-q closes the window
+autocmd CmdwinEnter * nnoremap <buffer> <C-q> :quit
+autocmd CmdwinEnter * inoremap <buffer> <C-q> <Esc>:quit
+
+" Re-enter command window after running command
+autocmd CmdwinEnter * noremap <silent> <buffer> <CR> <CR>q:
+autocmd CmdwinEnter * inoremap <silent> <buffer> <CR> <CR>q:i
+
+" Up and down like in command line
+autocmd CmdwinEnter * noremap <buffer> / /
+autocmd CmdwinEnter * noremap <buffer> ? ?
+autocmd CmdwinEnter * imap <buffer> <Up> <C-O>y0<C-O>:let@/='^'.@0<CR><C-O>??e+1<CR>
+autocmd CmdwinEnter * imap <buffer> <Down> <C-O>y0<C-O>:let@/='^'.@0<CR><C-O>//e+1<CR>
+autocmd CmdwinEnter * map <buffer> <Up> y0:let@/='^'.@0<CR>??e+1<CR>
+autocmd CmdwinEnter * map <buffer> <Down> y0:let@/='^'.@0<CR>//e+1<CR>
+
+" Start in insert mode
+noremap qi q:i
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Helpful commands
