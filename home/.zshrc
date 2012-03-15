@@ -565,6 +565,17 @@ else
     }
     zstyle ':completion:*:*:chdir:*' file-patterns 'files *(-/):directories'
 
+    # Send text to another window.
+    sendto() {
+        local win="$1"
+        shift
+        if [[ -n $* ]] ; then
+            screen -p "$win" -X stuff "$*"
+        else
+            screen -p "$win" -X stuff "$(cat)"
+        fi
+    }
+
     # Display entire scrollback in vim.
     scrollback() {
         setopt localtraps
