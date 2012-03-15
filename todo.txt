@@ -1,9 +1,6 @@
 .bashrc
-    + Fix lsd function so that it is more robust (no grep)
-    + archive .bash_history
 
 .vimrc
-    + mouse support for MBE
     + tagliist plugin
     + svn + git filetype recognition
     + set keywords based on filetpye
@@ -19,7 +16,7 @@ diff_nav:
 
 diff_changes:
     + save and reload yank register
-	+ multiple windows fucks up... WTF
+	+ multiple windows messes up... WTF
         + focus screws up in All-Diffchanges
     + create CleanUpDiffChanges to find any borked windows (run on DiffStop).
 
