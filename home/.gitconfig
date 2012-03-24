@@ -57,6 +57,9 @@
     # Add image diff commands which mirror diff and d
     idiff = difftool --extcmd 'imagediff $LOCAL $REMOTE $MERGED' --no-prompt
     id = difftool --extcmd 'imagediff $LOCAL $REMOTE $MERGED' --no-prompt --relative
+
+    # Determine the path relative to the root of the repository
+    path = "!python -c 'import os,sys; print \"\\n\".join(os.path.relpath(os.path.join(sys.argv[1], p)) for p in sys.argv[2:]);' \"$GIT_PREFIX\""
 [color]
     ui = true
 [branch]
