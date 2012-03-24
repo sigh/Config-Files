@@ -82,6 +82,34 @@ _git-restore() {
 }
 compdef _git-restore git-restore
 
+_git_cat_files() {
+  local -a files
+  local cur=${words[$CURRENT]}
+
+  local dir=.
+  local prefix
+  if [[ $cur == */* ]]; then
+    dir="${cur%/*}"
+    prefix="$dir/"
+  fi
+  files=($(git cat "${words[2]}" "$dir" | sed 1,2d))
+
+  # add each file to the completion using the appropriate $prefix
+  for file in $files ; do
+    if [[ $file == */ ]] ; then
+      # For directories the -S '' ensures that we don't add a space
+      # after the match
+      compadd -p "$prefix" -S '' $* - "$file"
+    else
+      compadd -p "$prefix" $* - "$file"
+    fi
+  done
+}
+_git-cat() {
+  _arguments -C '1:commit:__git_commits' '*:file:_git_cat_files'
+}
+compdef _git-cat git-cat
+
 # Completion is done from both ends.
 setopt complete_in_word
 # Show the type of each file with a trailing identifying mark.

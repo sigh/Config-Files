@@ -1,0 +1,11 @@
+#!/bin/sh
+# This is a standalone script so that zsh completion works correctly on it.
+# git cat <rev> <paths..>
+# Outputs the files from the given revision. For directories outputs the
+# directory contents.
+
+rev="$1"
+shift
+cd "$GIT_PREFIX"
+paths="$(git path "$@" | sed "s/^/$rev:/")"
+git show "$paths"
