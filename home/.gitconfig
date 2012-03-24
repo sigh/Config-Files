@@ -36,7 +36,8 @@
     hub = !git remote -v|sed "'s|.*git[:@]\\(.*\\).git.*|http://\\1|;s|m:|m/|'"|uniq|xargs open
 
     # view the staged changes
-    staged = diff --cached
+    sdiff = diff --cached
+    sd = diff --cached --relative
 
     # commit all with an message (which need not be quoted)
     cm = "!f() { git commit -a -m \"$*\" ; }; f"
