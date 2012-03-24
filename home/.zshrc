@@ -83,25 +83,33 @@ _git-restore() {
 compdef _git-restore git-restore
 
 _git_cat_files() {
-  local -a files
+  local -a lines
+  local -a parts
+  local dir
+  local name
+  local line
   local cur=${words[$CURRENT]}
+  local gitprefix="$(git rev-parse --show-prefix)"
 
-  local dir=.
-  local prefix
   if [[ $cur == */* ]]; then
-    dir="${cur%/*}"
-    prefix="$dir/"
+    dir="${cur%/*}/"
   fi
-  files=($(git cat "${words[2]}" "$dir" | sed 1,2d))
+  # collect lines from ls-tree into an array
+  lines=("${(@f)$(git ls-tree --full-tree "${words[2]}" "${gitprefix}${dir}")}")
 
   # add each file to the completion using the appropriate $prefix
-  for file in $files ; do
-    if [[ $file == */ ]] ; then
-      # For directories the -S '' ensures that we don't add a space
-      # after the match
-      compadd -p "$prefix" -S '' $* - "$file"
+  for line in $lines ; do
+    # split line into words
+    parts=("${(z)line}")
+    # because we are always just listing the files from one directory
+    # it's fine to take the last part of the name
+    name="${parts[4]##*/}"
+    if [[ $parts[2] == tree ]] ; then
+      # directory
+      compadd -p "$dir" -S '/' $* - "$name"
     else
-      compadd -p "$prefix" $* - "$file"
+      # normal file
+      compadd -p "$dir" $* - "$name"
     fi
   done
 }
