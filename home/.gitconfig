@@ -23,7 +23,8 @@
     amend = commit --amend -C HEAD
 
     # worddiff
-    wd = diff --word-diff-regex='[a-zA-Z0-9_]+|.' --color-words
+    wdiff = diff --word-diff-regex='[a-zA-Z0-9_]+|.' --color-words
+    wd = diff --word-diff-regex='[a-zA-Z0-9_]+|.' --color-words --relative
 
     # Nicely formatted log
     l = log --date=short --first-parent --pretty=format:'%C(bold)%C(ul)%C(blue)%s%+gs%Creset%n%C(yellow)%h %Creset%ad %C(magenta)%ae %Cgreen(%cr)%Creset%Cred%d%n' --stat
