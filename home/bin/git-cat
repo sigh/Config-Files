@@ -7,5 +7,4 @@
 rev="$1"
 shift
 cd "$GIT_PREFIX"
-paths="$(git path "$@" | sed "s/^/$rev:/")"
-git show "$paths"
+git show $(git path "$@" | sed "s/^/$rev:/")
