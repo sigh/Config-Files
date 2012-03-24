@@ -645,8 +645,7 @@ function s:spell()
 endfunction
 
 " <Leader>s toggles spelling on and off
-map  <Leader>s :call <SID>spell()<CR>
-imap <Leader>s <Esc>:call <SID>spell()<CR>
+map <Leader>s :call <SID>spell()<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Filetype specific autocommands
