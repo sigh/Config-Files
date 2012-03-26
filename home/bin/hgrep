@@ -1,0 +1,445 @@
+#!/usr/bin/perl
+# This script works with history logs as created by .zshrc
+# (note, not standard history).
+
+use strict;
+use warnings;
+
+use Term::ANSIColor;
+use Getopt::Long;
+use List::Util qw[min max];
+use Data::Dumper;
+
+my $HIST_FILE = "$ENV{HOME}/._full_zsh_history";
+
+my $dir_re;
+my $full;
+my $by_session;
+my $no_prefix;
+my $requested_match;
+my $context,
+my $context_before;
+my $context_after;
+my $ignore_case;
+my $exit_status;
+GetOptions(
+  "dir|d=s" => \$dir_re,
+  "full|f" => \$full,
+  "no-prefix|N" => \$no_prefix,
+  "session|s" => \$by_session,
+  "ignore-case|i" => \$ignore_case,
+  "n=i" => \$requested_match,
+  "context|C=i" => \$context,
+  "after|A=i" => \$context_after,
+  "before|B=i" => \$context_before,
+  "exit-status|e=s" => \$exit_status,
+) or die;
+
+my $want_context = defined($context) || defined($context_after) || defined($context_before);
+
+# force by session if we want context since context only makes sense for sessions.
+$by_session = $want_context || $by_session;
+
+my $command_re = qr/$ARGV[0]/;
+
+if ($ignore_case) {
+  $command_re = qr/(?i)$ARGV[0]/;
+  if ($dir_re) {
+    $dir_re = qr/(?i)$dir_re/;
+  }
+}
+my $num_matches = 0;
+
+# fast case if we don't want session or status info.
+if (not $by_session and not defined($exit_status)) {
+  quick_find_matches($HIST_FILE);
+  exit(0);
+}
+
+# find matches and exit if there are none.
+my $results = find_matches($HIST_FILE);
+if (not @$results) {
+  exit(0);
+}
+$results = filter_by_status($results, $exit_status);
+
+# if we only wanted exit statuses, then just stop now
+if (not $by_session) {
+  for my $result (@$results) {
+    print output_match($result) . "\n";
+  }
+  exit(0);
+}
+
+$num_matches = $results->[-1]->{match_no};
+my $sessions = find_sessions($HIST_FILE, $results);
+output_sessions($sessions);
+
+##################
+# Finding sessions
+##################
+
+sub output_sessions {
+  my ($sessions) = @_;
+
+  for my $info (sort(keys(%$sessions))) {
+    print color_string($info, "bold underline") . "\n";
+    if ($want_context) {
+      output_session_with_context($sessions->{$info});
+    } else {
+      # optimised workflow for when there is no context
+      for my $result (@{$sessions->{$info}->{matches}}) {
+        print output_match($result);
+      }
+    }
+  }
+}
+
+sub output_session_with_context {
+  my ($session) = @_;
+  my @lines = @{$session->{lines}};
+
+  # determine the number of lines of context.
+  my $num_lines = scalar(@lines);
+  my $before = $context_before;
+  my $after = $context_after;
+  if (defined($context)) {
+    $after = $context;
+    $before = $context;
+  }
+  $after = defined($after) ? $after || $num_lines : 0;
+  $before = defined($before) ? $before || $num_lines : 0;
+
+  my @output_lines;
+  for my $result (@{$session->{matches}}) {
+    my $start = max($result->{n} - $before, 1);
+    my $end = min($result->{n} + $after, $num_lines);
+    @output_lines[$start..$end] = @lines[$start..$end];
+  }
+
+  # populate context lines
+  for my $index (0..$#output_lines) {
+    my $line = $output_lines[$index];
+    if (defined($line)) {
+      $output_lines[$index] = output_context($line, $index);
+    }
+  }
+
+  # populate matches
+  for my $result (@{$session->{matches}}) {
+    $output_lines[$result->{n}] = output_match($result);
+  }
+
+  # output the whole thing
+  for my $line (@output_lines) {
+    if (defined($line)) {
+      print $line;
+    }
+  }
+}
+
+sub find_sessions {
+  my ($filename, $results) = @_;
+
+  my $wanted_pids = pids_in_results($results);
+
+  # find the sessions
+  my $current_sessions = {};
+  open my $fh, $filename or die $!;
+  my $line_no = 0;
+  while (<$fh>) {
+    $line_no += 1;
+    my ($pid, $n, $rest) = split(/ /, $_, 3);
+    if (exists($wanted_pids->{$pid})) {
+      update_session($current_sessions, $pid, $n, $rest);
+      my $wanted = $wanted_pids->{$pid};
+      if (@$wanted and $wanted->[0]->{line_no} == $line_no) {
+        push @{$current_sessions->{$pid}->{matches}}, $wanted->[0];
+        shift @$wanted;
+      }
+    }
+  }
+
+  # sort the sessions
+  my $sessions;
+  my $session_lines;
+  for my $session (values(%$current_sessions)) {
+    if (exists($session->{matches})) {
+      $sessions->{$session->{info}} = {
+        matches => $session->{matches},
+        lines => $session->{lines},
+      };
+    }
+  }
+
+  return $sessions;
+}
+
+sub update_session {
+  my ($current_sessions, $pid, $n, $rest) = @_;
+  chomp($rest);
+  if (not exists($current_sessions->{$pid})) {
+    # new session
+    $current_sessions->{$pid} = {
+      n => $n,
+      info => $rest,
+    };
+    return;
+  }
+
+  my $session = $current_sessions->{$pid};
+  if ($n == 0 or $session->{n} > $n) {
+    # new session overwriting old session
+    # if there are matches, then save this sesson
+    if (exists($session->{matches})) {
+      $current_sessions->{"-$pid"} = $session;
+    }
+    # create a new session.
+    $current_sessions->{$pid} = {
+      n => $n,
+      info => $rest,
+    }
+  } else {
+    # existing session
+    $session->{n} = $n;
+    if ($want_context and $rest =~ / \$ /) {
+      $session->{lines}->[$n] = $rest;
+    }
+  }
+}
+
+sub pids_in_results {
+  my ($results) = @_;
+
+  my $pids = {};
+  for my $result (@$results) {
+    push @{$pids->{$result->{pid}}}, $result;
+  }
+
+  return $pids;
+}
+
+#######################
+# Filter by exit status
+#######################
+
+sub filter_by_status {
+  my ($input, $status_list) = @_;
+
+  if (not defined($status_list)) {
+    return $input;
+  }
+
+  # determine if we should negate
+  my $negate = 0;
+  if ($status_list =~ /^-/) {
+    $status_list =~ s/^-//;
+    $negate = 1;
+  }
+
+  # create the lookup table
+  my %lookup;
+  for my $part (split(/,/, $status_list)) {
+    $lookup{"[$part]"} = 1;
+  }
+
+  # do the filter
+  my @output;
+  for my $result (@$input) {
+    if ($negate xor exists($lookup{$result->{status}})) {
+      push @output, $result;
+    }
+  }
+
+  return \@output;
+}
+
+#################
+# Finding matches
+#################
+
+# A function which prints out matches as it finds them.
+sub quick_find_matches {
+  my ($filename) = @_;
+  open my $fh, $filename or die $!;
+  my $line_no = 0;
+
+  while (<$fh>) {
+    $line_no += 1;
+    chomp(my $line = $_);
+    my ($init, $rest) = split(/ \$ /, $line, 2);
+    if ($rest and $rest =~ $command_re) {
+      if (my $result = process_match($line, $line_no)) {
+        print output_match($result);
+      }
+    }
+  }
+}
+
+sub find_matches {
+  my ($filename) = @_;
+  open my $fh, $filename or die $!;
+  my $line_no = 0;
+
+  my %status_pids;
+  my @results;
+
+  while (<$fh>) {
+    $line_no += 1;
+    chomp(my $line = $_);
+    my ($init, $rest) = split(/ \$ /, $line, 2);
+    if (not $rest) {
+      # handle exit status
+      my ($pid, $n, $time, $error) = split(/ /, $line, 4);
+      if (exists $status_pids{$pid}) {
+        if ($n == $status_pids{$pid}->{n}) {
+          $status_pids{$pid}->{status} = $error;
+        }
+        delete $status_pids{$pid};
+      }
+    } elsif ($rest =~ $command_re) {
+      # handle match
+      if (my $result = process_match($line, $line_no)) {
+        $status_pids{$result->{pid}} = $result;
+        push @results, $result;
+      }
+    }
+  }
+
+  return \@results;
+}
+
+my $count = 0;
+sub create_result {
+  my ($line, $line_no) = @_;
+
+  my ($state, $command) = split(/ \$ /, $line, 2);
+  my ($pid, $n, $time, $dir) = split(/ /, $state, 4);
+
+  return {
+    command => $command,
+    pid => $pid,
+    n => $n,
+    time => $time,
+    dir => $dir,
+    line_no => $line_no,
+  };
+}
+
+{
+  my $count = 0;
+  sub update_match_no {
+    my ($result) = @_;
+    $count += 1;
+    $result->{match_no} = $count;
+  }
+}
+
+sub process_match {
+  my ($line, $line_no) = @_;
+
+  my $result = create_result($line, $line_no);
+
+  # don't match session starts.
+  if ($result->{n} == 0) {
+    return;
+  }
+
+  # ensure that the directory matches if required
+  if ($dir_re and not $result->{dir} =~ m/$dir_re/) {
+    return;
+  }
+
+  update_match_no($result);
+
+  # if we only wanted one match then filter it out.
+  if ($requested_match and not $result->{match_no} == $requested_match) {
+    return;
+  }
+
+  return $result;
+}
+
+##################
+# Output functions
+##################
+
+sub output_context {
+  my ($line, $n) = @_;
+  my ($time, $dir, $ignore, $command) = split(/ /, $line, 4);
+  return output_line(
+    time => $time,
+    dir => $dir,
+    command => $command,
+    n => $n,
+  );
+}
+
+sub output_match {
+  my ($result) = @_;
+
+  return output_line(
+    %$result,
+    command => color_match($result->{command}, $command_re, "red"),
+  );
+}
+
+sub output_line {
+  my %args = @_;
+
+  # handle prefix
+  my $prefix = "";
+  if (not $no_prefix) {
+    if (exists($args{match_no})) {
+      $prefix = "[$args{match_no}]";
+    }
+    my $pad = length($num_matches) + 2;
+    $prefix = sprintf("%${pad}s ", $prefix);
+  }
+
+  # handle details
+  my $details = "";
+  if ($full) {
+    my $dir = color_match($args{dir}, $dir_re, "underline");
+    $dir = color_string($dir, "green");
+    $details = join(' ', $args{n}, $args{time}, $args{status} || (), $dir, '$', '');
+  }
+
+  return "$prefix$details$args{command}\n";
+}
+
+sub color_string {
+  my ($string, $color) = @_;
+
+  my $reset = color("reset");
+  my $new_color = color($color);
+  $string =~ s/\Q$reset/$reset$new_color/g;
+
+  return "$new_color$string$reset";
+}
+
+sub color_match {
+  my ($match, $regex, $color) = @_;
+
+  # don't do any coloring if there is not regex
+  if (not $regex) {
+    return $match;
+  }
+
+  # find match positions.
+  my @positions;
+  while ($match =~ /$regex/g) {
+    push @positions, $-[0], $+[0];
+  }
+
+  # color each position in reverse order.
+  while (@positions) {
+    my $end = pop @positions;
+    my $start = pop @positions;
+
+    substr($match, $end, 0, color("reset"));
+    substr($match, $start, 0, color($color));
+  }
+
+  return $match;
+}
