@@ -230,7 +230,7 @@ endfunction
 " buffers
 "
 
-autocmd VimEnter,BufNew,BufEnter,BufWritePost * call Buftabs_show(-1)
+autocmd BufNew,BufEnter * call Buftabs_show(-1)
 autocmd BufDelete * call Buftabs_show(expand('<abuf>'))
 if version >= 700
   autocmd InsertLeave,VimResized * call Buftabs_show(-1)
