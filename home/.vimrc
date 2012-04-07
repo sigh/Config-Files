@@ -178,24 +178,8 @@ endif
 set tags=./tags;/
 
 " Switch buffers with tab
-nnoremap <silent> <Tab> :call <SID>NextBuffer()<CR>
-nnoremap <silent> <S-Tab> :call <SID>PrevBuffer()<CR>
-
-function! <SID>NextBuffer()
-    bnext
-    if MBEIsOpen() != 1
-        set laststatus=0
-        MiniBufExplorer
-    endif
-endfunction
-
-function! <SID>PrevBuffer()
-    bprevious
-    if MBEIsOpen() != 1
-        set laststatus=0
-        MiniBufExplorer
-    endif
-endfunction
+nnoremap <silent> <Tab> :bnext<CR>
+nnoremap <silent> <S-Tab> :bprevious<CR>
 
 " <Tab> is C-I, so assign jump list navi to C-P
 noremap <C-P> <C-I>
@@ -277,7 +261,6 @@ map <silent> <Leader>qp :cprev<CR>
 map <silent> <Leader>q<S-Tab> :cprev<CR>
 map <silent> <Leader>Q<S-Tab> :cprev<CR>
 function s:OpenQuickfixWindow()
-    CMiniBufExplorer
     botright copen
 endfunction
 
@@ -369,15 +352,13 @@ noremap <silent> <Nul>   <Esc>:call <SID>ResetAll()<Bar>:nohlsearch<Bar>:pwd<CR>
 
 " Reset only somethings
 function! <SID>ResetSome()
-    " Close minibuf
-    CMiniBufExplorer
-    set laststatus=2
     " Update diff
     if &diff
         diffu
     endif
     " Move screen to the left
     normal zH
+    call Buftabs_show(-1)
 endfunction
 
 " Reset most things that we could have opened
@@ -600,13 +581,6 @@ endfunction
 " Plugin options
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Mini-buffer explorer
-let g:miniBufExplMaxSize = 1
-let g:miniBufExplModSelTarget = 1
-let g:miniBufExplUseSingleClick = 1
-let g:miniBufExplorerMoreThanOne = 1
-let g:miniBufExplSplitBelow = 1
-
 " NERD_commenter
 let g:NERDCreateDefaultMappings = 0
 let g:NERDSpaceDelims = 1
@@ -624,7 +598,7 @@ let g:EasyMotion_keys = "abcdefghijklmnopqrstuvwxyz"
 
 " Command-T
 let g:CommandTMatchWindowReverse=1
-map <silent> <Leader>t :CMiniBufExplorer<CR>:CommandT<CR>
+map <silent> <Leader>t :CommandT<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spelling
