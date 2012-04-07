@@ -303,6 +303,9 @@ noremap <unique> <script> 9 :b! 9<CR>
 "       when typing ':' after a count.
 noremap <unique> <script> <silent> - :<C-U>call <SID>SwitchToBuffer()<CR>
 
+" Ctrl-- will show the list of buffers and ask which to switch to
+noremap <unique> <script> <silent> <C-_> :ls<CR>:b
+
 " INSERT mode bindings
 inoremap <unique> <script> 1 <esc>:b! 1<CR>
 inoremap <unique> <script> 2 <esc>:b! 2<CR>
