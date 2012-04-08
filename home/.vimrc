@@ -249,6 +249,14 @@ function! s:NextTextObject(motion, dir)
   exe "normal! ".a:dir.c."v".a:motion.c
 endfunction
 
+" Search forward/backward for opening brace of a function, namespace, etc.
+" Use these mappings because by default [[ and ]] search for opening braces at
+" the start of each line.
+map [[ [m
+ounmap [[
+map ]] ]m
+ounmap ]]
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Quickfix
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
