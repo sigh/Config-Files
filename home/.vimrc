@@ -448,12 +448,12 @@ set nowrap
 " use tabs at the start of a line, spaces elsewhere
 set smarttab
 
-" <Leader>p enters insert mode with paste on and mouse off and line numbering
+" <Leader><Leader>p enters insert mode with paste on and mouse off and line numbering
 "    changes are reverted when exiting insert mode (or navigating away in any
 "    way)
 " While in paste mode a new tab is created so that splits don't get in the way
 " of copying.
-nmap <silent> <Leader>p :call <SID>MyPasteMode()<CR>i
+nmap <silent> <Leader><Leader>p :call <SID>MyPasteMode()<CR>i
 
 function! <SID>MyPasteMode()
     tab split
@@ -477,11 +477,18 @@ function! <SID>MyPasteModeEnd()
     tabclose
 endfunction
 
-if executable("pbcopy")
-    " <Leader>sp (smart paste) pastes when in normal mode, and copies in normal mode
-    vmap <silent> <Leader>sp :w !pbcopy<CR><CR>
-    nmap <silent> <Leader>sp :set paste<CR>:r !pbpaste<CR>:set nopaste<CR>
-endif
+" Set up mappings for accessing the system paste more easily
+map <silent> <Leader>y :call <SID>SetupServer()<CR>"+y
+map <silent> <Leader>p :call <SID>SetupServer()<CR>"+p
+" Set up the connection to the x server by running the serverlist function
+" Only do this once and only on demands because it can be slow over the network.
+let s:setup_serverlist = 0
+function! <SID>SetupServer()
+  if s:setup_serverlist == 0
+    let l:dummy = serverlist()
+    let s:setup_serverlist = 1
+  endif
+endfunction
 
 " Set text wrapping toggles
 nmap <silent> <Leader>r :set invwrap wrap?<CR>
