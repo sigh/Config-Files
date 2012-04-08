@@ -251,8 +251,8 @@ complete -F _unmount -o filenames unmount
 vless() { vimless "$@" ; }
 
 # shortcut vim and set it as our editor
-vi() { vim "$@" ; }
-v() { vim "$@" ; }
+vi() { vim -X "$@" ; }
+v() { vim -X "$@" ; }
 complete -o filenames -F _filedir_xspec v
 export EDITOR=vim
 export SVNEDITOR=vim

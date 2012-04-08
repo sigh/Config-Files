@@ -439,8 +439,12 @@ if [[ -n $(vim --version | grep +clientserver) ]] ; then
         if [[ -n $STY ]] ; then
             server_name="$STY-$WINDOW-$$"
         fi
-        command vim --servername "$server_name" "$@"
+        command vim -X --servername "$server_name" "$@"
     }
+else
+  vim() {
+    command vim -X "$@"
+  }
 fi
 alias vi=vim
 alias v=vim
