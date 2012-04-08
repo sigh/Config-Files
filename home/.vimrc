@@ -535,10 +535,6 @@ let g:explWinSize=35
 " Backup
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" create backup directories
-silent ! mkdir -p ~/.vim/.backup
-silent ! mkdir -p ~/.vim/.swap
-
 " set backup to go to backup directories
 set backup
 set backupdir=~/.vim/.backup//
