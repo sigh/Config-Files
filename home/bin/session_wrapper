@@ -1,8 +1,8 @@
 #!/usr/bin/env python2.6
 
-# A wrapper for tmux
+# A wrapper for screen and tmux
 #
-# usage: screen_wrapper [-h] [--reattach] [--child] [--window WINDOW] [--ask]
+# usage: session_wrapper screen|tmux [-h] [--reattach] [--child] [--window WINDOW] [--ask]
 #                       [--list] [--complete]
 #                       [session]
 #
@@ -62,11 +62,11 @@ class ScreenSettings(object):
                 exists = True,
             )
 
-    def launch_command(self, session, attached = None, window = None):
+    def launch_command(self, session, reattach = None, window = None):
         args = ['screen']
         if window is not None:
             args.extend(['-p', window])
-        if session.pid is None:
+        if not session.exists:
             # force creation of a new session
             args.extend(['-S'])
         elif reattach:
@@ -92,18 +92,23 @@ class TmuxSettings(object):
                 exists = True
             )
 
-    def launch_command(self, session, attached = None, window = None):
+    def launch_command(self, session, reattach = None, window = None):
+        session_name = str(session)
         args = ['tmux']
-        if window is not None:
-            args.extend(['-p', window])
-        if session.pid is None:
+        if not session.exists:
             # force creation of a new session
-            args.extend(['-S'])
-        elif reattach:
-            args.extend(['-x', '-S'])
+            args.extend(['new-session', '-s'])
         else:
-            args.extend(['-D', '-R'])
-        args.append(str(session))
+            if window is not None:
+                subprocess.check_call(
+                        ['tmux', 'select-window', '-t', session_name + ':' + window])
+            if not reattach:
+                subprocess.check_call(
+                        ['tmux', 'detach-client', '-P', '-s', session_name])
+            # TODO(dilshan): implement reattach properly (with a separate
+            # session)
+            args.extend(['attach-session', '-t'])
+        args.append(session_name)
 
         return args
 
@@ -112,7 +117,7 @@ class Session(object):
         self.name = name
         self.pid = pid
         self.attached = attached
-        self.exits = exists
+        self.exists = exists
 
     def __str__(self):
         if self.pid:
@@ -408,10 +413,12 @@ def main():
             print()
             sys.exit(2)
 
-    run_tmux(session,
-             child = options.child,
-             reattach = options.reattach,
-             window = options.window)
+    run_prog(
+        prog,
+        session,
+        child = options.child,
+        reattach = options.reattach,
+        window = options.window)
 
 if __name__ == '__main__':
     main()
