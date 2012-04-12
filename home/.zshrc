@@ -539,16 +539,7 @@ g.() {
 
 # screen commands
 
-if [[ -z $STY ]] ; then
-    # commands for outside screen
-
-    # I use screen_wrapper a lot
-    alias s=screen_wrapper
-    _screen_wrapper() {
-        compadd - $( screen_wrapper --complete "$PREFIX" )
-    }
-    compdef _screen_wrapper screen_wrapper
-else
+if [[ -n $STY ]] ; then
     # commands for use inside screen
 
     # ensure screendir is populated with the directory
@@ -653,6 +644,32 @@ else
         # clear the directory stack so that only the current directory is there.
         dirs -c
     fi
+elif [[ -n $TMUX ]] ; then
+    sessionname() {
+        tmux rename-session "$@"
+    }
+
+    title() {
+        tmux rename-window "$*"
+    }
+
+    chdir() {
+        local abs_path=$(cd "${1:-.}" 2> /dev/null && pwd)
+        if [[ -n $abs_path ]] ; then
+            tmux set default-path "$abs_path"
+        else
+            echo "chdir: $1: No such directory"
+        fi
+    }
+else
+    # commands for outside screen
+
+    # I use screen_wrapper a lot
+    alias s=screen_wrapper
+    _screen_wrapper() {
+        compadd - $( screen_wrapper --complete "$PREFIX" )
+    }
+    compdef _screen_wrapper screen_wrapper
 fi
 
 # reload zshrc for the current shell
