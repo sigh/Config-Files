@@ -314,7 +314,7 @@ def filter_sessions(sessions, prefix):
             s.pid and (s.name  + '.' + s.pid).startswith(prefix)]
 
 def get_session_list(prog):
-    process = subprocess.Popen(prog.list_command(), stdout=subprocess.PIPE)
+    process = subprocess.Popen(prog.list_command(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = process.communicate()
 
     sessions = []
