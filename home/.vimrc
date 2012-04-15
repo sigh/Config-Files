@@ -480,6 +480,8 @@ endfunction
 " Set up mappings for accessing the system paste more easily
 map <silent> <Leader>y :call <SID>SetupServer()<CR>"+y
 map <silent> <Leader>p :call <SID>SetupServer()<CR>"+p
+map <silent> <Leader>y :call <SID>SetupServer()<CR>"+Y
+map <silent> <Leader>p :call <SID>SetupServer()<CR>"+P
 " Set up the connection to the x server by running the serverlist function
 " Only do this once and only on demands because it can be slow over the network.
 let s:setup_serverlist = 0
