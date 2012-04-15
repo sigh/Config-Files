@@ -353,8 +353,7 @@ lsd() { command ls --color=tty -hd "$@" */ }
 # make sure we don't leave accidentally
 IGNOREEOF=1
 bash-ctrl-d() {
-  if [[ $CURSOR == 0 && -z $BUFFER ]]
-  then
+  if [[ $CURSOR == 0 && -z $BUFFER ]] ; then
     [[ -z $IGNOREEOF || $IGNOREEOF == 0 ]] && exit
     if [[ $LASTWIDGET == bash-ctrl-d ]]
     then
@@ -362,9 +361,12 @@ bash-ctrl-d() {
     else
       (( __BASH_IGNORE_EOF = IGNOREEOF-1 ))
     fi
+    zle send-break
+  elif [[ ${BUFFER// /} = \#* ]] ; then
+    zle accept-line
   else
+    zle pound-insert
   fi
-  zle send-break
 }
 setopt ignoreeof
 zle -N bash-ctrl-d
