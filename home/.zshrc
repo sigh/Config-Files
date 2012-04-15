@@ -397,14 +397,75 @@ mcd() { mkdir -p "$@" && cd "$@[-1]" ; }
 compdef _cd mcd
 
 # strings of dots are expanded to parents if they form the start of a word.
-# TODO: Is there a way to make this display the target directory as a side effect?
-# TODO: Look at the docs for recursive-edit
+_rationalise_dot_status=
+self-insert-rationalise-dot() {
+  if [[ $LBUFFER =~ '(^| )\.\.(/\.\.)*$' ]]; then
+    # We are still in a legal state
+    if [[ $KEYS = . ]] ; then
+        # Dot key
+        LBUFFER+=/..
+    elif [[ $'\b\x7f' = *"$KEYS"* ]] ; then
+        # Delete key
+        if [[ $LBUFFER == */../.. ]] ; then
+            LBUFFER="${LBUFFER%/..}"
+        elif [[ $LBUFFER == *../.. ]] ; then
+            # We want this to undo the effect of enter rationalise-dot
+            LBUFFER="${LBUFFER%/..}.." # last . will be deleted by the _finish- function
+            _finish-self-inset-rationalise-dot 'other-key'
+        elif [[ $LBUFFER == *.. ]] ; then
+            LBUFFER="${LBUFFER%.}" # first . will be deleted by the _finish- function
+            _finish-self-inset-rationalise-dot 'other-key'
+        fi
+    else
+        _finish-self-inset-rationalise-dot 'other-key'
+    fi
+  else
+    _finish-self-inset-rationalise-dot 'unknown-state'
+  fi
+
+  POSTDISPLAY=$'\n'"Destination: $(cd ${LBUFFER##* } 2> /dev/null && pwd)"
+  # region_highlight=("${#BUFFER} $(( ${#BUFFER} + ${#POSTDISPLAY} )) fg=yellow")
+}
+_finish-self-inset-rationalise-dot() {
+  if [[ $'\b\x7f' = *"$KEYS"* ]] ; then
+    # Delete
+    LBUFFER="${LBUFFER%?}"
+  else
+    # Any other key
+    LBUFFER+="$KEYS"
+  fi
+
+  # We want to return to normal please!
+  _rationalise_dot_status="$1"
+  zle accept-line
+}
 rationalise-dot() {
-  if [[ $LBUFFER =~ ' \.\.(/\.\.)*$' ]]; then
-    LBUFFER+=/..
-    # Make this work in a more robust way
-    # PREDISPLAY="${LBUFFER% *} $(cd ${LBUFFER##* } 2> /dev/null && pwd)"$'\n'"$HISTCMD \$ "
-    # region_highlight=("P0 ${#PREDISPLAY} fg=blue")
+  if [[ $LBUFFER =~ '(^| )\.\.(/\.\.)*$' ]]; then
+    local integer stat
+
+    zle -N self-insert-rationalise-dot
+    zle self-insert-rationalise-dot
+
+    zle -N self-insert self-insert-rationalise-dot
+    zle -N backward-delete-char self-insert-rationalise-dot
+    zle -A rationalise-dot save-rationalise-dot
+    zle -A accept-line rationalise-dot
+    bindkey . self-insert-rationalise-dot
+
+    _rationalise_dot_status=
+    zle recursive-edit
+    stat=$?
+    POSTDISPLAY=
+    # region_highlight=()
+
+    zle -A .self-insert self-insert
+    zle -A .backward-delete-char backward-delete-char
+    zle -A save-rationalise-dot rationalise-dot
+    zle -D save-rationalise-dot
+    bindkey . rationalise-dot
+
+    if (( $stat )) && zle send-break
+    [[ -z $_rationalise_dot_status ]] && zle accept-line
   else
     LBUFFER+=.
   fi
