@@ -326,8 +326,8 @@ bindkey "\e[1;5D" backward-word
 # delete with alt
 bindkey "\ea" backward-kill-line
 bindkey "\ee" kill-line
-bindkey "\e[1;9C" kill-word
-bindkey "\e[1;9D" backward-kill-word
+bindkey "\e[1;3C" kill-word
+bindkey "\e[1;3D" backward-kill-word
 
 WORDCHARS="${WORDCHARS:s#/#}"
 
