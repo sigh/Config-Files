@@ -94,7 +94,7 @@ class TmuxSettings(object):
 
     def launch_command(self, session, reattach = None, window = None):
         session_name = str(session)
-        args = ['tmux']
+        args = ['tmux', '-2']
         if not session.exists:
             # force creation of a new session
             args.extend(['new-session', '-s'])
