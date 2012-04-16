@@ -688,9 +688,6 @@ elif [[ -n $TMUX ]] ; then
     }
     zle -N inline-screen-scrollback
     bindkey '\es' inline-screen-scrollback
-
-    # Why isn't tmux setting this?
-    export TERM=screen-256color
 else
     # commands for outside screen
 
