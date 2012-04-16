@@ -95,11 +95,15 @@ cmap w!! w !sudo tee % >/dev/null
 syntax on
 
 " Makes colours not fugly
-if ! has("gui_running")
+if &term == "screen-256color" || &term == "xterm-256color"
+    set t_Co=256
+    let g:lucius_style = "light"
+    colorscheme lucius_mod
+else
     set t_Co=16
+    set background=light
+    colorscheme peachpuff_mod
 endif
-
-colorscheme peachpuff_mod
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Vim UI
