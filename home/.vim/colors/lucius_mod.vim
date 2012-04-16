@@ -285,18 +285,18 @@ elseif g:lucius_style == "light"
     hi CursorIM     guifg=bg        guibg=#5f87af   ctermfg=bg     ctermbg=67        gui=none      cterm=none
     hi CursorColumn guifg=NONE      guibg=#dadada   ctermfg=NONE   ctermbg=253       gui=none      cterm=none
     hi CursorLine   guifg=NONE      guibg=#dadada   ctermfg=NONE   ctermbg=253       gui=none      cterm=none
-    hi Visual       guifg=NONE      guibg=#afd7ff   ctermfg=NONE   ctermbg=153       gui=none      cterm=none
+    hi Visual       guifg=NONE      guibg=#afd7ff   ctermfg=NONE   ctermbg=189       gui=none      cterm=none
     hi VisualNOS    guifg=fg        guibg=NONE      ctermfg=fg     ctermbg=NONE      gui=underline cterm=underline
-    hi IncSearch    guifg=fg        guibg=#57d7d7   ctermfg=fg     ctermbg=80        gui=none      cterm=none
-    hi Search       guifg=fg        guibg=#ffaf00   ctermfg=fg     ctermbg=214       gui=none      cterm=none
+    hi IncSearch    guifg=fg        guibg=#57d7d7   ctermfg=fg     ctermbg=202       gui=none      cterm=none
+    hi Search       guifg=fg        guibg=#ffaf00                  ctermbg=222       gui=none      cterm=none
 
     " ## UI ##
     hi Pmenu        guifg=bg        guibg=#808080   ctermfg=bg     ctermbg=244       gui=none      cterm=none
     hi PmenuSel     guifg=fg        guibg=#afd7ff   ctermfg=fg     ctermbg=153       gui=none      cterm=none
     hi PmenuSbar    guifg=#808080   guibg=#444444   ctermfg=244    ctermbg=238       gui=none      cterm=none
     hi PmenuThumb   guifg=fg        guibg=#9e9e9e   ctermfg=fg     ctermbg=247       gui=none      cterm=none
-    hi StatusLine   guifg=bg        guibg=#808080   ctermfg=bg     ctermbg=244       gui=bold      cterm=bold
-    hi StatusLineNC guifg=#e4e4e4   guibg=#808080   ctermfg=254    ctermbg=244       gui=none      cterm=none
+    hi StatusLine   guifg=bg        guibg=#808080   ctermfg=bg     ctermbg=237       gui=bold      cterm=bold
+    hi StatusLineNC guifg=#e4e4e4   guibg=#808080   ctermfg=237    ctermbg=244       gui=none      cterm=none
     hi TabLine      guifg=bg        guibg=#808080   ctermfg=bg     ctermbg=244       gui=none      cterm=none
     hi TabLineFill  guifg=#b2b2b2   guibg=#808080   ctermfg=249    ctermbg=244       gui=none      cterm=none
     hi TabLineSel   guifg=fg        guibg=#afd7ff   ctermfg=fg     ctermbg=153       gui=none      cterm=none
@@ -305,10 +305,10 @@ elseif g:lucius_style == "light"
     hi FoldColumn   guifg=#626262   guibg=#bcbcbc   ctermfg=241    ctermbg=250       gui=bold      cterm=none
 
     " ## Spelling ##
-    hi SpellBad     guisp=#d70000                   ctermfg=160    ctermbg=NONE      gui=undercurl cterm=underline
-    hi SpellCap     guisp=#00afd7                   ctermfg=38     ctermbg=NONE      gui=undercurl cterm=underline
-    hi SpellRare    guisp=#5faf00                   ctermfg=70     ctermbg=NONE      gui=undercurl cterm=underline
-    hi SpellLocal   guisp=#d7af00                   ctermfg=178    ctermbg=NONE      gui=undercurl cterm=underline
+    hi SpellBad     guisp=#d70000                   ctermbg=210                      gui=undercurl cterm=underline
+    hi SpellCap     guisp=#00afd7                   ctermbg=153                      gui=undercurl cterm=underline
+    hi SpellRare    guisp=#5faf00                   ctermbg=114                      gui=undercurl cterm=underline
+    hi SpellLocal   guisp=#d7af00                   ctermbg=181                      gui=undercurl cterm=underline
 
     " ## Diff ##
     hi DiffAdd      guifg=fg        guibg=#afd7af   ctermfg=fg     ctermbg=151       gui=none      cterm=none

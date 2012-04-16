@@ -661,7 +661,6 @@ autocmd BufNewFile,BufRead *.go set ft=go
 " For some reason setlocal on the filetypes isn't working properly.
 autocmd BufRead,BufNewFile * setlocal colorcolumn=
 autocmd BufRead,BufNewFile *.c,*.cc,*.cpp,*.h,*.js,*.py setlocal colorcolumn=+1
-highlight ColorColumn ctermbg=blue ctermfg=white
 
 " Set some settings for editing makefiles
 augroup makefile
