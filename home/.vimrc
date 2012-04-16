@@ -294,17 +294,6 @@ endfunction
 " Swith buffer
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" NORMAL mode bindings
-noremap <unique> <script> 1 :b! 1<CR>
-noremap <unique> <script> 2 :b! 2<CR>
-noremap <unique> <script> 3 :b! 3<CR>
-noremap <unique> <script> 4 :b! 4<CR>
-noremap <unique> <script> 5 :b! 5<CR>
-noremap <unique> <script> 6 :b! 6<CR>
-noremap <unique> <script> 7 :b! 7<CR>
-noremap <unique> <script> 8 :b! 8<CR>
-noremap <unique> <script> 9 :b! 9<CR>
-
 " <count>- swithes to buffer <count>. With no count it switches the the previous
 " buffer.
 " NOTE: <C-U> is required is required to remove the line range that you get
@@ -313,18 +302,6 @@ noremap <unique> <script> <silent> - :<C-U>call <SID>SwitchToBuffer()<CR>
 
 " Ctrl-- will show the list of buffers and ask which to switch to
 noremap <unique> <script> <silent> <C-_> :ls<CR>:b
-
-" INSERT mode bindings
-inoremap <unique> <script> 1 <esc>:b! 1<CR>
-inoremap <unique> <script> 2 <esc>:b! 2<CR>
-inoremap <unique> <script> 3 <esc>:b! 3<CR>
-inoremap <unique> <script> 4 <esc>:b! 4<CR>
-inoremap <unique> <script> 5 <esc>:b! 5<CR>
-inoremap <unique> <script> 6 <esc>:b! 6<CR>
-inoremap <unique> <script> 7 <esc>:b! 7<CR>
-inoremap <unique> <script> 8 <esc>:b! 8<CR>
-inoremap <unique> <script> 9 <esc>:b! 9<CR>
-inoremap <unique> <script> 0 <esc>:b! 10<CR>
 
 function! <SID>SwitchToBuffer()
     if v:count == 0
