@@ -175,13 +175,6 @@ zgr() { zgrep -e  --color=always "$@" ; }
 zgi() { zgrep -ei --color=always "$@" ; }
 gr()  { egrep     --color=always "$@" ; }
 gi()  { egrep -i  --color=always "$@" ; }
-gh()  { gi "$@" "$HISTFILE"; }
-
-# Grep all files in the current directory recursively
-#   ignoring any files and folders that start with a .
-g.() {
-    find . -name '.?*' -prune -o -exec egrep --color=always -H "$@" {} \; 2> /dev/null
-}
 
 # make git easier to type :)
 g() { git "$@"; }
