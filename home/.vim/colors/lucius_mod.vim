@@ -249,7 +249,7 @@ elseif g:lucius_style == "dark_dim"
 elseif g:lucius_style == "light"
 
 
-    hi Normal       guifg=#444444   guibg=#eeeeee   ctermfg=238    ctermbg=255       gui=none      cterm=none
+    hi Normal       guifg=#444444   guibg=#eeeeee   ctermfg=238    ctermbg=15        gui=none      cterm=none
 
     hi Comment      guifg=#808080   guibg=NONE      ctermfg=244    ctermbg=NONE      gui=none      cterm=none
 
@@ -283,8 +283,8 @@ elseif g:lucius_style == "light"
     " ## Text Selection ##
     hi Cursor       guifg=bg        guibg=#5f87af   ctermfg=bg     ctermbg=67        gui=none      cterm=none
     hi CursorIM     guifg=bg        guibg=#5f87af   ctermfg=bg     ctermbg=67        gui=none      cterm=none
-    hi CursorColumn guifg=NONE      guibg=#dadada   ctermfg=NONE   ctermbg=253       gui=none      cterm=none
-    hi CursorLine   guifg=NONE      guibg=#dadada   ctermfg=NONE   ctermbg=253       gui=none      cterm=none
+    hi CursorColumn guifg=NONE      guibg=#dadada   ctermfg=NONE   ctermbg=255       gui=none      cterm=none
+    hi CursorLine   guifg=NONE      guibg=#dadada   ctermfg=NONE   ctermbg=255       gui=none      cterm=none
     hi Visual       guifg=NONE      guibg=#afd7ff   ctermfg=NONE   ctermbg=189       gui=none      cterm=none
     hi VisualNOS    guifg=fg        guibg=NONE      ctermfg=fg     ctermbg=NONE      gui=underline cterm=underline
     hi IncSearch    guifg=fg        guibg=#57d7d7   ctermfg=fg     ctermbg=202       gui=none      cterm=none
@@ -296,7 +296,7 @@ elseif g:lucius_style == "light"
     hi PmenuSbar    guifg=#808080   guibg=#444444   ctermfg=244    ctermbg=238       gui=none      cterm=none
     hi PmenuThumb   guifg=fg        guibg=#9e9e9e   ctermfg=fg     ctermbg=247       gui=none      cterm=none
     hi StatusLine   guifg=bg        guibg=#808080   ctermfg=bg     ctermbg=237       gui=bold      cterm=bold
-    hi StatusLineNC guifg=#e4e4e4   guibg=#808080   ctermfg=237    ctermbg=244       gui=none      cterm=none
+    hi StatusLineNC guifg=#e4e4e4   guibg=#808080   ctermfg=0      ctermbg=244       gui=none      cterm=none
     hi TabLine      guifg=bg        guibg=#808080   ctermfg=bg     ctermbg=244       gui=none      cterm=none
     hi TabLineFill  guifg=#b2b2b2   guibg=#808080   ctermfg=249    ctermbg=244       gui=none      cterm=none
     hi TabLineSel   guifg=fg        guibg=#afd7ff   ctermfg=fg     ctermbg=153       gui=none      cterm=none
@@ -320,8 +320,8 @@ elseif g:lucius_style == "light"
     hi Directory    guifg=#00875f   guibg=NONE      ctermfg=29     ctermbg=NONE      gui=none      cterm=none
     hi ErrorMsg     guifg=#af0000   guibg=NONE      ctermfg=124    ctermbg=NONE      gui=none      cterm=none
     hi SignColumn   guifg=#626262   guibg=#d0d0d0   ctermfg=241    ctermbg=252       gui=none      cterm=none
-    hi LineNr       guifg=#9e9e9e   guibg=#dadada   ctermfg=247    ctermbg=253       gui=none      cterm=none
-    hi CursorLineNr guifg=#9e9e9e   guibg=#dadada   ctermfg=247    ctermbg=253       gui=none      cterm=none
+    hi LineNr       guifg=#9e9e9e   guibg=#dadada   ctermfg=247    ctermbg=255       gui=none      cterm=none
+    hi CursorLineNr guifg=#9e9e9e   guibg=#dadada   ctermfg=247    ctermbg=255       gui=none      cterm=none
     hi MoreMsg      guifg=#005fd7   guibg=NONE      ctermfg=26     ctermbg=NONE      gui=none      cterm=none
     hi ModeMsg      guifg=fg        guibg=NONE      ctermfg=fg     ctermbg=NONE      gui=none      cterm=none
     hi Question     guifg=fg        guibg=NONE      ctermfg=fg     ctermbg=NONE      gui=none      cterm=none
