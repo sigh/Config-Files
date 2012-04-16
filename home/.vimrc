@@ -423,9 +423,6 @@ autocmd InsertLeave * syn clear EOLWS | syn match EOLWS excludenl containedin=AL
 autocmd BufRead,BufNewFile * syn match EOLWS excludenl containedin=ALL /\s\+$/
 highlight EOLWS ctermbg=red guibg=red
 
-" Make matching paren less distracting.
-highlight MatchParen ctermbg=yellow
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Text Formatting/Layout
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
