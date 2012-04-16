@@ -604,6 +604,11 @@ g.() {
     find . -name '.?*' -prune -o -exec egrep --color=always -H "$@" {} \; 2> /dev/null
 }
 
+# ack
+export ACK_COLOR_LINENO="yellow"
+export ACK_COLOR_FILENAME="green"
+alias ackp="ack --pager=less"
+
 # screen commands
 
 if [[ -z $STY ]] ; then
