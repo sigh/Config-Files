@@ -125,16 +125,25 @@ set foldlevel=0
 set fillchars=vert:\ ,stl:\ ,stlnc:\ ,diff:\ ,fold:\ 
 
 " Syntax highlighting
-set background=light
-hi clear
 syntax reset
-hi Comment ctermfg=2
 syn match command '^\[\d\d:\d\d\] \[\d\+\] dilshan@[^:]\+:.*\n\d\+ \$'
 hi link command Comment
-hi Folded ctermfg=4 ctermbg=8
-hi FoldColumn ctermfg=4 ctermbg=7
-" for the statusline.
-hi User1 ctermfg=3 ctermbg=0
+
+if &term == "screen-256color" || &term == "xterm-256color"
+    set t_Co=256
+    let g:lucius_style = "light"
+    colorscheme lucius_mod
+    hi Normal       ctermfg=0      ctermbg=15        cterm=none
+    hi Comment      ctermfg=2
+    hi User1        ctermfg=3      ctermbg=237       cterm=bold
+else
+    set t_Co=16
+    set background=light
+    hi Comment ctermfg=2
+    hi Folded ctermfg=4 ctermbg=8
+    hi FoldColumn ctermfg=4 ctermbg=7
+    hi User1 ctermfg=3 ctermbg=0
+endif
 
 function ToggleFold()
   if foldclosed('.') == -1
