@@ -311,10 +311,10 @@ elseif g:lucius_style == "light"
     hi SpellLocal   guisp=#d7af00                   ctermbg=181                      gui=undercurl cterm=underline
 
     " ## Diff ##
-    hi DiffAdd      guifg=fg        guibg=#afd7af   ctermfg=fg     ctermbg=151       gui=none      cterm=none
-    hi DiffChange   guifg=fg        guibg=#d7d7af   ctermfg=fg     ctermbg=187       gui=none      cterm=none
-    hi DiffDelete   guifg=fg        guibg=#d7afaf   ctermfg=fg     ctermbg=181       gui=none      cterm=none
-    hi DiffText     guifg=#d75f00   guibg=#d7d7af   ctermfg=166    ctermbg=187       gui=bold      cterm=bold
+    hi DiffAdd      guifg=fg        guibg=#afd7af                  ctermbg=151       gui=none      cterm=none
+    hi DiffChange   guifg=fg        guibg=#d7d7af                  ctermbg=153       gui=none      cterm=none
+    hi DiffDelete   guifg=fg        guibg=#d7afaf                  ctermbg=181       gui=none      cterm=none
+    hi DiffText     guifg=#d75f00   guibg=#d7d7af                  ctermbg=111       gui=bold      cterm=bold
 
     " ## Misc ##
     hi Directory    guifg=#00875f   guibg=NONE      ctermfg=29     ctermbg=NONE      gui=none      cterm=none
