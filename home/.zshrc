@@ -326,8 +326,8 @@ bindkey "\e[1;5D" backward-word
 # delete with alt
 bindkey "\ea" backward-kill-line
 bindkey "\ee" kill-line
-bindkey "\e[1;9C" kill-word
-bindkey "\e[1;9D" backward-kill-word
+bindkey "\e[1;3C" kill-word
+bindkey "\e[1;3D" backward-kill-word
 
 WORDCHARS="${WORDCHARS:s#/#}"
 
@@ -604,16 +604,7 @@ alias ackp="ack --pager=less"
 
 # screen commands
 
-if [[ -z $STY ]] ; then
-    # commands for outside screen
-
-    # I use screen_wrapper a lot
-    alias s=screen_wrapper
-    _screen_wrapper() {
-        compadd - $( screen_wrapper --complete "$PREFIX" )
-    }
-    compdef _screen_wrapper screen_wrapper
-else
+if [[ -n $STY ]] ; then
     # commands for use inside screen
 
     # ensure screendir is populated with the directory
@@ -718,6 +709,59 @@ else
         # clear the directory stack so that only the current directory is there.
         dirs -c
     fi
+elif [[ -n $TMUX ]] ; then
+    sessionname() {
+        tmux rename-session "$@"
+    }
+
+    title() {
+        tmux rename-window "$*"
+    }
+
+    chdir() {
+        local abs_path=$(cd "${1:-.}" 2> /dev/null && pwd)
+        if [[ -n $abs_path ]] ; then
+            tmux set default-path "$abs_path"
+        else
+            echo "chdir: $1: No such directory"
+        fi
+    }
+
+    scrollback() {
+        setopt localtraps
+        local filename="$(mktemp)"
+        trap "rm -f -- '$filename'" 0
+        trap 'exit 2' 1 2 3 15
+        tmux capture-pane -S -32000
+        tmux save-buffer "$filename"
+        tmux delete-buffer
+        # Use - because we want to call scrollback from within zle
+        OUTPUT_FILE="$1" command vim -u NONE -c "runtime! macros/scrollback_less.vim" - < "$filename"
+        # Move back up over the annoying text which vim writes.
+        tput cuu 2
+    }
+    alias sb=scrollback
+    # Access scrollback with Alt-s, use S within vim to write to command line.
+    inline-screen-scrollback() {
+        setopt localtraps
+        local filename="$(mktemp)"
+        trap "rm -f -- '$filename'" 0
+        trap 'exit 2' 1 2 3 15
+        scrollback "$filename"
+        LBUFFER+="$(<$filename)"
+        zle redisplay
+    }
+    zle -N inline-screen-scrollback
+    bindkey '\es' inline-screen-scrollback
+else
+    # commands for outside screen
+
+    # I use screen_wrapper a lot
+    alias s=screen_wrapper
+    _screen_wrapper() {
+        compadd - $( screen_wrapper --complete "$PREFIX" )
+    }
+    compdef _screen_wrapper screen_wrapper
 fi
 
 # reload zshrc for the current shell

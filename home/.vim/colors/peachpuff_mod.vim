@@ -47,6 +47,8 @@ hi DiffChange term=bold cterm=NONE ctermbg=3 ctermfg=0 guibg=#edb5cd
 hi DiffText term=reverse cterm=NONE ctermbg=2 ctermfg=0 gui=bold guibg=#ff8060
 hi Cursor guifg=bg guibg=fg
 hi lCursor guifg=bg guibg=fg
+hi MatchParen ctermbg=yellow
+hi ColorColumn ctermbg=blue ctermfg=white
 
 " Colors for syntax highlighting
 hi Comment term=bold ctermfg=4 guifg=#406090
