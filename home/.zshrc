@@ -602,7 +602,7 @@ export ACK_COLOR_LINENO="yellow"
 export ACK_COLOR_FILENAME="green"
 alias ackp="ack --pager=less"
 
-# screen commands
+# screen/tmux commands
 
 if [[ -n $STY ]] ; then
     # commands for use inside screen
@@ -754,14 +754,14 @@ elif [[ -n $TMUX ]] ; then
     zle -N inline-screen-scrollback
     bindkey '\es' inline-screen-scrollback
 else
-    # commands for outside screen
+    # commands for outside screen/tmux
 
-    # I use screen_wrapper a lot
-    alias s=screen_wrapper
-    _screen_wrapper() {
-        compadd - $( screen_wrapper --complete "$PREFIX" )
+    # I use session_wrapper a lot
+    alias s="session_wrapper tmux"
+    _session_wrapper() {
+        compadd - $(session_wrapper tmux --complete "$PREFIX")
     }
-    compdef _screen_wrapper screen_wrapper
+    compdef _session_wrapper session_wrapper
 fi
 
 # reload zshrc for the current shell
