@@ -756,12 +756,12 @@ elif [[ -n $TMUX ]] ; then
 else
     # commands for outside screen
 
-    # I use screen_wrapper a lot
-    alias s=screen_wrapper
-    _screen_wrapper() {
-        compadd - $( screen_wrapper --complete "$PREFIX" )
+    # I use session_wrapper a lot
+    alias s=session_wrapper
+    _session_wrapper() {
+        compadd - $(session_wrapper tmux --complete "$PREFIX")
     }
-    compdef _screen_wrapper screen_wrapper
+    compdef _session_wrapper session_wrapper
 fi
 
 # reload zshrc for the current shell
