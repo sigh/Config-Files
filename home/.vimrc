@@ -532,6 +532,12 @@ autocmd SwapExists * let v:swapchoice = 'o' | setlocal statusline=%!SwapStatusLi
 
 hi User1 ctermfg=255 ctermbg=1 cterm=bold
 function SwapStatusLine()
+    if ! &ro
+        " If the user removes the readonly flag, then take away the warning.
+        setlocal statusline=
+        return
+    endif
+
     let l:line = "%f [%M%n%R%H%W] %Y [%{&ff}] "
     let l:line = l:line . "%1* WARNING: Swapfile exists %*"
     let l:line = l:line . "%< %=%l/%L%< [%p%%] %v [%b,0x%B]"
