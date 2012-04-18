@@ -528,6 +528,16 @@ set backupdir=~/.vim/.backup//
 set directory=~/.vim/.swap// " the slashes at the end mean that the files are
                              " stored with the full path
 
+autocmd SwapExists * let v:swapchoice = 'o' | setlocal statusline=%!SwapStatusLine()
+
+hi User1 ctermfg=255 ctermbg=1 cterm=bold
+function SwapStatusLine()
+    let l:line = "%f [%M%n%R%H%W] %Y [%{&ff}] "
+    let l:line = l:line . "%1* WARNING: Swapfile exists %*"
+    let l:line = l:line . "%< %=%l/%L%< [%p%%] %v [%b,0x%B]"
+    return l:line
+endfunction
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Tabs
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
