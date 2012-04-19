@@ -240,7 +240,7 @@ class SessionPrompt(cmd.Cmd):
         lines = ['Preset options (leave empty for default): ']
         for i, session in enumerate(sessions):
             text = '%s %s: %s' %('*' if session.attached else ' ', i, session.pretty())
-            if session.pid is None:
+            if not session.exists:
                 text += ' (create)'
             if i == 0:
                 text += ' [default]'
