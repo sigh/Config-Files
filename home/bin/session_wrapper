@@ -38,6 +38,7 @@ from __future__ import print_function
 import optparse
 import cmd
 import collections
+import os
 import re
 import sys
 import subprocess
@@ -62,20 +63,20 @@ class ScreenSettings(object):
                 exists = True,
             )
 
-    def launch_command(self, session, reattach = None, window = None):
+    def launch_command(self, session, **options):
         args = ['screen']
-        if window is not None:
-            args.extend(['-p', window])
+        if options.get('window', None) is not None:
+            args.extend(['-p', options['window']])
         if not session.exists:
             # force creation of a new session
             args.extend(['-S'])
-        elif reattach:
+        elif options.get('reattach', False):
             args.extend(['-x', '-S'])
         else:
             args.extend(['-D', '-R'])
         args.append(str(session))
 
-        return args
+        return args, not options.get('child', False)
 
 class TmuxSettings(object):
     LIST_RE = r'([^:]+): .*'
@@ -92,25 +93,48 @@ class TmuxSettings(object):
                 exists = True
             )
 
-    def launch_command(self, session, reattach = None, window = None):
+    def launch_command(self, session, **options):
         session_name = str(session)
-        args = ['tmux', '-2']
+        do_exec = not options.get('child', False)
+        base_args = ['tmux', '-2']
+        rest_args = []
+
         if not session.exists:
             # force creation of a new session
-            args.extend(['new-session', '-s'])
+            rest_args.extend(['new-session', '-s'])
         else:
-            if window is not None:
+            if options.get('window', None) is not None:
                 subprocess.check_call(
-                        ['tmux', 'select-window', '-t', session_name + ':' + window])
-            if not reattach:
+                        ['tmux', 'select-window', '-t', session_name + ':' + options['window']])
+            if not options.get('reattach', False):
                 subprocess.check_call(
                         ['tmux', 'detach-client', '-P', '-s', session_name])
-            # TODO(dilshan): implement reattach properly (with a separate
-            # session)
-            args.extend(['attach-session', '-t'])
-        args.append(session_name)
+            else:
+                pass
+                # TODO(dilshan): implement reattach properly (with a separate
+                # session)
+            rest_args.extend(['attach-session', '-t'])
 
-        return args
+        # If we are inside tmux then do things a bit differently
+        if options.get('current_prog', None) == 'tmux':
+            # If the session doesn't exist yet then create it in detached mode.
+            if not session.exists:
+                # To create a new session the TMUX environment variable must be
+                # unset, otherwise tmux gets angry even though we aren't leaving
+                # the current sesssion :(
+                env = dict(os.environ)
+                del env['TMUX']
+
+                subprocess.check_call(
+                        ['tmux', 'new-session', '-d', '-s', session_name], env = env)
+
+            rest_args = ['switch-client', '-t']
+            # This is important, if we exec then we destroy the current shell.
+            do_exec = False
+
+        rest_args.append(session_name)
+
+        return base_args + rest_args, do_exec
 
 class Session(object):
     def __init__(self, name, pid = None, attached=False, exists=False):
@@ -261,17 +285,19 @@ def run_prog(
         session,
         reattach = False,
         child = False,
-        window = None):
-    args = prog.launch_command(
+        window = None,
+        current_prog = None):
+    args, do_exec = prog.launch_command(
             session,
             reattach = reattach,
-            window = window)
+            window = window,
+            child = child,
+            current_prog = current_prog)
 
-    import os
-    if child:
-        subprocess.call(args)
-    else:
+    if do_exec:
         os.execvp(args[0], args)
+    else:
+        subprocess.call(args)
 
 def find_session_to_load(all_sessions, session_name, default = None):
     # exclamation mark forces a new session to open
@@ -350,6 +376,13 @@ def get_session_completions(sessions, prefix):
                 completions.append('%s.%s' %(name, pid))
     return completions
 
+def get_current_prog():
+    if os.environ.get('STY', ''):
+        return 'screen'
+    if os.environ.get('TMUX', ''):
+        return 'tmux'
+    return None
+
 def main():
     parser = optparse.OptionParser(description = 'A wrapper for screen and tmux')
     parser.add_option(
@@ -379,6 +412,14 @@ def main():
     options, args = parser.parse_args()
     prog_name = args[0] if args else ''
     session_name = args[1] if len(args) == 2 else ''
+
+    current_prog = get_current_prog()
+    if current_prog == 'screen':
+        print("Can't start a new session from within screen", file=sys.stderr)
+        sys.exit(1)
+    if current_prog == 'tmux' and prog_name != 'tmux':
+        print("Can only start tmux sessions from within tmux", file=sys.stderr)
+        sys.exit(1)
 
     prog = None
     if prog_name == "screen":
@@ -418,7 +459,8 @@ def main():
         session,
         child = options.child,
         reattach = options.reattach,
-        window = options.window)
+        window = options.window,
+        current_prog = current_prog)
 
 if __name__ == '__main__':
     main()
