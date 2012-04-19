@@ -145,6 +145,14 @@ else
     hi User1 ctermfg=3 ctermbg=0
 endif
 
+if &term =~ '^screen'
+    " tmux will send xterm-style keys when its xterm-keys option is on
+    execute "set <xUp>=\e[1;*A"
+    execute "set <xDown>=\e[1;*B"
+    execute "set <xRight>=\e[1;*C"
+    execute "set <xLeft>=\e[1;*D"
+endif
+
 function ToggleFold()
   if foldclosed('.') == -1
     foldclose
