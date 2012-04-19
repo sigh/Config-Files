@@ -604,6 +604,15 @@ alias ackp="ack --pager=less"
 
 # screen/tmux commands
 
+# commands for outside screen/tmux
+
+# I use session_wrapper a lot
+alias s="session_wrapper tmux"
+_session_wrapper() {
+    compadd - $(session_wrapper tmux --complete "$PREFIX")
+}
+compdef _session_wrapper session_wrapper
+
 if [[ -n $STY ]] ; then
     # commands for use inside screen
 
@@ -753,15 +762,6 @@ elif [[ -n $TMUX ]] ; then
     }
     zle -N inline-screen-scrollback
     bindkey '\es' inline-screen-scrollback
-else
-    # commands for outside screen/tmux
-
-    # I use session_wrapper a lot
-    alias s="session_wrapper tmux"
-    _session_wrapper() {
-        compadd - $(session_wrapper tmux --complete "$PREFIX")
-    }
-    compdef _session_wrapper session_wrapper
 fi
 
 # reload zshrc for the current shell
