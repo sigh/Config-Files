@@ -286,7 +286,7 @@ elseif g:lucius_style == "light"
     hi CursorColumn guifg=NONE      guibg=#dadada   ctermfg=NONE   ctermbg=255       gui=none      cterm=none
     hi CursorLine   guifg=NONE      guibg=#dadada   ctermfg=NONE   ctermbg=255       gui=none      cterm=none
     hi Visual       guifg=NONE      guibg=#afd7ff   ctermfg=NONE   ctermbg=189       gui=none      cterm=none
-    hi VisualNOS    guifg=fg        guibg=NONE      ctermfg=fg     ctermbg=NONE      gui=underline cterm=underline
+    hi VisualNOS    guifg=NONE      guibg=#afd7ff   ctermfg=NONE   ctermbg=189       gui=none      cterm=none
     hi IncSearch    guifg=fg        guibg=#57d7d7   ctermfg=fg     ctermbg=202       gui=none      cterm=none
     hi Search       guifg=fg        guibg=#ffaf00                  ctermbg=222       gui=none      cterm=none
 
