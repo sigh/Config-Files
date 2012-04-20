@@ -345,14 +345,9 @@ set hlsearch
 set incsearch
 
 " Press Space to turn off highlighting and clear any message already displayed.
-" Also turn off MBE
-noremap <silent> <Space> <Esc>:call <SID>ResetSome()<Bar>:nohlsearch<Bar>:pwd<CR>
+noremap <silent> <Space> <Esc>:call <SID>Reset()<Bar>:nohlsearch<CR>
 
-" Ctrl-Space
-noremap <silent> <Nul>   <Esc>:call <SID>ResetAll()<Bar>:nohlsearch<Bar>:pwd<CR>
-
-" Reset only somethings
-function! <SID>ResetSome()
+function! <SID>Reset()
     " Update diff
     if &diff
         diffu
@@ -360,12 +355,6 @@ function! <SID>ResetSome()
     " Move screen to the left
     normal zH
     call Buftabs_show(-1)
-endfunction
-
-" Reset most things that we could have opened
-function! <SID>ResetAll()
-    call <SID>ResetSome()
-    CDiffChanges
 endfunction
 
 " what to show when I hit :set list
@@ -378,8 +367,8 @@ set scrolloff=4
 set sidescrolloff=10
 set sidescroll=1
 
-" don't blink
-set novisualbell
+" Don't have any bell.
+set visualbell t_vb=
 
 " Set the status line
 set statusline=%f\ [%M%n%R%H%W]%<\ %Y\ [%{&ff}]\ %=%l/%L%<\ [%p%%]\ %v\ [%b,0x%B]
