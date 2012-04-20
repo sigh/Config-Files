@@ -316,10 +316,13 @@ noremap <unique> <script> <silent> - :<C-U>call <SID>SwitchToBuffer()<CR>
 " Ctrl-- will show the list of buffers and ask which to switch to
 noremap <unique> <script> <silent> <C-_> :ls<CR>:b
 
+let s:prevbuf = -1
+autocmd BufLeave * let s:prevbuf = bufnr('%')
+
 function! <SID>SwitchToBuffer()
     if v:count == 0
-        if bufexists(bufname('#'))
-            e # " edit previous buffer
+        if bufexists(s:prevbuf)
+            exec "b! " . s:prevbuf
         else
             echohl Error
             echo "No previous buffer"
