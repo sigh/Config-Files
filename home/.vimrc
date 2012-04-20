@@ -526,14 +526,15 @@ set backupdir=~/.vim/.backup//
 set directory=~/.vim/.swap// " the slashes at the end mean that the files are
                              " stored with the full path
 
-autocmd SwapExists * let v:swapchoice = 'o' | setlocal statusline=%!SwapStatusLine()
+autocmd SwapExists * let v:swapchoice = 'o' | exec "setlocal statusline=%!SwapStatusLine('" . expand('%') . "')"
 
 hi User1 ctermfg=255 ctermbg=1 cterm=bold
-function SwapStatusLine()
-    if ! &ro
+function SwapStatusLine(filename)
+    " Only change the warning if this is the current buffer.
+    if ! &ro && a:filename == expand('%')
         " If the user removes the readonly flag, then take away the warning.
-        setlocal statusline=
-        return
+        setlocal statusline=wtf
+        return a:filename
     endif
 
     let l:line = "%f [%M%n%R%H%W] %Y [%{&ff}] "
