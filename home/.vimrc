@@ -717,3 +717,10 @@ command! -nargs=+ Calc :r! python -c "from math import *; print <args>"
 " correctly
 smapclear
 
+" If the screen is wide enough and there is more than one file then open up to
+" a split view.
+if argc() > 1 && &columns >= 200
+    silent vsp
+    silent b 2
+    silent wincmd p
+endif
