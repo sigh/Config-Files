@@ -276,10 +276,11 @@ ounmap ]]
 map <silent> <Leader>qq :call <SID>OpenQuickfixWindow()<CR>
 map <silent> <Leader>qc :cclose<CR>
 map <silent> <Leader>qn :cnext<CR>
-map <silent> <Leader>q<Tab> :cnext<CR>
 map <silent> <Leader>qp :cprev<CR>
-map <silent> <Leader>q<S-Tab> :cprev<CR>
-map <silent> <Leader>Q<S-Tab> :cprev<CR>
+map <silent> q<Left> :cprev<CR>
+map <silent> q<Right> :cnext<CR>
+map <silent> q<Up> :cpfile<CR>
+map <silent> q<Down> :cnfile<CR>
 function s:OpenQuickfixWindow()
     botright copen
 endfunction
