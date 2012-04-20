@@ -232,10 +232,10 @@ map <Leader>O O<Esc>
 map <Leader>d ^d$
 
 " Easy window navigation.
-noremap <C-h>  <C-w>h
-noremap <C-j>  <C-w>j
-noremap <C-k>  <C-w>k
-noremap <C-l>  <C-w>l
+noremap <C-Left>  <C-w>h
+noremap <C-Down>  <C-w>j
+noremap <C-Up>    <C-w>k
+noremap <C-Right> <C-w>l
 
 " allow the . to execute once for each line of a visual selection
 vnoremap . :normal .<CR>
