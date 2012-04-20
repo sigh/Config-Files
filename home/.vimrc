@@ -140,7 +140,7 @@ set cmdheight=2
 " Print the line number in front of each line
 set number
 
-" do not redraw while running macros (much faster) (LazyRedraw)
+" do not redraw while running macros (much faster)
 set lazyredraw
 
 " buffer becomes hidden when it is abandoned
@@ -168,7 +168,7 @@ set noerrorbells
 " all filchars blank
 set fillchars=vert:\ ,stl:\ ,stlnc:\ ,diff:\ ,fold:\ 
 
-" all cursor to go anywhere
+" allow cursor to go anywhere
 set virtualedit=all
 
 " cursor doesn't honor lines
@@ -179,12 +179,10 @@ map k gk
 set history=1000
 
 " Restore cursor position when we load up the file
-if has("autocmd")
-    autocmd BufReadPost *
+autocmd BufReadPost *
     \ if line("'\"") > 0 && line("'\"") <= line("$") |
     \ exe "normal g`\"" |
     \ endif
-endif
 
 " look up the entire directory stack for tags
 set tags=./tags;/
