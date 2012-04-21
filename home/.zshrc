@@ -653,7 +653,11 @@ if [[ -n $STY ]] ; then
     # set title for current session
     #   new title can contain spaces
     title() {
-        screen -X title "$*"
+        local title="$*"
+        if [[ -z $title ]] ; then
+            title=$(basename "$PWD")
+        fi
+        screen -X title "$title"
     }
 
     # change the default directory that screens open in
@@ -724,7 +728,11 @@ elif [[ -n $TMUX ]] ; then
     }
 
     title() {
-        tmux rename-window "$*"
+        local title="$*"
+        if [[ -z $title ]] ; then
+            title=$(basename "$PWD")
+        fi
+        tmux rename-window "$title"
     }
 
     chdir() {
