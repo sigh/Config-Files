@@ -342,16 +342,28 @@ endfunction
 map <silent> <C-Q> <Esc>:call <SID>BDPreserveWindow()<CR>
 
 function <SID>BDPreserveWindow()
-    let current = bufnr('%')
-    let prev = bufnr('#')
-    if prev != current && prev > 0
-        " If there is a previous buffer to move to - go there.
-        exec 'b ' . prev
-    else
-        " Otherwise just go to the next buffer in the buffer list.
-        bnext
-    endif
-    exe 'bwipe ' . current
+    let window = winnr()
+    let buffer = bufnr('%')
+
+    " Switch buffers for every window where this buffer occurs
+    for i in range(1, winnr('$'))
+        if winbufnr(i) != buffer
+            continue
+        endif
+        exec i . 'wincmd w'
+
+        let prev = bufnr('#')
+        if prev != buffer && prev > 0
+            " If there is a previous buffer to move to - go there.
+            exec 'b ' . prev
+        else
+            " Otherwise just go to the next buffer in the buffer list.
+            bnext
+        endif
+    endfor
+
+    exec 'bwipe ' . buffer
+    exec window . 'wincmd w'
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
