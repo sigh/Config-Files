@@ -575,7 +575,7 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " set a larger context in diffs
-set diffopt=filler,context:10
+set diffopt=filler,context:10,foldcolumn:0
 
 " allow us to be able to "do" in visual mode
 vmap <silent> do :diffget<CR>
