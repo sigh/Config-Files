@@ -626,6 +626,11 @@ let g:EasyMotion_keys = "abcdefghijklmnopqrstuvwxyz"
 let g:CommandTMatchWindowReverse=1
 map <silent> <Leader>t :CommandT<CR>
 
+" Splice
+let g:splice_initial_diff_grid = 1
+let g:splice_initial_layout_grid = 1
+let g:splice_initial_scrollbind_grid = 1
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spelling
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

@@ -6,13 +6,17 @@
     excludesfile = ~/.gitignore
     pager = less -FXRiKa
 [merge]
-    tool = vimdiff
+    tool = splice
+[mergetool "splice"]
+    cmd = "vim -f $BASE $LOCAL $REMOTE $MERGED -c 'SpliceInit'"
+    trustExitCode = true
 [alias]
     d = diff --relative
     h = help
     b = branch
     a = add
     m = merge
+    mt = mergetool --no-prompt
 
     st = status -sb
     ci = commit
