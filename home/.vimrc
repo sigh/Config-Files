@@ -193,6 +193,9 @@ set tags=./tags;/
 " <Tab> is C-I, so assign jump list navi to C-P
 noremap <C-P> <C-I>
 
+" Entering ex mode by accident is annoying!
+map Q <NOP>
+
 " Always split on right when vertical
 set splitright
 
