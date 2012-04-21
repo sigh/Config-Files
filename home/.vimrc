@@ -637,10 +637,6 @@ imap <silent> <C-c> <plug>NERDCommenterInInsert
 " EasyMotion
 let g:EasyMotion_keys = "abcdefghijklmnopqrstuvwxyz"
 
-" Command-T
-let g:CommandTMatchWindowReverse=1
-map <silent> <Leader>t :CommandT<CR>
-
 " Splice
 let g:splice_initial_diff_grid = 1
 let g:splice_initial_layout_grid = 1
