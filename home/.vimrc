@@ -187,15 +187,8 @@ autocmd BufReadPost *
 " look up the entire directory stack for tags
 set tags=./tags;/
 
-" Switch buffers with tab
-nnoremap <silent> <Tab> :bnext<CR>
-nnoremap <silent> <S-Tab> :bprevious<CR>
-
 " <Tab> is C-I, so assign jump list navi to C-P
 noremap <C-P> <C-I>
-
-" ctrl-q deletes the buffer
-map <silent> <C-Q> <Esc>:BD<CR>
 
 " Always split on right when vertical
 set splitright
@@ -305,6 +298,10 @@ endfunction
 " Swith buffer
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" Switch buffers with tab
+nnoremap <silent> <Tab> :bnext<CR>
+nnoremap <silent> <S-Tab> :bprevious<CR>
+
 " <count>- swithes to buffer <count>. With no count it switches the the previous
 " buffer.
 " NOTE: <C-U> is required is required to remove the line range that you get
@@ -333,6 +330,22 @@ function! <SID>SwitchToBuffer()
         echo "Buffer " . v:count . " does not exist"
         echohl None
     endif
+endfunction
+
+" ctrl-q deletes the buffer
+map <silent> <C-Q> <Esc>:call <SID>BDPreserveWindow()<CR>
+
+function <SID>BDPreserveWindow()
+    let current = bufnr('%')
+    let prev = bufnr('#')
+    if prev != current && prev > 0
+        " If there is a previous buffer to move to - go there.
+        exec 'b ' . prev
+    else
+        " Otherwise just go to the next buffer in the buffer list.
+        bnext
+    endif
+    exe 'bwipe ' . current
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
