@@ -72,6 +72,9 @@ let mapleader = ","
 " Better Completion
 set completeopt=longest,menuone,preview
 
+" Set path for find command
+set path=.,,
+
 " Shortcut to get current file's directory
 cabbr <expr> %% <SID>CurrentWorkingDir()
 
@@ -547,7 +550,7 @@ function SwapStatusLine(filename)
     " Only change the warning if this is the current buffer.
     if ! &ro && a:filename == expand('%')
         " If the user removes the readonly flag, then take away the warning.
-        setlocal statusline=wtf
+        setlocal statusline=
         return a:filename
     endif
 
