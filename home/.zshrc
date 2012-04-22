@@ -770,6 +770,10 @@ elif [[ -n $TMUX ]] ; then
     }
     zle -N inline-screen-scrollback
     bindkey '\es' inline-screen-scrollback
+
+    # Monitor for the start of the shell command prompt - this usually means
+    # that a command has finished running.
+    tmux setw monitor-content "\[??:??\] \[*\] $USER@*:" > /dev/null
 fi
 
 # reload zshrc for the current shell
