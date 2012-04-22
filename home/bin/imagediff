@@ -14,21 +14,24 @@ if [[ $1 == /dev/null ]] ; then
 fi
 
 # skip any non images
-if [[ $(identify -format '%m' "$imagefile" 2> /dev/null) != TXT ]] ; then
+format=$(identify -format '%m' "$imagefile" 2> /dev/null)
+if [[ -n $format && $format != TXT ]] ; then
     [[ -n $3 ]] && echo Displaying "$3"
 else
     [[ -n $3 ]] && echo Skipping "  $3"
     exit 0
 fi
 
-if [[ -z $single ]] ; then
-    # Create a temp file and make sure it is deleted when the script ends
-    diff=$(mktemp --suffix=.png)
-    trap "rm -f -- '$diff'" 0
-    trap 'exit 2' 1 2 3 15
+# Create a temp file and make sure it is deleted when the script ends
+diff=$(mktemp)
+trap "rm -f -r -- '$diff'" 0
+trap 'exit 2' 1 2 3 15
 
+if [[ -z $single ]] ; then
     compare "$1" "$2" "$diff"
-    montage "$1" \( "$diff" -set label "$3" \) "$2" -geometry +4+4 x:
+    montage "$1" \( "$diff" -set label "$3" \) "$2" -geometry +4+4 "$diff"
 else
-    montage -label "$single$3" "$imagefile" -geometry +4+4 x:
+    montage -label "$single$3" "$imagefile" -geometry +4+4 "$diff"
 fi
+
+feh "$diff"

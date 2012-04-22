@@ -256,18 +256,18 @@ export PYTHONSTARTUP="$HOME/.pystartup"
 # screen commands
 
 if [[ -z $STY ]] ; then
-    # commands for outside screen
+    # commands for outside screen/tmux
 
-    # I use screen_wrapper a lot
-    s() { screen_wrapper "$@"; }
+    # I use session_wrapper a lot
+    s() { session_wrapper tmux "$@"; }
 
-    # completion for screen_wrapper
-    _screen_wrapper() {
-        COMPREPLY=( $( screen_wrapper --complete "${COMP_WORDS[COMP_CWORD]}" ) )
+    # completion for session_wrapper
+    _session_wrapper() {
+        COMPREPLY=( $(session_wrapper tmux --complete "${COMP_WORDS[COMP_CWORD]}" ))
     }
 
-    complete -F _screen_wrapper screen_wrapper
-    complete -F _screen_wrapper s
+    complete -F _session_wrapper session_wrapper
+    complete -F _session_wrapper s
 else
     # commands for use inside screen
 
