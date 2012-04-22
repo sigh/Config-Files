@@ -602,6 +602,10 @@ export ACK_COLOR_LINENO="yellow"
 export ACK_COLOR_FILENAME="green"
 alias ackp="ack --pager=less"
 
+# monitor
+
+monitor() { watch -d -n1 -t "$@"; }
+
 # screen/tmux commands
 
 # commands for outside screen/tmux
@@ -774,6 +778,14 @@ elif [[ -n $TMUX ]] ; then
     # Monitor for the start of the shell command prompt - this usually means
     # that a command has finished running.
     tmux setw monitor-content "\[??:??\] \[*\] $USER@*:" > /dev/null
+
+    # monitor activity on a command
+    monitor() {
+        trap "tmux setw monitor-activity off > /dev/null" 0
+        trap 'exit 2' 1 2 3 15
+        tmux setw monitor-activity on > /dev/null
+        watch -n1 -d -t "$@"
+    }
 fi
 
 # reload zshrc for the current shell
