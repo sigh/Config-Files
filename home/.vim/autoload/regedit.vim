@@ -68,7 +68,7 @@ endfunction
 function! s:SetupBuffer()
   setlocal nobuflisted
   setlocal noswapfile
-  setlocal buftype=
+  setlocal buftype=acwrite
   setlocal tabstop=8
   setlocal softtabstop=0
   setlocal shiftwidth=8
