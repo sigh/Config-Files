@@ -539,17 +539,7 @@ set foldopen-=search
 set foldopen-=undo
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" File Explorer
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" should I split vertically
-let g:explVertical=1
-
-" width of 35 pixels
-let g:explWinSize=35
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Backup
+" Backup and swapfiles
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " set backup to go to backup directories
@@ -645,6 +635,10 @@ let g:splice_initial_scrollbind_grid = 1
 " Regedit
 command! -nargs=? -bang RE :call regedit#Start("<bang>", <f-args>)
 map <silent> <Bslash>r :RE<CR>
+
+" File Explorer (:h :Explore)
+let g:explVertical=1
+let g:explWinSize=35
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spelling
