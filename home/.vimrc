@@ -90,10 +90,6 @@ endfunction
 " Sudo to write
 cmap w!! w !sudo tee % >/dev/null
 
-" Use space for entering command
-noremap <Space> :
-noremap : <NOP>
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Theme/Colors
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
