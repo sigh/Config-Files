@@ -642,6 +642,9 @@ let g:splice_initial_diff_grid = 1
 let g:splice_initial_layout_grid = 1
 let g:splice_initial_scrollbind_grid = 1
 
+" Regedit
+map <silent> <Bslash>r :RE<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spelling
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
