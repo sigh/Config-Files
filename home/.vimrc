@@ -626,6 +626,7 @@ imap <silent> <C-c> <plug>NERDCommenterInInsert
 
 " EasyMotion
 let g:EasyMotion_keys = "abcdefghijklmnopqrstuvwxyz"
+let g:EasyMotion_leader_key = '<Space>'
 
 " Splice
 let g:splice_initial_diff_grid = 1
