@@ -13,9 +13,9 @@ let loaded_regedit = 1
 let s:writeable = '^[a-z@*+~/]$'
 let s:readonly = '^[0-9:.%#=-]$'
 
-command! -nargs=? RE :call <SID>Start(<f-args>)
+command! -nargs=? -bang RE :call <SID>Start("<bang>", <f-args>)
 
-function! s:Start(...)
+function! s:Start(bang, ...)
   " Find which register the user wants
   let reg = '@' " Unnammed register is the default
   if a:0 > 0
@@ -38,7 +38,7 @@ function! s:Start(...)
   let _isf = &isfname
   try
     set isfname=1-255 " Anything goes in a filename
-    exec 'e [Register ' . reg . ']'
+    exec 'e' . a:bang . ' [Register ' . reg . ']'
   finally
     let &isfname = _isf
   endtry
