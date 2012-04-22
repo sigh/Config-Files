@@ -90,6 +90,10 @@ endfunction
 " Sudo to write
 cmap w!! w !sudo tee % >/dev/null
 
+" Use space for entering command
+noremap <Space> :
+noremap : <NOP>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Theme/Colors
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -377,7 +381,7 @@ set hlsearch
 set incsearch
 
 " Press Space to turn off highlighting and clear any message already displayed.
-noremap <silent> <Space> <Esc>:call <SID>Reset()<Bar>:nohlsearch<CR>
+noremap <silent> <Leader><Space> <Esc>:call <SID>Reset()<Bar>:nohlsearch<CR>
 
 function! <SID>Reset()
     " Update diff
@@ -515,7 +519,7 @@ function! <SID>StripTrailingWhitespace()
     let @/=_s
     call cursor(l, c)
 endfunction
-nmap <silent> <Leader><space> :call <SID>StripTrailingWhitespace()<CR>
+nmap <silent> <Leader><Leader><space> :call <SID>StripTrailingWhitespace()<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Folding
