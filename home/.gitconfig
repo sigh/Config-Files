@@ -27,9 +27,9 @@
     wdiff = diff --word-diff-regex='[a-zA-Z0-9_]+|.' --color-words
     wd = diff --word-diff-regex='[a-zA-Z0-9_]+|.' --color-words --relative
 
-    # diff images (ignore other file types)
-    idiff = difftool --extcmd 'imagediff $LOCAL $REMOTE $MERGED' --no-prompt
-    id = difftool --extcmd 'imagediff $LOCAL $REMOTE $MERGED' --no-prompt --relative
+    # diff images (ignore other file types) [NOTE: --relative makes it break]
+    idiff = difftool --tool=imagediff --no-prompt
+    id = difftool --tool=imagediff --no-prompt
 
     # view the staged changes
     sdiff = diff --cached
@@ -74,3 +74,5 @@
     mnemonicprefix = true
 [rerere]
     enabled = true
+[difftool "imagediff"]
+    cmd = imagediff $LOCAL $REMOTE $MERGED
