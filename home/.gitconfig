@@ -38,10 +38,12 @@
     # simple amend
     amend = commit --amend -C HEAD
 
-    # Nicely formatted log
+    # Nicely formatted logs:
+    #   l: Shows just the main line
+    #   lg: All lines and includes a graph
+    #   graph: Display of branch & tag topology
     l = log --date=short --first-parent --pretty=format:'%C(bold)%C(ul)%C(blue)%s%+gs%Creset%n%C(yellow)%h %Creset%ad %C(magenta)%ae %Cgreen(%cr)%Creset%Cred%d%n' --stat
-
-    # display of branch & tag topology
+    lg = log --date=short --pretty=format:'%C(bold)%C(ul)%C(blue)%s%+gs%Creset%n%C(yellow)%h %Creset%ad %C(magenta)%ae %Cgreen(%cr)%Creset%Cred%d%n' --stat --graph
     graph = log --graph --branches --date=short --pretty=format:'%C(bold)%C(ul)%C(blue)%s%Creset%n%C(yellow)%h %Creset%ad %Cgreen(%cr)%Creset%Cred%d%n' --simplify-by-decoration
 
     # open a github url for the current git repo
