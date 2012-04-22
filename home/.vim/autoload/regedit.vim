@@ -1,3 +1,5 @@
+" Define a command:
+"   command! -nargs=? -bang RE :call regedit#Start("<bang>", <f-args>)
 " Usage: :RE <register>
 "   Will edit the register in a new buffer. If no register is given then
 "   the unnamed register will be used
@@ -5,17 +7,15 @@
 "  When invoking the mapping if it is prefixed with "<reg> then that register
 "  will be opened.
 
-if exists('loaded_regedit')
-  finish
-endif
-let loaded_regedit = 1
+" if exists('g:loaded_regedit_autoload')
+  " finish
+" endif
+" let g:loaded_regedit_autoload = 1
 
 let s:writeable = '^[a-z@*+~/]$'
 let s:readonly = '^[0-9:.%#=-]$'
 
-command! -nargs=? -bang RE :call <SID>Start("<bang>", <f-args>)
-
-function! s:Start(bang, ...)
+function! regedit#Start(bang, ...)
   " Find which register the user wants
   let reg = '@' " Unnammed register is the default
   if a:0 > 0
