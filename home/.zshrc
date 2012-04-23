@@ -334,9 +334,8 @@ WORDCHARS="${WORDCHARS:s#/#}"
 # map shift-enter to ^J and then it will allow easy multiline editing.
 bindkey "^J" self-insert
 
-# directory colors (and stop anything being brightly colored)
-eval $(dircolors -b)
-LS_COLORS="${LS_COLORS//=01;/=00;}";
+# directory colors
+eval $(dircolors -b ~/.dircolors)
 
 # Comandline completion has colors
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
