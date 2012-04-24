@@ -131,7 +131,6 @@ hi link command Comment
 
 if &term == "screen-256color" || &term == "xterm-256color"
     set t_Co=256
-    let g:lucius_style = "light"
     colorscheme lucius_mod
     hi Normal       ctermfg=0      ctermbg=15        cterm=none
     hi Comment      ctermfg=2
@@ -139,6 +138,7 @@ if &term == "screen-256color" || &term == "xterm-256color"
 else
     set t_Co=16
     set background=light
+    colorscheme peachpuff_mod
     hi Comment ctermfg=2
     hi Folded ctermfg=4 ctermbg=8
     hi FoldColumn ctermfg=4 ctermbg=7
