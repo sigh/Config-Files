@@ -69,6 +69,10 @@
     path = "!python -c 'import os,sys; print \"\\n\".join(os.path.relpath(os.path.join(sys.argv[1], p)) for p in sys.argv[2:]);' \"$GIT_PREFIX\""
 [color]
     ui = true
+[color.diff]
+    meta = blue bold
+    frag = magenta
+    func = magenta ul
 [branch]
     autosetupmerge = true
 [diff]
