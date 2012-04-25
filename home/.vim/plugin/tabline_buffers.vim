@@ -119,10 +119,7 @@ endfunction
 function! s:BufferString(width)
   let [items, current_index] = s:BufferItems()
 
-  let len = s:BufferItemsStrlen(items)
-
-  if len > a:width
-  endif
+  call s:TrimBufferItems(items, current_index, a:width)
 
   let line = ''
   for [caption, hl] in items
@@ -130,34 +127,80 @@ function! s:BufferString(width)
   endfor
 
   return line
+endfunction
 
-  " let line = join(items, ' ')
-  " if strlen(line) > a:width
-  "   " If the resulting list is too long to fit on the screen, chop
-  "   " out the appropriate part
-  "   let from = 0
-  "   " The trailing space is added so that there will always be three parts to
-  "   " the split.
-  "   let parts = split(line . ' ', '[()]')
-  "   if len(parts) == 3
-  "     let start = strlen(parts[0]) + 1
-  "     let end = strlen(parts[0]) + strlen(parts[1]) + 2
-  "     let from = (start + end) / 2 - a:width / 2
-  "   endif
+function! s:TrimBufferItems(items, center, width)
+    " Length of the item we want centered
+    let len_center = strlen(a:items[a:center][0])
 
-  "   if from <= 0
-  "     let from = 0
-  "   elseif from + a:width > strlen(line)
-  "     let from = strlen(line) - a:width
-  "   end
+    " Length of the items before the center
+    let len_prefix = 0
+    if a:center > 0
+        let len_prefix = s:BufferItemsStrlen(a:items[: a:center - 1]) + 1
+    endif
 
-  "   let line = strpart(line, from, a:width)
-  " endif
+    " Length of the items from the center onwards
+    let len_suffix = s:BufferItemsStrlen(a:items[a:center :])
 
-  " return line
+    " The required length of the each of the sides
+    let wanted_len_prefix = max([(a:width - len_center) / 2, 0])
+    let wanted_len_suffix = a:width - wanted_len_prefix
+
+    " If either prefix or suffix have too much space then give it to the other
+    " side
+    if len_prefix < wanted_len_prefix
+        let wanted_len_suffix += wanted_len_prefix - len_prefix
+        let wanted_len_prefix = len_prefix
+    endif
+    if len_suffix < wanted_len_suffix
+        let wanted_len_prefix += wanted_len_suffix - len_suffix
+        let wanted_len_prefix = min([wanted_len_prefix, len_prefix])
+        let wanted_len_suffix = len_suffix
+    endif
+
+    " Trim the suffix
+    for i in range(a:center, len(a:items)-1)
+        let item = a:items[i]
+        let len = strlen(item[0])
+        if wanted_len_suffix <= 0
+            " We don't want the rest of the items
+            call remove(a:items, i, -1)
+            break
+        elseif wanted_len_suffix < len
+            " Trim some of this item
+            let item[0] = item[0][: wanted_len_suffix - len - 1]
+            let wanted_len_suffix = 0
+        else
+            " Trim none of this item
+            let wanted_len_suffix -= len + 1
+        endif
+    endfor
+
+    " Trim the prefix
+    let wanted_len_prefix -= 1 " Trim the last space for free!
+    for i in range(a:center-1, 0, -1)
+        let item = a:items[i]
+        let len = strlen(item[0])
+        if wanted_len_prefix <= 0
+            " We don't want the rest of the items
+            call remove(a:items, 0, i)
+            break
+        elseif wanted_len_prefix < len
+            " Trim some of this item
+            let item[0] = item[0][len - wanted_len_prefix :]
+            let wanted_len_prefix = 0
+        else
+            " Trim none of this item
+            let wanted_len_prefix -= len + 1
+        endif
+    endfor
 endfunction
 
 function! s:BufferItemsStrlen(items)
+    if len(a:items) == 0
+        return 0
+    endif
+
     let len = 0
 
     for item in a:items
@@ -200,7 +243,9 @@ endfunction
 
 function! TablineBuffersSetting()
     let [line, len] = s:TabString()
-    return line . s:BufferString(&columns - len)
+    " If we don't remove 1 from the width then the tabline truncates 1 character
+    " in the line even though there is enough space :(
+    return line . s:BufferString(&columns - len - 1)
 endfunction
 
 """""""""""""""""
