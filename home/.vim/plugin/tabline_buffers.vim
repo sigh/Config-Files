@@ -61,9 +61,9 @@ function! s:TabString()
     return [line, len]
 endfunction
 
-"""""""""""""
-" Buffer list
-"""""""""""""
+"""""""""""""""""""
+" Buffer list setup
+"""""""""""""""""""
 
 function! s:CreateBufferList(deleted_buf)
   let s:buffers = []
@@ -112,49 +112,86 @@ function! s:DedupeNames(buffers)
   return names
 endfunction
 
+""""""""""""""""""""""
+" Create buffer string
+""""""""""""""""""""""
+
 function! s:BufferString(width)
+  let [items, current_index] = s:BufferItems()
+
+  let len = s:BufferItemsStrlen(items)
+
+  if len > a:width
+  endif
+
+  let line = ''
+  for [caption, hl] in items
+      let line .= caption . ' '
+  endfor
+
+  return line
+
+  " let line = join(items, ' ')
+  " if strlen(line) > a:width
+  "   " If the resulting list is too long to fit on the screen, chop
+  "   " out the appropriate part
+  "   let from = 0
+  "   " The trailing space is added so that there will always be three parts to
+  "   " the split.
+  "   let parts = split(line . ' ', '[()]')
+  "   if len(parts) == 3
+  "     let start = strlen(parts[0]) + 1
+  "     let end = strlen(parts[0]) + strlen(parts[1]) + 2
+  "     let from = (start + end) / 2 - a:width / 2
+  "   endif
+
+  "   if from <= 0
+  "     let from = 0
+  "   elseif from + a:width > strlen(line)
+  "     let from = strlen(line) - a:width
+  "   end
+
+  "   let line = strpart(line, from, a:width)
+  " endif
+
+  " return line
+endfunction
+
+function! s:BufferItemsStrlen(items)
+    let len = 0
+
+    for item in a:items
+        let len += strlen(item[0])
+    endfor
+
+    " Add one space between each item
+    return len + len(a:items) - 1
+endfunction
+
+function! s:BufferItems()
   let current_buffer = bufnr('%')
 
   let i = 0
   let items = []
+  let current_index = -1
   for item in s:buffers
     let i = i + 1
     if item == ''
       continue
     endif
-    let desc = i . ':' . item
+
+    let hl = ''
     if i == current_buffer
-      let desc = "( " . desc . ' )'
+      let hl = 'Selected'
+      let current_index = len(items)
     elseif bufwinnr(i) != -1
-      let desc = '[' . desc . ']'
+      let hl = 'Visible'
     endif
-    call add(items, desc)
+
+    call add(items, [i . ':' . item, hl])
   endfor
 
-  let line = join(items, ' ')
-  if strlen(line) > a:width
-    " If the resulting list is too long to fit on the screen, chop
-    " out the appropriate part
-    let from = 0
-    " The trailing space is added so that there will always be three parts to
-    " the split.
-    let parts = split(line . ' ', '[()]')
-    if len(parts) == 3
-      let start = strlen(parts[0]) + 1
-      let end = strlen(parts[0]) + strlen(parts[1]) + 2
-      let from = (start + end) / 2 - a:width / 2
-    endif
-
-    if from <= 0
-      let from = 0
-    elseif from + a:width > strlen(line)
-      let from = strlen(line) - a:width
-    end
-
-    let line = strpart(line, from, a:width)
-  endif
-
-  return line
+  return [items, current_index]
 endfunction
 
 """"""""""""""""""""
