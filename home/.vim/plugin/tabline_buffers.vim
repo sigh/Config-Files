@@ -123,13 +123,13 @@ function! s:BufferString(width)
   let parts = []
   for [caption, hl] in items
       if hl != ''
-          call add(parts, '%#' . hl . '#' . caption . '%#BuftabOther#')
+          call add(parts, '%#' . hl . '#' . caption . '%#Tabline#')
       else
           call add(parts, caption)
       endif
   endfor
 
-  return '%#BuftabOther#' . join(parts, ' ')
+  return '%#Tabline#' . join(parts, ' ')
 endfunction
 
 function! s:TrimBufferItems(items, center, width)
@@ -231,6 +231,12 @@ function! s:BufferItems()
 
     let caption = i . ':' . item
 
+    " This ensure that the current index is set to something sane
+    if current_index == -1 && i > current_buffer
+        let current_index = i
+    endif
+
+    " Determine the highlight group
     let hl = ''
     if i == current_buffer
       let hl = 'BuftabSelected'
@@ -242,6 +248,10 @@ function! s:BufferItems()
 
     call add(items, [caption, hl])
   endfor
+
+  if current_index == -1
+      let current_index = len(items) - 1
+  endif
 
   return [items, current_index]
 endfunction
@@ -259,15 +269,14 @@ endfunction
 " Global settings
 """""""""""""""""
 
-hi BuftabOther    ctermfg=0  ctermbg=244 cterm=none
-hi BuftabVisible  ctermfg=15 ctermbg=244 cterm=none
-hi BuftabSelected ctermfg=15 ctermbg=237 cterm=none
+hi BuftabVisible  ctermfg=226 ctermbg=244 cterm=none
+hi BuftabSelected ctermfg=226 ctermbg=237 cterm=none
 
 augroup TablineBuffers
     au!
     au WinEnter * call s:TabWinEnter()
-    auto BufAdd * call s:UpdateBufferList(-1)
-    auto BufDelete * call s:UpdateBufferList(expand('<abuf>'))
+    auto BufAdd * call s:CreateBufferList(-1)
+    auto BufDelete * call s:CreateBufferList(expand('<abuf>'))
 augroup END
 
 command! -nargs=1 TName call s:SetTabName(<args>)
