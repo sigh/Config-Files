@@ -28,6 +28,7 @@ function! s:TabWinEnter()
     if exists('t:tab_name')
         call setwinvar(winnr(), "tab_win_name", t:tab_name)
     endif
+    call SetShowTabLine()
 endfunction
 
 function! s:GetTabName(number)
@@ -67,6 +68,7 @@ endfunction
 
 function! s:CreateBufferList(deleted_buf)
   let s:buffers = []
+  let s:num_buffers = 0
   let names = {}
   for i in range(1, bufnr('$'))
     let text = ''
@@ -81,6 +83,7 @@ function! s:CreateBufferList(deleted_buf)
         let names[text] = []
       endif
       call add(names[text], i)
+      let s:num_buffers += 1
     endif
     call add(s:buffers, text)
   endfor
@@ -93,6 +96,8 @@ function! s:CreateBufferList(deleted_buf)
       endfor
     endif
   endfor
+
+  call SetShowTabLine()
 endfunction
 
 function! s:DedupeNames(buffers)
@@ -262,6 +267,14 @@ function! TablineBuffersSetting()
     return line . s:BufferString(&columns - len)
 endfunction
 
+function! SetShowTabLine()
+    if tabpagenr('$') == 1 && s:num_buffers < 2
+        set showtabline=0
+    else
+        set showtabline=2
+    endif
+endfunction
+
 """""""""""""""""
 " Global settings
 """""""""""""""""
@@ -273,13 +286,12 @@ hi BuftabSelected ctermfg=226 ctermbg=237 cterm=none
 augroup TablineBuffers
     au!
     au WinEnter * call s:TabWinEnter()
-    auto BufAdd * call s:CreateBufferList(-1)
-    auto BufDelete * call s:CreateBufferList(expand('<abuf>'))
+    au BufAdd * call s:CreateBufferList(-1)
+    au BufDelete * call s:CreateBufferList(expand('<abuf>'))
 augroup END
 
 command! -nargs=1 TName call s:SetTabName(<args>)
 
 set tabline=%!TablineBuffersSetting()
-set showtabline=2
 
 call s:CreateBufferList(-1)
