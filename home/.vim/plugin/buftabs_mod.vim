@@ -69,7 +69,7 @@
 " * g:buftabs_inactive_highlight_group
 "
 "   The name of a highlight group (:help highligh-groups) which is used to
-"   show the name of the current active buffer and of all other inactive
+"   show the name of the current_index active buffer and of all other inactive
 "   buffers. If these variables are not defined, no highlighting is used.
 "   (Highlighting is only functional when g:buftabs_in_statusline is enabled)
 "
@@ -162,67 +162,107 @@ function! s:Pecho(msg)
   aug END
 endf
 
+function! s:CreateBufferList(deleted_buf)
+  let s:buffers = []
+  let names = {}
+  for i in range(1, bufnr('$'))
+    let text = ''
+    if buflisted(i) && getbufvar(i, "&modifiable") && a:deleted_buf != i
+      let text = fnamemodify(bufname(i), ":t")
+      if text == '' " Hashes can't handle the empty string.
+        continue
+      endif
+
+      let text = substitute(text, '[[\]()]', '?', '')
+      if !has_key(names, text)
+        let names[text] = []
+      endif
+      call add(names[text], i)
+    endif
+    call add(s:buffers, text)
+  endfor
+
+  " Dedupe names
+  for [key, values] in items(names)
+    if len(values) > 1
+      for [i, name] in s:DedupeNames(values)
+        let s:buffers[i-1] = name
+      endfor
+    endif
+  endfor
+endfunction
+
+function! s:UpdateBufferList(deleted_buf)
+  call s:CreateBufferList(a:deleted_buf)
+  call s:Buftabs_show()
+endfunction
+
+function! s:DedupeNames(buffers)
+  " TODO(dilshan): Do better deduping - for now this just adds the first letter
+  " of the parent directory, if it exists.
+  let names = []
+  for b in a:buffers
+    let value = bufname(b)
+    let name = fnamemodify(value, ':t')
+    if name == value
+      call add(names, [b, name])
+    else
+      let dir = fnamemodify(pathshorten(fnamemodify(value, ':~:.')), ':h:t')
+      call add(names, [b, dir . '/' . name])
+    endif
+  endfor
+  return names
+endfunction
 
 "
 " Draw the buftabs
 "
 
-function! Buftabs_show(deleted_buf)
+function! s:Buftabs_show()
+  let current_buffer = bufnr('%')
 
-  let l:i = 1
-  let s:list = ''
-  let l:start = 0
-  let l:end = 0
-  let l:first = 1
+  let i = 0
+  let items = []
+  for item in s:buffers
+    let i = i + 1
+    if item == ''
+      continue
+    endif
+    let desc = i . ':' . item
+    if i == current_buffer
+      let desc = "( " . desc . ' )'
+    elseif bufwinnr(i) != -1
+      let desc = '[' . desc . ']'
+    endif
+    call add(items, desc)
+  endfor
 
-  " Walk the list of buffers
+  let width = &columns
+  let string = join(items, ' ')
+  if strlen(string) > width
+    " If the resulting list is too long to fit on the screen, chop
+    " out the appropriate part
+    let from = 0
+    " The trailing space is added so that there will always be three parts to
+    " the split.
+    let parts = split(string . ' ', '[()]')
+    if len(parts) == 3
+      let start = strlen(parts[0]) + 1
+      let end = strlen(parts[0]) + strlen(parts[1]) + 2
+      let from = (start + end) / 2 - width / 2
+    endif
 
-  while(l:i <= bufnr('$'))
-
-    " Only show buffers in the list, and omit help screens
-
-    if buflisted(l:i) && getbufvar(l:i, "&modifiable") && a:deleted_buf != l:i
-      if l:first == 1
-        let l:first = 0
-      else
-        let s:list = s:list . ' '
-      endif
-
-      let l:name = fnamemodify(bufname(l:i), ":t")
-
-      let l:desc = l:i . ':' . l:name
-
-      if winbufnr(winnr()) == l:i
-        let l:start = strlen(s:list)
-        let s:list = s:list . "( " . l:desc . ' )'
-        let l:end = strlen(s:list)
-      elseif bufwinnr(l:i) != -1
-        let s:list = s:list . '[' . l:desc . ']'
-      else
-        let s:list = s:list . l:desc
-      endif
+    if from <= 0
+      let from = 0
+    elseif from + width > strlen(string)
+      let from = strlen(string) - width
     end
 
-    let l:i = l:i + 1
-  endwhile
-
-  " If the resulting list is too long to fit on the screen, chop
-  " out the appropriate part
-
-  let l:width = &columns
-  if strlen(s:list) > l:width
-    let l:from = (l:start + l:end) / 2 - l:width / 2
-    if l:from < 0
-      let l:from = 0
-    elseif l:from + l:width > strlen(s:list)
-      let l:from = strlen(s:list) - l:width
-    end
-    let s:list = strpart(s:list, l:from, l:width)
+    let string = strpart(string, from, width)
   endif
 
   redraw
-  call s:Pecho(s:list)
-
+  call s:Pecho(string)
 endfunction
 
 "
@@ -230,11 +270,13 @@ endfunction
 " buffers
 "
 
-autocmd BufNew,BufEnter * call Buftabs_show(-1)
-autocmd BufDelete * call Buftabs_show(expand('<abuf>'))
-if version >= 700
-  autocmd InsertLeave,VimResized * call Buftabs_show(-1)
-end
+" WARNING: Do not call UpdateBufferList as this will call Buftabs_show and for
+" some reason mess up the *shell* display outside of vim.
+call s:CreateBufferList(-1)
+
+autocmd BufAdd * call s:UpdateBufferList(-1)
+autocmd BufDelete * call s:UpdateBufferList(expand('<abuf>'))
+autocmd BufEnter,InsertLeave,VimResized * call s:Buftabs_show()
 
 " vi: ts=2 sw=2
 

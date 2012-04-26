@@ -100,11 +100,9 @@ syntax on
 " Makes colours not fugly
 if &term == "screen-256color" || &term == "xterm-256color"
     set t_Co=256
-    let g:lucius_style = "light"
     colorscheme lucius_mod
 else
     set t_Co=16
-    set background=light
     colorscheme peachpuff_mod
 endif
 
