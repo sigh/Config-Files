@@ -118,15 +118,18 @@ endfunction
 
 function! s:BufferString(width)
   let [items, current_index] = s:BufferItems()
-
   call s:TrimBufferItems(items, current_index, a:width)
 
-  let line = ''
+  let parts = []
   for [caption, hl] in items
-      let line .= caption . ' '
+      if hl != ''
+          call add(parts, '%#' . hl . '#' . caption . '%#BuftabOther#')
+      else
+          call add(parts, caption)
+      endif
   endfor
 
-  return line
+  return '%#BuftabOther#' . join(parts, ' ')
 endfunction
 
 function! s:TrimBufferItems(items, center, width)
@@ -226,15 +229,18 @@ function! s:BufferItems()
       continue
     endif
 
+    let caption = i . ':' . item
+
     let hl = ''
     if i == current_buffer
-      let hl = 'Selected'
+      let hl = 'BuftabSelected'
       let current_index = len(items)
+      let caption = ' ' . caption . ' '
     elseif bufwinnr(i) != -1
-      let hl = 'Visible'
+      let hl = 'BuftabVisible'
     endif
 
-    call add(items, [i . ':' . item, hl])
+    call add(items, [caption, hl])
   endfor
 
   return [items, current_index]
@@ -246,14 +252,16 @@ endfunction
 
 function! TablineBuffersSetting()
     let [line, len] = s:TabString()
-    " If we don't remove 1 from the width then the tabline truncates 1 character
-    " in the line even though there is enough space :(
-    return line . s:BufferString(&columns - len - 1)
+    return line . s:BufferString(&columns - len)
 endfunction
 
 """""""""""""""""
 " Global settings
 """""""""""""""""
+
+hi BuftabOther    ctermfg=0  ctermbg=244 cterm=none
+hi BuftabVisible  ctermfg=15 ctermbg=244 cterm=none
+hi BuftabSelected ctermfg=15 ctermbg=237 cterm=none
 
 augroup TablineBuffers
     au!
