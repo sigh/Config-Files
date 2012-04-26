@@ -44,8 +44,8 @@ function! s:TabString()
         return ['', 0]
     endif
 
-    let line = ''
     let len = 0
+    let line = ''
     for i in range(1, tabpagenr('$'))
         let caption = '[' . i . ']'
         let name = ' ' . s:GetTabName(i) . ' '
@@ -54,7 +54,7 @@ function! s:TabString()
             let hl = '%#TabLineSel#'
         endif
 
-        let line .= '%' . i . 'T%#String#' . caption . hl . name . '%#TabLineFill#%T'
+        let line .= '%' . i . 'T%#String#' . hl . caption . name . '%#TabLineFill#%T'
         let len += strlen(caption) + strlen(name)
     endfor
 
@@ -123,13 +123,13 @@ function! s:BufferString(width)
   let parts = []
   for [caption, hl] in items
       if hl != ''
-          call add(parts, '%#' . hl . '#' . caption . '%#Tabline#')
+          call add(parts, '%#' . hl . '#' . caption . '%#BuftabOther#')
       else
           call add(parts, caption)
       endif
   endfor
 
-  return '%#Tabline#' . join(parts, ' ')
+  return '%#BuftabOther#' . join(parts, ' ')
 endfunction
 
 function! s:TrimBufferItems(items, center, width)
@@ -269,6 +269,7 @@ endfunction
 " Global settings
 """""""""""""""""
 
+hi BuftabOther    ctermfg=15  ctermbg=244 cterm=none
 hi BuftabVisible  ctermfg=226 ctermbg=244 cterm=none
 hi BuftabSelected ctermfg=226 ctermbg=237 cterm=none
 

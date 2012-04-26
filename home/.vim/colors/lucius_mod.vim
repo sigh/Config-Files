@@ -116,9 +116,9 @@ hi PmenuSbar    guifg=#808080   guibg=#444444   ctermfg=244    ctermbg=238      
 hi PmenuThumb   guifg=fg        guibg=#9e9e9e   ctermfg=fg     ctermbg=247       gui=none      cterm=none
 hi StatusLine   guifg=bg        guibg=#808080   ctermfg=bg     ctermbg=237       gui=bold      cterm=bold
 hi StatusLineNC guifg=#e4e4e4   guibg=#808080   ctermfg=0      ctermbg=244       gui=none      cterm=none
-hi TabLine      guifg=bg        guibg=#808080   ctermfg=bg     ctermbg=244       gui=none      cterm=none
+hi TabLine      guifg=bg        guibg=#808080   ctermfg=0      ctermbg=244       gui=none      cterm=none
 hi TabLineFill  guifg=#b2b2b2   guibg=#808080   ctermfg=249    ctermbg=244       gui=none      cterm=none
-hi TabLineSel   guifg=fg        guibg=#afd7ff   ctermfg=fg     ctermbg=153       gui=none      cterm=none
+hi TabLineSel   guifg=fg        guibg=#afd7ff   ctermfg=0      ctermbg=189       gui=none      cterm=none
 hi VertSplit    guifg=#e4e4e4   guibg=#808080   ctermfg=254    ctermbg=244       gui=none      cterm=none
 hi Folded       guifg=#626262   guibg=#bcbcbc   ctermfg=241    ctermbg=250       gui=bold      cterm=none
 hi FoldColumn   guifg=#626262   guibg=#bcbcbc   ctermfg=241    ctermbg=250       gui=bold      cterm=none
