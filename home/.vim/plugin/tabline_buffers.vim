@@ -136,9 +136,6 @@ function! s:TrimBufferItems(items, center, width)
     " Length of the item we want centered
     let len_center = strlen(a:items[a:center][0])
 
-    " TODO(dilshan): I don't actually need these strlens, I can figure that out
-    " while I'm trimming... interesting exercise.
-
     " Length of the items before the center
     let len_prefix = 0
     if a:center > 0
