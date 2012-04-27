@@ -3,7 +3,7 @@
 # A wrapper for screen and tmux
 #
 # usage: session_wrapper screen|tmux [-h] [--reattach] [--child] [--window WINDOW] [--ask]
-#                       [--list] [--complete]
+#                       [--list] [--complete] [--binary PATH] [--command COMMAND]
 #                       [session]
 #
 # positional arguments:
@@ -19,6 +19,8 @@
 #   --ask, -a             Ask which screen to open even there is only one match
 #   --list, -l            List current screens
 #   --complete            List completions for current screens
+#   --binary              A path to the session program (tmux or screen)
+#   --command             The command to run in the window if this is a new session
 #
 # interactive prompt:
 #   The screen is chosen in the following order:
@@ -50,8 +52,11 @@ NOCOLOR = '\033[0m'
 class ScreenSettings(object):
     LIST_RE = r'\t(\d+)\.([^\t]+)\t.*\((At|De)tached\)'
 
+    def __init__(self, binary = None):
+        self.binary = binary or 'screen'
+
     def list_command(self):
-        return ['screen', '-ls']
+        return [self.binary, '-ls']
 
     def list_line_to_session(self, line):
         result = re.match(ScreenSettings.LIST_RE, line)
@@ -64,7 +69,7 @@ class ScreenSettings(object):
             )
 
     def launch_command(self, session, **options):
-        args = ['screen']
+        args = [self.binary]
         if options.get('window', None) is not None:
             args.extend(['-p', options['window']])
         if not session.exists:
@@ -81,8 +86,11 @@ class ScreenSettings(object):
 class TmuxSettings(object):
     LIST_RE = r'([^:]+): .*'
 
+    def __init__(self, binary = None):
+        self.binary = binary or 'tmux'
+
     def list_command(self):
-        return ['tmux', 'list-sessions']
+        return [self.binary, 'list-sessions']
 
     def list_line_to_session(self, line):
         result = re.match(TmuxSettings.LIST_RE, line)
@@ -96,7 +104,7 @@ class TmuxSettings(object):
     def launch_command(self, session, **options):
         session_name = str(session)
         do_exec = not options.get('child', False)
-        base_args = ['tmux', '-2']
+        base_args = [self.binary, '-2']
         rest_args = []
 
         if not session.exists:
@@ -105,10 +113,10 @@ class TmuxSettings(object):
         else:
             if options.get('window', None) is not None:
                 subprocess.check_call(
-                        ['tmux', 'select-window', '-t', session_name + ':' + options['window']])
+                        [self.binary, 'select-window', '-t', session_name + ':' + options['window']])
             if not options.get('reattach', False):
                 subprocess.check_call(
-                        ['tmux', 'detach-client', '-P', '-s', session_name])
+                        [self.binary, 'detach-client', '-P', '-s', session_name])
             else:
                 pass
                 # TODO(dilshan): implement reattach properly (with a separate
@@ -126,13 +134,16 @@ class TmuxSettings(object):
                 del env['TMUX']
 
                 subprocess.check_call(
-                        ['tmux', 'new-session', '-d', '-s', session_name], env = env)
+                        [self.binary, 'new-session', '-d', '-s', session_name], env = env)
 
             rest_args = ['switch-client', '-t']
             # This is important, if we exec then we destroy the current shell.
             do_exec = False
 
         rest_args.append(session_name)
+
+        if not session.exists and options.get('command', None):
+            rest_args.extend([options['command']])
 
         return base_args + rest_args, do_exec
 
@@ -286,13 +297,15 @@ def run_prog(
         reattach = False,
         child = False,
         window = None,
-        current_prog = None):
+        current_prog = None,
+        command = None):
     args, do_exec = prog.launch_command(
             session,
             reattach = reattach,
             window = window,
             child = child,
-            current_prog = current_prog)
+            current_prog = current_prog,
+            command = command)
 
     if do_exec:
         os.execvp(args[0], args)
@@ -408,6 +421,12 @@ def main():
         '--complete',
         action = 'store_true',
         help = 'List completions for current screens')
+    parser.add_option(
+        '--binary',
+        help = "The binary for the session program")
+    parser.add_option(
+        '--command',
+        help = "The command to run in the intial window if this is a new session")
 
     options, args = parser.parse_args()
     prog_name = args[0] if args else ''
@@ -423,9 +442,9 @@ def main():
 
     prog = None
     if prog_name == "screen":
-        prog = ScreenSettings()
+        prog = ScreenSettings(options.binary)
     elif prog_name == "tmux":
-        prog = TmuxSettings()
+        prog = TmuxSettings(options.binary)
     else:
         print("Unknown program: " + prog_name, file=sys.stderr)
         sys.exit(1)
@@ -460,7 +479,8 @@ def main():
         child = options.child,
         reattach = options.reattach,
         window = options.window,
-        current_prog = current_prog)
+        current_prog = current_prog,
+        command = options.command)
 
 if __name__ == '__main__':
     main()
