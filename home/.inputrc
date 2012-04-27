@@ -11,8 +11,8 @@ set history-preserve-point on
 "\C-s": "\C-a\e[1;5C"
 
 # new delete commands
-"\e[1;9C": kill-word
-"\e[1;9D": backward-kill-word
+"\e[1;3C": kill-word
+"\e[1;3D": backward-kill-word
 "\e[3~": delete-char
 
 "\ea": backward-kill-line
