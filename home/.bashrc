@@ -90,9 +90,9 @@ export FIGNORE='.swp:.svn:.0:~';
 NONE="\[$(tput sgr0)\]"    # reset formatting to default
 
 if [[ "$USER" == root ]] ; then
-    RAW_PROMPT_COLOR="$(tput setf 4)" # red for root
+    RAW_PROMPT_COLOR="$(tput setaf 1)" # red for root
 else
-    RAW_PROMPT_COLOR="$(tput setf 2)" # green for other
+    RAW_PROMPT_COLOR="$(tput setaf 2)" # green for other
 fi
 PROMPT_COLOR="\[$RAW_PROMPT_COLOR\]"
 
@@ -108,10 +108,10 @@ export GIT_PS1_SHOWDIRTYSTATE=true
 
 # set other prompts
 export PS2="$PROMPT_COLOR>$NONE "
-export PS4="\[$(tput setf 5)\]+$NONE "
+export PS4="\[$(tput setaf 5)\]+$NONE "
 
 # mysql prompt
-export MYSQL_PS1="$RAW_PROMPT_COLOR[\R:\m] \U:\d$(tput setf 0)\nmysql> "
+export MYSQL_PS1="$RAW_PROMPT_COLOR[\R:\m] \U:\d$(tput setaf 0)\nmysql> "
 
 unset NONE
 unset PROMPT_COLOR

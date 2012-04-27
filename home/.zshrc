@@ -239,7 +239,7 @@ bindkey "\e[Z" reverse-menu-complete # Shift-tab
 # Show dots when the command line is completing so that
 # we have some visual indication of when the shell is busy.
 expand-or-complete-with-dots() {
-    echo -n "$(tput setf 4)...$(tput sgr0)"
+    echo -n "$(tput setaf 1)...$(tput sgr0)"
     zle expand-or-complete
     zle redisplay
 }
@@ -487,7 +487,7 @@ setopt notify
 READNULLCMD=less
 # Report timing stats for any command longer than 1 second
 REPORTTIME=1
-TIMEFMT="$(tput setf 1)%E real  %U user  %S system  %P cpu  %MkB mem $(tput sgr0)$ %J"
+TIMEFMT="$(tput setaf 4)%E real  %U user  %S system  %P cpu  %MkB mem $(tput sgr0)$ %J"
 
 # config for python interactive shell
 export PYTHONSTARTUP="$HOME/.pystartup"
@@ -606,7 +606,7 @@ simplehttp() {
     if [[ $# == 3 ]] ; then
         port="$1"
     fi
-    iplist "%s: http://$(tput setf 3)%s$(tput sgr0):$port/"
+    iplist "%s: http://$(tput setaf 6)%s$(tput sgr0):$port/"
     command simplehttp "$@"
 }
 
@@ -834,7 +834,7 @@ _status_ps1() {
 }
 
 # For debugging bash scripts (must be defined before PROMPT4)
-export PS4="\[$(tput setf 5)\]+\[$(tput sgr0)\] "
+export PS4="\[$(tput setaf 5)\]+\[$(tput sgr0)\] "
 
 # Rename prompt variables so that they don't confuse other subshells.
 PROMPT=$'$(_status_ps1)%F{blue}[%D{%H:%M}] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
