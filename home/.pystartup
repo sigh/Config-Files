@@ -31,6 +31,6 @@ del os, atexit, readline, rlcompleter, save_history, historyPath
 
 # Since this only applies for interactive sessions, import these into the global
 # namespace for convenience.
-from os import *
 from sys import *
+from os import *
 from math import *
