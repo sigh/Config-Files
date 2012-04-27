@@ -1,0 +1,69 @@
+#!/usr/bin/python
+
+import os
+import subprocess
+import sys
+
+import BaseHTTPServer
+
+class SimpleRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path != '/':
+            self.error_message_format = 'Not found'
+            self.send_error(404)
+            return
+        p = subprocess.Popen(
+            COMMAND,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+        out, err = p.communicate()
+        if not p.returncode:
+            self.send_response(200, 'OK')
+            if CONTENT_TYPE:
+                self.send_header('content-type', CONTENT_TYPE)
+            self.end_headers()
+            self.wfile.write(out)
+        else:
+            self.error_message_format = err
+            self.send_error(500)
+
+    error_content_type = 'text/plain'
+
+PORT = 8000
+CONTENT_TYPE = 'text/plain'
+COMMAND = ['sh', '-c', 'echo nothing here']
+TYPE_MAP = {
+    'text': 'text/plain',
+    'plain': 'text/plain',
+    'html': 'text/html',
+}
+
+def main(args):
+    global COMMAND
+    global CONTENT_TYPE
+    global PORT
+
+    command = args.pop()
+    if os.access(command, os.X_OK):
+        COMMAND = ['sh', command]
+    elif os.path.isfile(command):
+        COMMAND = ['cat', command]
+    else:
+        COMMAND = ['sh', '-c', command]
+
+    if len(args) > 1:
+        content_type = args.pop()
+        CONTENT_TYPE = TYPE_MAP.get(content_type, CONTENT_TYPE)
+
+    if len(args) > 1:
+        PORT = int(args.pop())
+
+    httpd = BaseHTTPServer.HTTPServer(("", PORT), SimpleRequestHandler)
+    # Don't show the traceback when a caller kills this process
+    try:
+        httpd.serve_forever()
+    except:
+        pass
+
+if __name__ == '__main__':
+    main(sys.argv)
