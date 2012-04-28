@@ -87,6 +87,15 @@ endfunction
 nnoremap <silent> Q :set opfunc=ShellEscape<CR>g@
 vnoremap <silent> Q :<C-U>call ShellEscape(visualmode(), 1)<CR>
 
+" [count]- goes to command with history number count
+function! s:GoToCommand()
+    let match = search('^' . v:count1 . ' \$', 'cw')
+    if match != 0
+        foldopen
+    endif
+endfunction
+noremap <unique> <script> <silent> - :<C-U>call <SID>GoToCommand()<CR>
+
 function FoldLevel(line)
   if getline(a:line) =~ '^\[\d\d:\d\d\] \[\d\+\] dilshan@[^:]\+:'
     return '>1'
@@ -111,7 +120,7 @@ function DiffFoldText()
     let l:numlines -= 1
   endif
 
-  return l:time . ' ' . l:linetext . ' (' . l:numlines . ' lines)'
+  return l:time . ' ' . l:linetext . ' (' . max([l:numlines,0]) . ' lines)'
 endfunction
 
 " define folds
