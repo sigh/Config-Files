@@ -1,0 +1,41 @@
+# Move up and down move through multi-line buffer or through history using
+# LBUFFER as a prefix.
+#
+# Usage:
+#   autoload -U my-history-search
+#   zle -N my-up-line-or-history-search-backward my-history-search
+#   zle -N my-down-line-or-history-search-forward my-history-search
+#   bindkey "^[[A" my-up-line-or-history-search-backward
+#   bindkey "^[[B" my-down-line-or-history-search-forward
+
+_my-up-line-or-history-search-backward() {
+    if (( CURSOR == 0 )) ; then
+        zle .up-history
+    elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
+        zle .up-history
+    elif [[ $LBUFFER == *$'\n'* ]]; then
+        zle .up-line-or-history
+    else
+        zle .history-beginning-search-backward
+    fi
+}
+
+_my-down-line-or-history-search-forward() {
+    if (( CURSOR == 0 )) ; then
+        zle .down-history
+    elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
+        zle .down-history
+    elif [[ $LBUFFER != *$'\n'* && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
+        zle .history-beginning-search-forward
+    elif [[ $RBUFFER == *$'\n'* ]]; then
+        zle .down-line-or-history
+    else
+        zle .history-beginning-search-forward
+    fi
+}
+
+my-history-search() {
+    "_$WIDGET" "$@"
+}
+
+my-history-search "$@"

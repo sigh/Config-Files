@@ -1,0 +1,26 @@
+# Make Ctrl-d behave like in bash
+# - If the line the line starts with a #, then accept it
+# - Otherwise if the line is not empty then comment it out and create a new
+#   prompt
+# - Otherwise ignore the Ctrl-d $IGNOREEOF times before exiting
+#
+# Usage:
+#   IGNOREEOF=1 # Set to desired number
+#   setopt ignoreeof
+#   autoload -U bash-ctrl-d
+#   zle -N bash-ctrl-d
+#   bindkey "^D" bash-ctrl-d
+
+if [[ $CURSOR == 0 && -z $BUFFER ]] ; then
+    [[ -z $IGNOREEOF || $IGNOREEOF == 0 ]] && exit
+    if [[ $LASTWIDGET == bash-ctrl-d ]] ; then
+      (( --__BASH_IGNORE_EOF <= 0 )) && exit
+    else
+      (( __BASH_IGNORE_EOF = IGNOREEOF-1 ))
+    fi
+    zle send-break
+elif [[ ${BUFFER// /} = \#* ]] ; then
+    zle accept-line
+else
+    zle pound-insert
+fi

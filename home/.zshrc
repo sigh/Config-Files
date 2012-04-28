@@ -8,6 +8,9 @@ trap -
 zstyle -d
 bindkey -d
 
+# Add my own functions directory
+fpath=(~/.zsh/functions $fpath)
+
 # Ensure path only has unique entries.
 typeset -gU PATH
 
@@ -196,36 +199,14 @@ setopt inc_append_history
 
 bindkey -e # use emacs mode by default
 
-# Up and down move through multi-line buffer or through history using LBUFFER
-# as a prefix.
-my-up-line-or-history-search-backward() {
-    if (( CURSOR == 0 )) ; then
-        zle .up-history
-    elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
-        zle .up-history
-    elif [[ $LBUFFER == *$'\n'* ]]; then
-        zle .up-line-or-history
-    else
-        zle .history-beginning-search-backward
-    fi
-}
-my-down-line-or-history-search-forward() {
-    if (( CURSOR == 0 )) ; then
-        zle .down-history
-    elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
-        zle .down-history
-    elif [[ $LBUFFER != *$'\n'* && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
-        zle .history-beginning-search-forward
-    elif [[ $RBUFFER == *$'\n'* ]]; then
-        zle .down-line-or-history
-    else
-        zle .history-beginning-search-forward
-    fi
-}
-zle -N my-up-line-or-history-search-backward
-zle -N my-down-line-or-history-search-forward
+# Move up and down move through multi-line buffer or through history using
+# LBUFFER as a prefix.
+autoload -U my-history-search
+zle -N my-up-line-or-history-search-backward my-history-search
+zle -N my-down-line-or-history-search-forward my-history-search
 bindkey "^[[A" my-up-line-or-history-search-backward
 bindkey "^[[B" my-down-line-or-history-search-forward
+
 # Complete using words from history (Ctrl-N, Ctrl-P are to mimic vi bindings).
 bindkey "\C-n" _history-complete-older
 bindkey "\C-p" _history-complete-newer
@@ -236,13 +217,9 @@ bindkey '\e#' pound-insert
 bindkey -s "\C-s" "\C-a\e[1;5C"
 bindkey "\e[Z" reverse-menu-complete # Shift-tab
 
-# Show dots when the command line is completing so that
-# we have some visual indication of when the shell is busy.
-expand-or-complete-with-dots() {
-    echo -n "$(tput setaf 1)...$(tput sgr0)"
-    zle expand-or-complete
-    zle redisplay
-}
+# Show dots when the command line is completing so that we have some visual
+# indication of when the shell is busy.
+autoload -U expand-or-complete-with-dots
 zle -N expand-or-complete-with-dots
 bindkey "^I" expand-or-complete-with-dots
 
@@ -256,68 +233,15 @@ zle -C complete-files complete-word _generic
 zstyle ':completion:complete-files:*' completer _files
 bindkey '^[,' complete-files
 
-# quote chars and keep cursor on the same character that it
-# was before (not necessarily the same position).
-# Characters are quoted in the range [$1, $2)
-# Whitespace is ignored unless $3 is set.
-_quote-chars-follow-cursor() {
-    local new_cursor=$CURSOR
-    local new_buffer=$BUFFER[1,$1]
-    integer i
-
-    for (( i = $1; i < $2; i++ )) ; do
-        if [[ -z $3 && $BUFFER[$i+1] =~ $'[ \t\n\r]' ]] ; then
-            new_buffer+=$BUFFER[$i+1]
-        else
-            new_buffer+=${(q)BUFFER[$i+1]}
-        fi
-        if [[ $i == $CURSOR ]] ; then
-            new_cursor=$(( ${#new_buffer} - 1 ))
-        fi
-    done
-
-    new_buffer+=$BUFFER[$2+1,$#BUFFER]
-
-    # If the cursor is after the end of the region, then
-    # move it forward by however much the buffer has increased.
-    if (( CURSOR >= $2 )) ; then
-        new_cursor=$(( CURSOR + ${#new_buffer} - ${#BUFFER} ))
-    fi
-
-    BUFFER=$new_buffer
-    CURSOR=$new_cursor
-}
-# find the position of the current arg
-_current-arg-position() {
-    local start=0 end=${#BUFFER}
-    integer i
-
-    for (( i=0; i < ${#BUFFER}; i++ )) ; do
-        if [[ $BUFFER[$i+1] =~ $'[ \t\r\n]' ]] ; then
-            if (( i >= CURSOR )) ; then
-                end=$i
-            else
-                start=$i
-            fi
-        fi
-    done
-    echo -n "$start $end"
-}
-
+# Quote current line and current argument keeping the cursor on the same
+# character.
+autoload -U quote-chars
+zle -N quote-current-arg quote-chars
+zle -N quote-current-line quote-chars
 # Alt-' quotes current argument
 # Alt-' Alt-' quote entire line
-quote-current-line() {
-    _quote-chars-follow-cursor 0 ${#BUFFER}
-}
-quote-current-arg() {
-    _quote-chars-follow-cursor $(_current-arg-position)
-}
-zle -N quote-current-arg
-zle -N quote-current-line
 bindkey "\e'" quote-current-arg
 bindkey "\e'\e'" quote-current-line
-# Alt enter just accepts the line like normal.
-bindkey '^[^M' accept-line
 
 # move with control
 bindkey "\e[1;5C" forward-word
@@ -351,23 +275,8 @@ lsd() { command ls --color=tty -hd "$@" */ }
 
 # make sure we don't leave accidentally
 IGNOREEOF=1
-bash-ctrl-d() {
-  if [[ $CURSOR == 0 && -z $BUFFER ]] ; then
-    [[ -z $IGNOREEOF || $IGNOREEOF == 0 ]] && exit
-    if [[ $LASTWIDGET == bash-ctrl-d ]]
-    then
-      (( --__BASH_IGNORE_EOF <= 0 )) && exit
-    else
-      (( __BASH_IGNORE_EOF = IGNOREEOF-1 ))
-    fi
-    zle send-break
-  elif [[ ${BUFFER// /} = \#* ]] ; then
-    zle accept-line
-  else
-    zle pound-insert
-  fi
-}
 setopt ignoreeof
+autoload -U bash-ctrl-d
 zle -N bash-ctrl-d
 bindkey "^D" bash-ctrl-d
 
@@ -396,79 +305,7 @@ mcd() { mkdir -p "$@" && cd "$@[-1]" ; }
 compdef _cd mcd
 
 # strings of dots are expanded to parents if they form the start of a word.
-_rationalise_dot_status=
-self-insert-rationalise-dot() {
-  if [[ $LBUFFER =~ '(^| )\.\.(/\.\.)*$' ]]; then
-    # We are still in a legal state
-    if [[ $KEYS = . ]] ; then
-        # Dot key
-        LBUFFER+=/..
-    elif [[ $'\b\x7f' = *"$KEYS"* ]] ; then
-        # Delete key
-        if [[ $LBUFFER == */../.. ]] ; then
-            LBUFFER="${LBUFFER%/..}"
-        elif [[ $LBUFFER == *../.. ]] ; then
-            # We want this to undo the effect of enter rationalise-dot
-            LBUFFER="${LBUFFER%/..}.." # last . will be deleted by the _finish- function
-            _finish-self-inset-rationalise-dot 'other-key'
-        elif [[ $LBUFFER == *.. ]] ; then
-            LBUFFER="${LBUFFER%.}" # first . will be deleted by the _finish- function
-            _finish-self-inset-rationalise-dot 'other-key'
-        fi
-    else
-        _finish-self-inset-rationalise-dot 'other-key'
-    fi
-  else
-    _finish-self-inset-rationalise-dot 'unknown-state'
-  fi
-
-  POSTDISPLAY=$'\n'"Destination: $(cd ${LBUFFER##* } 2> /dev/null && pwd)"
-  # region_highlight=("${#BUFFER} $(( ${#BUFFER} + ${#POSTDISPLAY} )) fg=yellow")
-}
-_finish-self-inset-rationalise-dot() {
-  if [[ $'\b\x7f' = *"$KEYS"* ]] ; then
-    # Delete
-    LBUFFER="${LBUFFER%?}"
-  else
-    # Any other key
-    LBUFFER+="$KEYS"
-  fi
-
-  # We want to return to normal please!
-  _rationalise_dot_status="$1"
-  zle accept-line
-}
-rationalise-dot() {
-  if [[ $LBUFFER =~ '(^| )\.\.(/\.\.)*$' ]]; then
-    local integer stat
-
-    zle -N self-insert-rationalise-dot
-    zle self-insert-rationalise-dot
-
-    zle -N self-insert self-insert-rationalise-dot
-    zle -N backward-delete-char self-insert-rationalise-dot
-    zle -A rationalise-dot save-rationalise-dot
-    zle -A accept-line rationalise-dot
-    bindkey . self-insert-rationalise-dot
-
-    _rationalise_dot_status=
-    zle recursive-edit
-    stat=$?
-    POSTDISPLAY=
-    # region_highlight=()
-
-    zle -A .self-insert self-insert
-    zle -A .backward-delete-char backward-delete-char
-    zle -A save-rationalise-dot rationalise-dot
-    zle -D save-rationalise-dot
-    bindkey . rationalise-dot
-
-    if (( $stat )) && zle send-break
-    [[ -z $_rationalise_dot_status ]] && zle accept-line
-  else
-    LBUFFER+=.
-  fi
-}
+autoload -U rationalise-dot
 zle -N rationalise-dot
 bindkey . rationalise-dot
 
@@ -866,4 +703,3 @@ preexec() {
     awk -v prefix="$$ $_FULL_HIST_LINENO $(date +%FT%T) $PWD \$" "{ print prefix, \$0 }" <<<"$1" >> "$FULLHISTFILE"
     _PS1_NEW_CMD=1
 }
-
