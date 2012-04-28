@@ -384,7 +384,6 @@ function! <SID>Reset()
     endif
     " Move screen to the left
     normal zH
-    call Buftabs_show(-1)
 endfunction
 
 " what to show when I hit :set list
