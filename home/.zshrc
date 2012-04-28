@@ -601,13 +601,13 @@ elif [[ -n $TMUX ]] ; then
 
     # Monitor for the start of the shell command prompt - this usually means
     # that a command has finished running.
-    tmux setw monitor-content "\[??:??\] \[*\] $USER@*:" > /dev/null
+    tmux setw monitor-content "\[??:??\] \[*\] $USER@*:"
 
     # monitor activity on a command
     monitor() {
-        trap "tmux setw monitor-activity off > /dev/null" 0
+        trap "tmux setw monitor-activity off" 0
         trap 'exit 2' 1 2 3 15
-        tmux setw monitor-activity on > /dev/null
+        tmux setw monitor-activity on
         watch -n1 -d -t "$@"
     }
 fi
