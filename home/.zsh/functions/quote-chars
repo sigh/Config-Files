@@ -1,0 +1,69 @@
+# Quote current line or current argument keeping the cursor on the same
+# character.
+#
+# Usage:
+#   autoload -U quote-chars
+#   zle -N quote-current-arg quote-chars
+#   zle -N quote-current-line quote-chars
+# Then bind to appropriate keys e.g.
+#   bindkey "\e'" quote-current-arg
+#   bindkey "\e'\e'" quote-current-line
+
+# quote chars and keep cursor on the same character that it was before (not
+# necessarily the same position).
+# Characters are quoted in the range [$1, $2)
+# Whitespace is ignored unless $3 is set.
+_quote-chars-follow-cursor() {
+    local new_cursor=$CURSOR
+    local new_buffer=$BUFFER[1,$1]
+    integer i
+
+    for (( i = $1; i < $2; i++ )) ; do
+        if [[ -z $3 && $BUFFER[$i+1] =~ $'[ \t\n\r]' ]] ; then
+            new_buffer+=$BUFFER[$i+1]
+        else
+            new_buffer+=${(q)BUFFER[$i+1]}
+        fi
+        if [[ $i == $CURSOR ]] ; then
+            new_cursor=$(( ${#new_buffer} - 1 ))
+        fi
+    done
+
+    new_buffer+=$BUFFER[$2+1,$#BUFFER]
+
+    # If the cursor is after the end of the region, then
+    # move it forward by however much the buffer has increased.
+    if (( CURSOR >= $2 )) ; then
+        new_cursor=$(( CURSOR + ${#new_buffer} - ${#BUFFER} ))
+    fi
+
+    BUFFER=$new_buffer
+    CURSOR=$new_cursor
+}
+
+# find the position of the current arg
+_current-arg-position() {
+    local start=0 end=${#BUFFER}
+    integer i
+
+    for (( i=0; i < ${#BUFFER}; i++ )) ; do
+        if [[ $BUFFER[$i+1] =~ $'[ \t\r\n]' ]] ; then
+            if (( i >= CURSOR )) ; then
+                end=$i
+            else
+                start=$i
+            fi
+        fi
+    done
+    echo -n "$start $end"
+}
+
+quote-chars() {
+    if [[ $WIDGET == quote-current-line ]] ; then
+        _quote-chars-follow-cursor 0 ${#BUFFER}
+    elif [[ $WIDGET == quote-current-arg ]] ; then
+        _quote-chars-follow-cursor $(_current-arg-position)
+    fi
+}
+
+quote-chars "$@"
