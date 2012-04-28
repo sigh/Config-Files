@@ -144,7 +144,7 @@ CORRECT_IGNORE='_*'
 # By default it is bound to ESC-h (Alt-h)
 autoload -U run-help
 HELPDIR=~/.zsh/help
-alias man=run-help
+alias help=run-help
 
 # Make run help understand git subcommands
 run-help-git() {
