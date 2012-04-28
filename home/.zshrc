@@ -459,7 +459,14 @@ if [[ -z $FULLHISTFILE ]] ; then
 fi
 
 if [[ -z $_ALREADY_LOADED ]] ; then
-    cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL STY=$STY ZSH_VERSION=$ZSH_VERSION" >> "$FULLHISTFILE"
+    session_info=
+    if [[ -n $STY ]] ; then
+        session_info=" screen:$STY"
+    elif [[ -n $TMUX ]] ; then
+        session_info=" tmux:$(tmux display-message -p '#S.#I')"
+    fi
+    cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL ZSH_VERSION=$ZSH_VERSION$session_info" >> "$FULLHISTFILE"
+    unset session_info
     # let us know that this has been loaded so that we can prevent somethings from
     # loading twice.
     readonly _ALREADY_LOADED=1
