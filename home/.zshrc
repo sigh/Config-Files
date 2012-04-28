@@ -76,6 +76,10 @@ zstyle ':completion:*:history-words' menu yes
 # This stops completion if we paste text into the terminal which has tabs.
 zstyle ':completion:*' insert-tab pending
 
+# Completion for the extract program
+zstyle ':completion:*:*:extract:*' file-patterns \
+    '*.(tar|bz2|rar|gz|tbz2|tgz|zip|Z|7z):zip\ files *(-/):directories'
+
 # tab completion # -u avoid unnecessary security check.
 autoload -U compinit && compinit -u
 source ~/.git-completion.bash
@@ -380,31 +384,6 @@ export LESS_TERMCAP_so=$(tput bold; tput setaf 3; tput setab 4) # yellow on blue
 export LESS_TERMCAP_se=$(tput rmso; tput sgr0)
 export LESS_TERMCAP_us=$(tput smul; tput setaf 2) # green
 export LESS_TERMCAP_ue=$(tput rmul; tput sgr0)
-
-# Handy Extract Program.
-extract()
-{
-     if [[ -f $1 ]] ; then
-         case "$1" in
-             *.tar.bz2)   tar xvjf "$1"     ;;
-             *.tar.gz)    tar xvzf "$1"     ;;
-             *.bz2)       bunzip2 "$1"      ;;
-             *.rar)       7za x "$1"        ;;
-             *.gz)        gunzip "$1"       ;;
-             *.tar)       tar xvf "$1"      ;;
-             *.tbz2)      tar xvjf "$1"     ;;
-             *.tgz)       tar xvzf "$1"     ;;
-             *.zip)       unzip "$1"        ;;
-             *.Z)         uncompress "$1"   ;;
-             *.7z)        7za x "$1"         ;;
-             *)           echo "'$1' cannot be extracted via >extract<" 1>&2 ;;
-         esac
-     else
-         echo "'$1' is not a valid file" 1>&2
-     fi
-}
-zstyle ':completion:*:*:extract:*' file-patterns \
-    '*.(tar|bz2|rar|gz|tbz2|tgz|zip|Z|7z):zip\ files *(-/):directories'
 
 # open man page as a PDF in preview
 if [[ -d /Applications/Preview.app ]] ; then
