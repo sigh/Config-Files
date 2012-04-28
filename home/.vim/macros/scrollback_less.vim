@@ -120,7 +120,8 @@ function DiffFoldText()
     let l:numlines -= 1
   endif
 
-  return l:time . ' ' . l:linetext . ' (' . max([l:numlines,0]) . ' lines)'
+  let l:linecount = max([l:numlines,0])
+  return l:time . ' (' . l:linecount . ')' . repeat(' ', 5 - strlen(l:linecount)) . l:linetext
 endfunction
 
 " Find the first non-blank line in the fold
