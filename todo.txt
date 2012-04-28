@@ -1,27 +1,21 @@
-.bashrc
++ Move todo list into TODOs in the code.
+
+.zshrc
+    + Move custom zle function out of .zshrc
 
 .vimrc
-    + tagliist plugin
-    + svn + git filetype recognition
-    + set keywords based on filetpye
-
-minifbuf:
-    + do laststatus changes internally
-
-rcdist
-    + load hosts and files from a config file
+    + taglist plugin
 
 diff_nav:
     + handle "only file" lines etc (look in diff syntax file)
 
 diff_changes:
     + save and reload yank register
-	+ multiple windows messes up... WTF
-        + focus screws up in All-Diffchanges
-    + create CleanUpDiffChanges to find any borked windows (run on DiffStop).
 
     + make DiffReturn actaully return to the originating diff (give each tab an ID in a variable so that it can be found)
     + tabnames
     + link buffers to diff so that we can easily cleanup
     + disentangle vcs code
-    + don't use actual buffer numbers in minibuf explorer, use positional indicators chage [N]- to match
+
+other:
+    + don't use actual buffer numbers in tab/buffer list, use an abstraction so that we an use MRU or something.
