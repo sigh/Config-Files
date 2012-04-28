@@ -227,3 +227,8 @@ normal zO
 
 " Go to our desired start line
 exec start_line
+
+let unused_space = winheight(0) - winline() - (line('$') - line('.'))
+if unused_space > 0
+  exec "normal " . unused_space . "\<C-Y>"
+endif
