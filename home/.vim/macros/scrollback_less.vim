@@ -115,12 +115,25 @@ function DiffFoldText()
   let l:numlines = v:foldend - v:foldstart - 1
 
   " If the command name is fg then the real command will be printed next line.
-  if l:linetext =~ '^\d\+ \$ \s*fg\>'
-    let l:linetext = substitute(l:linetext, 'fg.*', 'fg: ' . getline(v:foldstart + 2), '')
+  if l:linetext =~ '^\d\+ \$ \s*\(fg\>\|%\)'
+    let l:linetext = substitute(l:linetext, '\$ .*', '$ ' . s:FindFGText(v:foldstart + 2, v:foldend), '')
     let l:numlines -= 1
   endif
 
   return l:time . ' ' . l:linetext . ' (' . max([l:numlines,0]) . ' lines)'
+endfunction
+
+" Find the first non-blank line in the fold
+function s:FindFGText(startlineno, endlineno)
+  let lineno = a:startlineno
+  while lineno <= a:endlineno
+    let line = getline(lineno)
+    if line != ''
+      return line
+    endif
+    let lineno += 1
+  endwhile
+  return '??'
 endfunction
 
 " define folds
