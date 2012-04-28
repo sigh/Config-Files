@@ -29,6 +29,6 @@ if [[ ! $local_only ]] ; then
   for host in "${hosts[@]}" ; do
       echo
       echo "Updating host: $host"
-      rsync $options . "$host:~" && [[ ! $no_reload ]] && ssh "$host" reload-all
+      rsync $options . "$host:~" # && [[ ! $no_reload ]] && ssh "$host" reload-all
   done
 fi
