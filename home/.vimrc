@@ -384,6 +384,7 @@ function! <SID>Reset()
     endif
     " Move screen to the left
     normal zH
+    TlistClose
 endfunction
 
 " what to show when I hit :set list
@@ -633,6 +634,13 @@ let g:splice_initial_scrollbind_grid = 1
 " Regedit
 command! -nargs=? -bang RE :call regedit#Start("<bang>", <f-args>)
 map <silent> <Bslash>r :RE<CR>
+
+" Taglist
+let g:Tlist_Inc_Winwidth = 0
+let g:Tlist_Compact_Format = 1
+let g:Tlist_Enable_Fold_Column = 0
+" let g:Tlist_File_Fold_Auto_Close = 1
+map <silent> <Leader>t :TlistOpen<CR>
 
 " File Explorer (:h :Explore)
 let g:explVertical=1
