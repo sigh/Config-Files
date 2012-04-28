@@ -235,7 +235,7 @@ function! s:BufferItems()
 
     " This ensure that the current index is set to something sane
     if current_index == -1 && i > current_buffer
-      let current_index = i
+      let current_index = len(items) - 1
     endif
 
     " Determine the highlight group
