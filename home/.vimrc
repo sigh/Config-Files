@@ -91,7 +91,7 @@ function! <SID>CurrentWorkingDir()
 endfunction
 
 " Sudo to write
-cmap w!! w !sudo tee % >/dev/null
+command! SW :execute 'silent w !sudo tee % > /dev/null' | edit!
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Theme/Colors
