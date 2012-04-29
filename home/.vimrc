@@ -287,6 +287,9 @@ endfunction
 let &grepprg="ack --column -H"
 set grepformat=%f:%l:%c:%m
 command -bang -complete=shellcmd -nargs=* A call s:Ack(<q-args>, "<bang>")
+map <Leader>a :Ack<Space>
+map <Leader>a<Space> :Ack<Space>
+map <Leader>aa :Ack -a<Space>
 
 function! s:Ack(query, async)
     if a:async != ""
