@@ -138,7 +138,7 @@ class Mode(object):
         ])
         diagram = pad(self.hud_diagram())
         commands = pad([
-            r'Splice Commands',
+            r'Splice Commands (Leader: %s)' % setting('leader', '-'),
             r'd: cycle diffs   n: next conflict   space: cycle layouts   u: use hunk   o: original   1: one   q: save and quit',
             r'D: diffs off     N: prev conflict   s: toggle scrollbind                 r: result     2: two   CC: exit with error',
         ])
