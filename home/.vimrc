@@ -576,6 +576,9 @@ function! <SID>NameTabPrefix(prefix)
     TName a:prefix . ' ' . pathshorten(expand('%'))
 endfunction
 
+nnoremap <silent> <Leader><Tab> :tabnext<CR>
+nnoremap <silent> <Leader><S-Tab> :tabprevious<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Diff
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
