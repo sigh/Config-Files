@@ -640,7 +640,7 @@ let g:Tlist_Inc_Winwidth = 0
 let g:Tlist_Compact_Format = 1
 let g:Tlist_Enable_Fold_Column = 0
 " let g:Tlist_File_Fold_Auto_Close = 1
-map <silent> <Leader>t :TlistOpen<CR>
+map <silent> <Leader>l :TlistOpen<CR>
 
 " File Explorer (:h :Explore)
 let g:explVertical=1
