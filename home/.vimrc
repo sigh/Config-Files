@@ -63,6 +63,9 @@ set nostartofline
 " Set default textwidth to 80
 set textwidth=80
 
+" Stop warning me when the file has been updated externally
+set autoread
+
 " Keyword lookup
 autocmd FileType * exec "setlocal keywordprg=vimdoc\\ -" . &ft
 
@@ -686,6 +689,9 @@ augroup END
 
 " Strip trailing whitespace before writing to programming filetypes.
 autocmd BufWritePre *.c,*.cc,*.cpp,*.h,*.js,*.py :call <SID>StripTrailingWhitespace()
+
+" Anything with a shebang line should be set to executable
+autocmd BufWritePost * if getline(1) =~ "^#!/" | exec "silent !chmod u+x %" | endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Filetype switching
