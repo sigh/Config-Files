@@ -121,9 +121,6 @@ endif
 " Vim UI
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" number of pixel lines inserted between characters
-set linespace=0
-
 " command-line completion operates in an enhanced mode
 set wildmenu
 set wildmode=list:longest,full
@@ -133,9 +130,6 @@ set display+=lastline
 
 " don't split words if word wrap is on
 set linebreak
-
-" Show the line and column number of the cursor position
-set ruler
 
 " Number of screen lines to use for the command-line
 " Helps avoid 'Hit enter' prompt
