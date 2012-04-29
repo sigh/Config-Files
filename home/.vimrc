@@ -148,7 +148,7 @@ set hidden
 set backspace=2
 
 " allow backspace and cursor keys to cross line boundaries
-set whichwrap+=<,>,h,l,b,[,],~
+set whichwrap+=<,>,b,[,],~
 
 " use mouse everywhere
 set mouse=a
