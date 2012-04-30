@@ -247,6 +247,14 @@ zle -N quote-current-line quote-chars
 bindkey "\e'" quote-current-arg
 bindkey "\e'\e'" quote-current-line
 
+# Expand real name of file
+autoload -U modify-current-argument
+current-arg-real-path() {
+    modify-current-argument '$(realpath "$ARG" 2> /dev/null)'
+}
+zle -N current-arg-real-path
+bindkey "^X^R" current-arg-real-path
+
 # move with control
 bindkey "\e[1;5C" forward-word
 bindkey "\e[1;5D" backward-word
