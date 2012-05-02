@@ -383,8 +383,9 @@ function! <SID>Reset()
         diffu
     endif
     " Move screen to the left
-    normal zH
+    normal 10zH
     TlistClose
+    cclose
 endfunction
 
 " what to show when I hit :set list
