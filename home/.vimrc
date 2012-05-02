@@ -439,13 +439,13 @@ vnoremap <Tab> >gv
 vnoremap <S-Tab> <gv
 
 " tab spacing (settings below are just to unify it)
-set tabstop=4
+set tabstop=2
 
 " unify
-set softtabstop=4
+set softtabstop=2
 
 " unify
-set shiftwidth=4
+set shiftwidth=2
 
 set expandtab " no tabs
 
