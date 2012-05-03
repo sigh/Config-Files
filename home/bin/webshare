@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
-port="${1:-8000}"
+port=8000
+if [[ $# == 3 ]] ; then
+    port="$1"
+fi
 iplist "%s: http://$(tput setaf 6)%s$(tput sgr0):$port/"
-exec python -m SimpleHTTPServer "$port" > /dev/null
+exec simplehttp "$@"

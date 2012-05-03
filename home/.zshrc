@@ -425,15 +425,6 @@ export ACK_COLOR_LINENO="yellow"
 export ACK_COLOR_FILENAME="green"
 alias ackp="ack --pager=less"
 
-simplehttp() {
-    local port=8000
-    if [[ $# == 3 ]] ; then
-        port="$1"
-    fi
-    iplist "%s: http://$(tput setaf 6)%s$(tput sgr0):$port/"
-    command simplehttp "$@"
-}
-
 # monitor
 
 monitor() { watch -d -n1 -t "$@"; }
