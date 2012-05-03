@@ -5,6 +5,7 @@ import subprocess
 import sys
 
 import BaseHTTPServer
+import SimpleHTTPServer
 
 class SimpleRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_GET(self):
@@ -38,13 +39,22 @@ TYPE_MAP = {
     'html': 'text/html',
 }
 
-def main(args):
+def get_handler(args):
     global COMMAND
     global CONTENT_TYPE
     global PORT
 
-    command = args.pop()
-    if os.access(command, os.X_OK):
+    # By default command is the current directory
+    command = '.'
+    if len(args) > 1:
+        command = args.pop()
+
+    if os.path.isdir(command):
+        # If the command is a directory then serve the entire directory using
+        # SimpleHTTPServer
+        os.chdir(command)
+        return SimpleHTTPServer.SimpleHTTPRequestHandler
+    elif os.access(command, os.X_OK):
         COMMAND = ['sh', command]
     elif os.path.isfile(command):
         COMMAND = ['cat', command]
@@ -58,7 +68,10 @@ def main(args):
     if len(args) > 1:
         PORT = int(args.pop())
 
-    httpd = BaseHTTPServer.HTTPServer(("", PORT), SimpleRequestHandler)
+    return SimpleRequestHandler
+
+def main(args):
+    httpd = BaseHTTPServer.HTTPServer(("", PORT), get_handler(args))
     # Don't show the traceback when a caller kills this process
     try:
         httpd.serve_forever()
