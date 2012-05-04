@@ -30,7 +30,6 @@ class SimpleRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     error_content_type = 'text/plain'
 
-PORT = 8000
 TYPE_MAP = {
     'text': 'text/plain',
     'plain': 'text/plain',
@@ -38,8 +37,6 @@ TYPE_MAP = {
 }
 
 def get_handler(args):
-    global PORT
-
     # By default serve the current directory
     server_what = '.'
     if len(args) > 1:
@@ -49,19 +46,19 @@ def get_handler(args):
         # If serving a directory then use SimpleHTTPServer to serve the entire
         # tree recursively
         os.chdir(serve_what)
-        print >>sys.stderr, "Serving directory:", serve_what
+        print >>sys.stderr, 'Serving directory:', serve_what
         return SimpleHTTPServer.SimpleHTTPRequestHandler
 
     handler = SimpleRequestHandler
 
     if os.access(serve_what, os.X_OK):
-        print >>sys.stderr, "Executing file:", serve_what
+        print >>sys.stderr, 'Executing file:', serve_what
         handler.COMMAND = ['sh', serve_what]
     elif os.path.isfile(serve_what):
-        print >>sys.stderr, "Serving file:", serve_what
+        print >>sys.stderr, 'Serving file:', serve_what
         handler.COMMAND = ['cat', serve_what]
     else:
-        print >>sys.stderr, "Running shell command:", serve_what
+        print >>sys.stderr, 'Running shell command:', serve_what
         handler.COMMAND = ['sh', '-c', serve_what]
 
     content_type = 'text/plain'
@@ -69,16 +66,23 @@ def get_handler(args):
         args = args.pop()
         content_type = TYPE_MAP.get(arg, arg)
     handler.CONTENT_TYPE = content_type
-    print >>sys.stderr, "Content type:", content_type
-
-    if len(args) > 1:
-        PORT = int(args.pop())
+    print >>sys.stderr, 'Content type:', content_type
 
     return handler
 
 def main(args):
+    # If the first argument is a number treat it as a port
+    port = 8000
+    try:
+        port = int(args[0])
+        del args[0]
+    except:
+        pass
+
+    # Setup the server
     handler = get_handler(args)
-    httpd = BaseHTTPServer.HTTPServer(("", PORT), handler)
+    httpd = BaseHTTPServer.HTTPServer(('', port), handler)
+
     # Don't show the traceback when a caller kills this process
     try:
         httpd.serve_forever()
@@ -86,4 +90,4 @@ def main(args):
         pass
 
 if __name__ == '__main__':
-    main(sys.argv)
+  main(sys.argv[1:])
