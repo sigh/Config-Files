@@ -144,7 +144,7 @@ class SimpleRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(out)
         else:
-            self.error_message_format = err
+            self.error_message_format = 'Server Error'
             self.send_error(500)
 
     error_content_type = 'text/plain'
