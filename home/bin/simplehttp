@@ -1,23 +1,145 @@
 #!/usr/bin/python
+#
+# Usage: simplehttp [PORT] [CONTENT_TYPE] COMMAND
+#   If COMMAND is a directory all its children are served.
+#   If COMMAND is a regular file then it is served.
+#   If COMMAND is an executable or a shell command, then it is run for every
+#     request and the output served.
+#
+#   Executed commands can take advantage of CGI variables in the environment.
+#   NOTE: There is no support for real CGI scripts yet - the request body and
+#   the response header are handled by the server code.
 
 import os
+import posixpath
 import subprocess
 import sys
+import urllib
 
 import BaseHTTPServer
 import SimpleHTTPServer
 
 class SimpleRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+    def translate_path(self, path):
+        """Translate a /-separated PATH to the local filename syntax.
+
+        Components that mean special things to the local file system
+        (e.g. drive or directory names) are ignored.  (XXX They should
+        probably be diagnosed.)
+
+        """
+        # abandon query parameters
+        path = path.split('?',1)[0]
+        path = path.split('#',1)[0]
+        path = posixpath.normpath(urllib.unquote(path))
+        words = path.split('/')
+        words = filter(None, words)
+        path = os.getcwd()
+        for word in words:
+            drive, word = os.path.splitdrive(word)
+            head, word = os.path.split(word)
+            if word in (os.curdir, os.pardir): continue
+            path = os.path.join(path, word)
+        return path
+
+    def create_env(self):
+        env = {}
+        rest, ignore, query = self.path.partition('?')
+
+        # Mostly copied from
+        # http://code.google.com/p/unladen-swallow/source/browse/trunk/Lib/CGIHTTPServer.py
+
+        env['SERVER_SOFTWARE'] = self.version_string()
+        env['SERVER_NAME'] = self.server.server_name
+        # env['GATEWAY_INTERFACE'] = 'CGI/1.1'
+        env['SERVER_PROTOCOL'] = self.protocol_version
+        env['SERVER_PORT'] = str(self.server.server_port)
+        env['REQUEST_METHOD'] = self.command
+        uqrest = urllib.unquote(rest)
+        env['PATH_INFO'] = uqrest
+        env['PATH_TRANSLATED'] = self.translate_path(uqrest)
+        if self.SCRIPT_NAME:
+          env['SCRIPT_NAME'] = self.SCRIPT_NAME
+        if query:
+            env['QUERY_STRING'] = query
+        host = self.address_string()
+        if host != self.client_address[0]:
+            env['REMOTE_HOST'] = host
+        env['REMOTE_ADDR'] = self.client_address[0]
+        authorization = self.headers.getheader("authorization")
+        if authorization:
+            authorization = authorization.split()
+            if len(authorization) == 2:
+                import base64, binascii
+                env['AUTH_TYPE'] = authorization[0]
+                if authorization[0].lower() == "basic":
+                    try:
+                        authorization = base64.decodestring(authorization[1])
+                    except binascii.Error:
+                        pass
+                    else:
+                        authorization = authorization.split(':')
+                        if len(authorization) == 2:
+                            env['REMOTE_USER'] = authorization[0]
+        if self.headers.typeheader is None:
+            env['CONTENT_TYPE'] = self.headers.type
+        else:
+            env['CONTENT_TYPE'] = self.headers.typeheader
+        length = self.headers.getheader('content-length')
+        if length:
+            env['CONTENT_LENGTH'] = length
+        referer = self.headers.getheader('referer')
+        if referer:
+            env['HTTP_REFERER'] = referer
+        accept = []
+        for line in self.headers.getallmatchingheaders('accept'):
+            if line[:1] in "\t\n\r ":
+                accept.append(line.strip())
+            else:
+                accept = accept + line[7:].split(',')
+        env['HTTP_ACCEPT'] = ','.join(accept)
+        ua = self.headers.getheader('user-agent')
+        if ua:
+            env['HTTP_USER_AGENT'] = ua
+        co = filter(None, self.headers.getheaders('cookie'))
+        if co:
+            env['HTTP_COOKIE'] = ', '.join(co)
+        for k in ('QUERY_STRING', 'REMOTE_HOST', 'CONTENT_LENGTH',
+                  'HTTP_USER_AGENT', 'HTTP_COOKIE', 'HTTP_REFERER',
+                  'SCRIPT_NAME'):
+            env.setdefault(k, '')
+
+        return env
+
+    def get_content_length(self, env):
+      try:
+          return int(env['CONTENT_LENGTH'])
+      except:
+          return 0
+
     def do_GET(self):
-        if self.path != '/':
+      self.do_POST()
+
+    def do_POST(self):
+        if not self.ALLOW_PATH and self.path != '/':
             self.error_message_format = 'Not found'
             self.send_error(404)
             return
+
+        env = self.create_env()
+        os.environ.update(env)
+        length = self.get_content_length(env)
+        content = ''
+        if length:
+          content = self.rfile.read(length)
+
         p = subprocess.Popen(
             self.COMMAND,
+            stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-        out, err = p.communicate()
+            stderr=sys.stderr)
+        out, err = p.communicate(content)
+
         if not p.returncode:
             self.send_response(200, 'OK')
             if self.CONTENT_TYPE:
@@ -38,8 +160,8 @@ TYPE_MAP = {
 
 def get_handler(args):
     # By default serve the current directory
-    server_what = '.'
-    if len(args) > 1:
+    serve_what = '.'
+    if len(args):
         serve_what = args.pop()
 
     if os.path.isdir(serve_what):
@@ -50,19 +172,23 @@ def get_handler(args):
         return SimpleHTTPServer.SimpleHTTPRequestHandler
 
     handler = SimpleRequestHandler
+    handler.ALLOW_PATH = True
+    handler.SCRIPT_NAME = None
 
     if os.access(serve_what, os.X_OK):
         print >>sys.stderr, 'Executing file:', serve_what
-        handler.COMMAND = ['sh', serve_what]
+        handler.COMMAND = ['sh', '-c', os.path.abspath(serve_what)]
+        handler.SCRIPT_NAME = serve_what
     elif os.path.isfile(serve_what):
         print >>sys.stderr, 'Serving file:', serve_what
         handler.COMMAND = ['cat', serve_what]
+        handler.ALLOW_PATH = False
     else:
         print >>sys.stderr, 'Running shell command:', serve_what
         handler.COMMAND = ['sh', '-c', serve_what]
 
     content_type = 'text/plain'
-    if len(args) > 1:
+    if len(args):
         args = args.pop()
         content_type = TYPE_MAP.get(arg, arg)
     handler.CONTENT_TYPE = content_type
