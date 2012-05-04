@@ -14,14 +14,14 @@ class SimpleRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self.send_error(404)
             return
         p = subprocess.Popen(
-            COMMAND,
+            self.COMMAND,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
         out, err = p.communicate()
         if not p.returncode:
             self.send_response(200, 'OK')
-            if CONTENT_TYPE:
-                self.send_header('content-type', CONTENT_TYPE)
+            if self.CONTENT_TYPE:
+                self.send_header('content-type', self.CONTENT_TYPE)
             self.end_headers()
             self.wfile.write(out)
         else:
@@ -31,8 +31,6 @@ class SimpleRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     error_content_type = 'text/plain'
 
 PORT = 8000
-CONTENT_TYPE = 'text/plain'
-COMMAND = ['sh', '-c', 'echo nothing here']
 TYPE_MAP = {
     'text': 'text/plain',
     'plain': 'text/plain',
@@ -40,38 +38,47 @@ TYPE_MAP = {
 }
 
 def get_handler(args):
-    global COMMAND
-    global CONTENT_TYPE
     global PORT
 
-    # By default command is the current directory
-    command = '.'
+    # By default serve the current directory
+    server_what = '.'
     if len(args) > 1:
-        command = args.pop()
+        serve_what = args.pop()
 
-    if os.path.isdir(command):
-        # If the command is a directory then serve the entire directory using
-        # SimpleHTTPServer
-        os.chdir(command)
+    if os.path.isdir(serve_what):
+        # If serving a directory then use SimpleHTTPServer to serve the entire
+        # tree recursively
+        os.chdir(serve_what)
+        print >>sys.stderr, "Serving directory:", serve_what
         return SimpleHTTPServer.SimpleHTTPRequestHandler
-    elif os.access(command, os.X_OK):
-        COMMAND = ['sh', command]
-    elif os.path.isfile(command):
-        COMMAND = ['cat', command]
-    else:
-        COMMAND = ['sh', '-c', command]
 
+    handler = SimpleRequestHandler
+
+    if os.access(serve_what, os.X_OK):
+        print >>sys.stderr, "Executing file:", serve_what
+        handler.COMMAND = ['sh', serve_what]
+    elif os.path.isfile(serve_what):
+        print >>sys.stderr, "Serving file:", serve_what
+        handler.COMMAND = ['cat', serve_what]
+    else:
+        print >>sys.stderr, "Running shell command:", serve_what
+        handler.COMMAND = ['sh', '-c', serve_what]
+
+    content_type = 'text/plain'
     if len(args) > 1:
-        content_type = args.pop()
-        CONTENT_TYPE = TYPE_MAP.get(content_type, CONTENT_TYPE)
+        args = args.pop()
+        content_type = TYPE_MAP.get(arg, arg)
+    handler.CONTENT_TYPE = content_type
+    print >>sys.stderr, "Content type:", content_type
 
     if len(args) > 1:
         PORT = int(args.pop())
 
-    return SimpleRequestHandler
+    return handler
 
 def main(args):
-    httpd = BaseHTTPServer.HTTPServer(("", PORT), get_handler(args))
+    handler = get_handler(args)
+    httpd = BaseHTTPServer.HTTPServer(("", PORT), handler)
     # Don't show the traceback when a caller kills this process
     try:
         httpd.serve_forever()
