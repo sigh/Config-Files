@@ -9,6 +9,12 @@
 #   Executed commands can take advantage of CGI variables in the environment.
 #   NOTE: There is no support for real CGI scripts yet - the request body and
 #   the response header are handled by the server code.
+#
+#   For redular files (served directly or from inside a directory) the program
+#     attempts to guess the conent type unless overridden by CONTENT_TYPE.
+#   For executed commmands, the content type is text/plain by default.
+#
+#   PORT is 8000 by default.
 
 import os
 import posixpath
@@ -19,28 +25,19 @@ import urllib
 import BaseHTTPServer
 import SimpleHTTPServer
 
+# FakeHandler exists purely so we can use its methods
+# Could use inheritance, but I don't know what other junk I'll pick up.
+class FakeHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+  def __init__(self):
+    pass
+fake_handler = FakeHandler()
+
 class SimpleRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def translate_path(self, path):
-        """Translate a /-separated PATH to the local filename syntax.
+      return fake_handler.translate_path(path)
 
-        Components that mean special things to the local file system
-        (e.g. drive or directory names) are ignored.  (XXX They should
-        probably be diagnosed.)
-
-        """
-        # abandon query parameters
-        path = path.split('?',1)[0]
-        path = path.split('#',1)[0]
-        path = posixpath.normpath(urllib.unquote(path))
-        words = path.split('/')
-        words = filter(None, words)
-        path = os.getcwd()
-        for word in words:
-            drive, word = os.path.splitdrive(word)
-            head, word = os.path.split(word)
-            if word in (os.curdir, os.pardir): continue
-            path = os.path.join(path, word)
-        return path
+    def guess_type(self, path):
+      return fake_handler.guess_type(path)
 
     def create_env(self):
         env = {}
@@ -142,8 +139,8 @@ class SimpleRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
         if not p.returncode:
             self.send_response(200, 'OK')
-            if self.CONTENT_TYPE:
-                self.send_header('content-type', self.CONTENT_TYPE)
+            content_type = self.guess_type('')
+            self.send_header('content-type', content_type)
             self.end_headers()
             self.wfile.write(out)
         else:
@@ -158,18 +155,30 @@ TYPE_MAP = {
     'html': 'text/html',
 }
 
+def set_content_type_method(cls, content_type):
+    if content_type:
+        print >>sys.stderr, 'Content type:', content_type
+        cls.guess_type = lambda s, p: content_type
+
 def get_handler(args):
     # By default serve the current directory
     serve_what = '.'
     if len(args):
         serve_what = args.pop()
 
+    content_type = None
+    if len(args):
+        arg = args.pop()
+        content_type = TYPE_MAP.get(arg, arg)
+
     if os.path.isdir(serve_what):
         # If serving a directory then use SimpleHTTPServer to serve the entire
         # tree recursively
         os.chdir(serve_what)
         print >>sys.stderr, 'Serving directory:', serve_what
-        return SimpleHTTPServer.SimpleHTTPRequestHandler
+        handler = SimpleHTTPServer.SimpleHTTPRequestHandler
+        set_content_type_method(handler, content_type)
+        return handler
 
     handler = SimpleRequestHandler
     handler.ALLOW_PATH = True
@@ -183,16 +192,13 @@ def get_handler(args):
         print >>sys.stderr, 'Serving file:', serve_what
         handler.COMMAND = ['cat', serve_what]
         handler.ALLOW_PATH = False
+        if not content_type:
+            content_type = fake_handler.guess_type(serve_what)
     else:
         print >>sys.stderr, 'Running shell command:', serve_what
         handler.COMMAND = ['sh', '-c', serve_what]
 
-    content_type = 'text/plain'
-    if len(args):
-        args = args.pop()
-        content_type = TYPE_MAP.get(arg, arg)
-    handler.CONTENT_TYPE = content_type
-    print >>sys.stderr, 'Content type:', content_type
+    set_content_type_method(handler, content_type or 'text/plain')
 
     return handler
 
