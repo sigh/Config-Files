@@ -650,6 +650,12 @@ map <silent> <Leader>l :TlistOpen<CR>
 let g:explVertical=1
 let g:explWinSize=35
 
+" Output syntax highlighted file as html
+map <Leader>h :call tohtml#Convert2HTML(1, line('$'))<Bar>set nomodified<CR>
+let g:html_ignore_folding=1
+let g:html_whole_filler=1
+let g:html_number_lines=0
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spelling
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
