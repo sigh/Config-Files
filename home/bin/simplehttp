@@ -5,7 +5,7 @@
 #   If COMMAND is a regular file then it is served.
 #   If COMMAND is an executable or a shell command, then it is run for every
 #     request and the output served.
-#   If COMMAND is '-' then the static contents of stdin is served.
+#   If COMMAND is 
 #
 #   Executed commands can take advantage of CGI variables in the environment.
 #   NOTE: There is no support for real CGI scripts yet - the request body and
