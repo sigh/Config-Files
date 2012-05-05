@@ -96,6 +96,12 @@ function! s:GoToCommand()
 endfunction
 noremap <unique> <script> <silent> - :<C-U>call <SID>GoToCommand()<CR>
 
+" Output syntax highlighted file as html
+map <Leader>h :call tohtml#Convert2HTML(1, line('$'))<Bar>set nomodified<CR>
+let g:html_ignore_folding=1
+let g:whole_filler=1
+let g:number_lines=0
+
 function FoldLevel(line)
   if getline(a:line) =~ '^\[\d\d:\d\d\] \[\d\+\] dilshan@[^:]\+:'
     return '>1'
