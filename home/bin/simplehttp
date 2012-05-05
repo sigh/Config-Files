@@ -5,6 +5,7 @@
 #   If COMMAND is a regular file then it is served.
 #   If COMMAND is an executable or a shell command, then it is run for every
 #     request and the output served.
+#   If COMMAND is '-' then the static contents of stdin is served.
 #
 #   Executed commands can take advantage of CGI variables in the environment.
 #   NOTE: There is no support for real CGI scripts yet - the request body and
@@ -183,7 +184,10 @@ def get_handler(args):
     handler.ALLOW_PATH = True
     handler.SCRIPT_NAME = None
 
-    if os.access(serve_what, os.X_OK):
+    if serve_what == '-':
+        handler.COMMAND = ['echo', sys.stdin.read()]
+        print >>sys.stderr, 'Serving stdin'
+    elif os.access(serve_what, os.X_OK):
         print >>sys.stderr, 'Executing file:', serve_what
         handler.COMMAND = ['sh', '-c', os.path.abspath(serve_what)]
         handler.SCRIPT_NAME = serve_what
