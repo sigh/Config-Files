@@ -17,7 +17,6 @@
 #   PORT is 8000 by default.
 
 import os
-import posixpath
 import subprocess
 import sys
 import urllib
