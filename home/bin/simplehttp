@@ -186,6 +186,7 @@ def get_handler(args):
 
     if serve_what == '-':
         handler.COMMAND = ['echo', sys.stdin.read()]
+        handler.ALLOW_PATH = False
         print >>sys.stderr, 'Serving stdin'
     elif os.access(serve_what, os.X_OK):
         print >>sys.stderr, 'Executing file:', serve_what
