@@ -266,7 +266,7 @@ ounmap ]]
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 map <silent> <Leader>qq :call <SID>OpenQuickfixWindow()<CR>
-map <silent> <Leader>qc :cclose<CR>
+map <silent> <Leader>qw :cclose<CR>
 map <silent> <Leader>qn :cnext<CR>
 map <silent> <Leader>qp :cprev<CR>
 map <silent> q<Left> :cprev<CR>
