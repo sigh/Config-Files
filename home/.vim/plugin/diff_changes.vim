@@ -4,7 +4,10 @@
 " TODO: Handle bdelete on diff buffer
 " TODO: Autodetect VCS
 " TODO: Create AnyDiffChanges which takes any readwhat string (and expands it
-" first)
+"       first)
+" TODO: when deleting delete into blackhole register
+" TODO: Make DiffReturn actaully return to the originating diff (give each tab
+"       an ID in a variable so that it can be found)
 
 " Set up default globals
 
@@ -89,7 +92,7 @@ function! <SID>VCSAllUpdate()
 
     normal ggdG
     exec "silent read !" . s:vcsprogs[l:prog]
-    normal ggdd 
+    normal ggdd
 
     setlocal filetype=diff
     setlocal nomodified

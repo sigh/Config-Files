@@ -1,4 +1,6 @@
 " actual file specific setting at end of file
+"
+" TODO: Handle "only file" lines etc (look in diff syntax file)
 
 if ! exists('g:diff_nav_loaded')
     let g:diff_nav_loaded = 1
