@@ -119,8 +119,7 @@ class TmuxSettings(object):
                         [self.binary, 'detach-client', '-P', '-s', session_name])
             else:
                 pass
-                # TODO(dilshan): implement reattach properly (with a separate
-                # session)
+                # TODO: implement reattach properly (with a separate session)
             rest_args.extend(['attach-session', '-t'])
 
         # If we are inside tmux then do things a bit differently

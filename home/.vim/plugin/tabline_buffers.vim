@@ -1,5 +1,8 @@
 " Based on Tabname plugin: http://www.vim.org/scripts/script.php?script_id=1678
 " and buftabs plugin: http://www.vim.org/scripts/script.php?script_id=1664
+"
+" TODO: Don't use actual buffer numbers in tab/buffer list, use an abstraction
+"       so that we an use MRU or something.
 
 if exists('tabline_buffers_loaded')
   finish
@@ -101,7 +104,7 @@ function! s:CreateBufferList(deleted_buf)
 endfunction
 
 function! s:DedupeNames(buffers)
-  " TODO(dilshan): Do better deduping - for now this just adds the first letter
+  " TODO: Do better deduping - for now this just adds the first letter
   " of the parent directory, if it exists.
   let names = []
   for b in a:buffers
