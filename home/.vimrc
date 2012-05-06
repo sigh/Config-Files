@@ -382,11 +382,22 @@ function! <SID>Reset()
     if &diff
         diffu
     endif
+
     " Move screen to the left
     normal 10zH
+
+    " Close helper windows
     TlistClose
     cclose
+
+    " Turn off cursorcolumn in all windows
+    for w in range(1,winnr('$'))
+        call setwinvar(w, '&cursorcolumn', 0)
+    endfor
 endfunction
+
+" Toggle cursorcolumn
+noremap <Leader><Bar> :set cursorcolumn!<CR>
 
 " what to show when I hit :set list
 set listchars=tab:·\ ,extends:»,precedes:«
