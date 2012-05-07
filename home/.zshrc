@@ -174,7 +174,40 @@ run-help-sudo() {
     fi
 }
 
+# Mark files in the output. Put them into the array variable $m and the
+# scalar variables $m1, $m2, ...
+function m() {
+  declare -ag m
+  m=()
+
+  # Allow perl to write directly to our stdout using file descriptor 3.
+  exec 3>&1
+
+  # Meanwhile perl's stdout will be eval'd.
+  eval $(perl -e '
+    open($real_stdout, ">&3") or die;
+    $count = 0;
+
+    sub insert_ref {
+      $t = shift;
+      if (-r $t) {
+        $count += 1;
+        print "m$count=\"$t\";";
+        print "m+=(\"$t\");";
+        $t = "[$count]$t";
+      }
+      return $t;
+    }
+
+    while(<>) {
+      $_ =~ s|([\w./]+)|insert_ref($1)|eg;
+      print $real_stdout $_;
+    }
+  ');
+}
+
 # Other global aliases
+alias -g M='| m'
 alias -g C='| wc -l'
 alias -g L='| less'
 alias -g V='| vimless'
