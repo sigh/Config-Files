@@ -740,20 +740,16 @@ autocmd CmdwinEnter * noremap <buffer> <C-c> <C-c>
 autocmd CmdwinEnter * inoremap <buffer> <C-c> <C-c>
 
 " Ctrl-q closes the window
-autocmd CmdwinEnter * nnoremap <buffer> <C-q> :quit
-autocmd CmdwinEnter * inoremap <buffer> <C-q> <Esc>:quit
-
-" Re-enter command window after running command
-autocmd CmdwinEnter * noremap <silent> <buffer> <CR> <CR>q:
-autocmd CmdwinEnter * inoremap <silent> <buffer> <CR> <CR>q:i
+autocmd CmdwinEnter * nnoremap <buffer> <silent> <C-q> :quit<CR>
+autocmd CmdwinEnter * inoremap <buffer> <silent> <C-q> <Esc>:quit<CR>
 
 " Up and down like in command line
 autocmd CmdwinEnter * noremap <buffer> / /
 autocmd CmdwinEnter * noremap <buffer> ? ?
-autocmd CmdwinEnter * imap <buffer> <Up> <C-O>y0<C-O>:let@/='^'.@0<CR><C-O>??e+1<CR>
-autocmd CmdwinEnter * imap <buffer> <Down> <C-O>y0<C-O>:let@/='^'.@0<CR><C-O>//e+1<CR>
-autocmd CmdwinEnter * map <buffer> <Up> y0:let@/='^'.@0<CR>??e+1<CR>
-autocmd CmdwinEnter * map <buffer> <Down> y0:let@/='^'.@0<CR>//e+1<CR>
+autocmd CmdwinEnter * imap <buffer> <Up>   <C-O>:let@/='\c^'.getline('.')[:col('.')-2]<CR><C-O>0<C-O>??e<CR><Right>
+autocmd CmdwinEnter * imap <buffer> <Down> <C-O>:let@/='\c^'.getline('.')[:col('.')-2]<CR><C-O>//e<CR><Right>
+autocmd CmdwinEnter * map <buffer> <Up>   :let@/='\c^'.getline('.')[:col('.')-1]<CR>??e<CR>
+autocmd CmdwinEnter * map <buffer> <Down> :let@/='\c^'.getline('.')[:col('.')-1]<CR>//e<CR>
 
 " Start in insert mode
 noremap qi q:i
