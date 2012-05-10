@@ -7,7 +7,7 @@ hi clear
 if exists("syntax_on")
     syntax reset
 endif
-let colors_name="lucius"
+let colors_name="lucius_mod"
 
 " Summary:
 " Color scheme with dark and light versions (GUI and 256 color terminal).

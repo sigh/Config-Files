@@ -273,14 +273,14 @@ map <silent> q<Left> :cprev<CR>
 map <silent> q<Right> :cnext<CR>
 map <silent> q<Up> :cpfile<CR>
 map <silent> q<Down> :cnfile<CR>
-function s:OpenQuickfixWindow()
+function! s:OpenQuickfixWindow()
     botright copen
 endfunction
 
 " Use ack for grep (for some reason set greprg didn't like the space)
 let &grepprg="ack --column -H"
 set grepformat=%f:%l:%c:%m
-command -bang -complete=shellcmd -nargs=* A call s:Ack(<q-args>, "<bang>")
+command! -bang -complete=shellcmd -nargs=* A call s:Ack(<q-args>, "<bang>")
 map <Leader>a :Ack<Space>
 map <Leader>a<Space> :Ack<Space>
 map <Leader>aa :Ack -a<Space>
@@ -310,10 +310,10 @@ nnoremap <silent> <S-Tab> :bprevious<CR>
 " buffer.
 " NOTE: <C-U> is required is required to remove the line range that you get
 "       when typing ':' after a count.
-noremap <unique> <script> <silent> - :<C-U>call <SID>SwitchToBuffer()<CR>
+noremap <script> <silent> - :<C-U>call <SID>SwitchToBuffer()<CR>
 
 " Ctrl-- will show the list of buffers and ask which to switch to
-noremap <unique> <script> <silent> <C-_> :ls<CR>:b
+noremap <script> <silent> <C-_> :ls<CR>:b
 
 let s:prevbuf = -1
 autocmd BufLeave * let s:prevbuf = bufnr('%')
@@ -339,7 +339,7 @@ endfunction
 " ctrl-q deletes the buffer
 map <silent> <C-Q> <Esc>:call <SID>BDPreserveWindow()<CR>
 
-function <SID>BDPreserveWindow()
+function! <SID>BDPreserveWindow()
     let window = winnr()
     let buffer = bufnr('%')
 
@@ -561,7 +561,7 @@ set directory=~/.vim/.swap// " the slashes at the end mean that the files are
 autocmd SwapExists * let v:swapchoice = 'o' | exec "setlocal statusline=%!SwapStatusLine('" . expand('%') . "')"
 
 hi User1 ctermfg=255 ctermbg=1 cterm=bold
-function SwapStatusLine(filename)
+function! SwapStatusLine(filename)
     " Only change the warning if this is the current buffer.
     if ! &ro && a:filename == expand('%')
         " If the user removes the readonly flag, then take away the warning.
@@ -675,7 +675,7 @@ let g:html_number_lines=0
 set spelllang=en_au
 
 " Helper to toggle spelling
-function s:spell()
+function! s:spell()
 	if ! &l:spell
 		echo  "Spell check on"
 		setlocal spell
@@ -721,7 +721,7 @@ nmap <Bslash>ccp :call <SID>fileswitch('cc')<CR>
 nmap <Bslash>h   :call <SID>fileswitch('h')<CR>
 nmap <Bslash>\   :call <SID>fileswitch('')<CR>
 
-function s:fileswitch(ext)
+function! s:fileswitch(ext)
     let l:fileswitch_prev = expand('%')
     if a:ext != ""
         exec "find %:t:r." . a:ext
