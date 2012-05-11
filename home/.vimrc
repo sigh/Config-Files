@@ -695,9 +695,9 @@ map <Leader>s :call <SID>spell()<CR>
 " Detect Go filetype
 autocmd BufNewFile,BufRead *.go set ft=go
 
-" For some reason setlocal on the filetypes isn't working properly.
-autocmd BufRead,BufNewFile * setlocal colorcolumn=
-autocmd BufRead,BufNewFile *.c,*.cc,*.cpp,*.h,*.js,*.py setlocal colorcolumn=+1
+" Set colorcolumn everwhere - it is much more annoying to not having when
+" required than vice-versa.
+set colorcolumn=+1
 
 " Set some settings for editing makefiles
 augroup makefile
