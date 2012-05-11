@@ -63,6 +63,8 @@ set nostartofline
 " Set default textwidth to 80
 set textwidth=80
 
+let &formatprg = "par qrgw" . &textwidth
+
 " Stop warning me when the file has been updated externally
 set autoread
 
