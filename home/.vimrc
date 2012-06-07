@@ -389,13 +389,15 @@ function! <SID>Reset()
     normal 10zH
 
     " Close helper windows
-    TlistClose
+    silent TlistClose
     cclose
 
     " Turn off cursorcolumn in all windows
     for w in range(1,winnr('$'))
         call setwinvar(w, '&cursorcolumn', 0)
     endfor
+
+    syn sync fromstart
 endfunction
 
 " Toggle cursorcolumn
