@@ -464,7 +464,7 @@ def main():
 
     # Try to find which session is being asked for
     session = None
-    if not options.ask:
+    if not options.ask and session_name:
         session = find_session_to_load(all_sessions, session_name, DEFAULT_SESSION_NAME)
     if not session:
         # Multiple possible sessions, ask the user!
