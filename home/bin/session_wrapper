@@ -45,7 +45,7 @@ import re
 import sys
 import subprocess
 
-DEFAULT_SESSION_NAME = '_'
+DEFAULT_SESSION_NAME = '.'
 BLUE = '\033[94m'
 NOCOLOR = '\033[0m'
 
@@ -268,7 +268,7 @@ class SessionPrompt(cmd.Cmd):
         sessions = filter_sessions(self.sessions, session_name)
         if not session_name and not self.has_default:
             # add the default if there is no default session open, make it the first option.
-            sessions.insert(0, Session('_'))
+            sessions.insert(0, Session(DEFAULT_SESSION_NAME))
         elif not sessions:
             # if there are no options at all then creating is the default.
             sessions.append(Session(session_name))
