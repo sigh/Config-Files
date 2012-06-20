@@ -1,0 +1,6 @@
+new-session -s .
+new-window -t . -n python "while :; do clear && PYTHONSTARTUP=~/.pystartup /opt/local/bin/python3.1; done"
+set default-path ~/git/Config-Files
+new-window -t . -n Config-Files
+set default-path ''
+select-window -t .:1
