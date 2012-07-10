@@ -355,13 +355,13 @@ zle -N rationalise-dot
 bindkey . rationalise-dot
 
 # Ensure that rationalise dot doesn't break incremental history search
-function scrub-history-incremental-search-backward () {
+function history-incremental-search-backward () {
   bindkey . self-insert
   zle .history-incremental-search-backward
   bindkey . rationalise-dot
 }
-zle -N scrub-history-incremental-search-backward
-bindkey "^R" scrub-history-incremental-search-backward
+zle -N history-incremental-search-backward
+bindkey "^R" history-incremental-search-backward
 
 # Stopped jobs that are removed from the job table with the disown builtin
 # command are automatically sent a CONT signal to make them running.
