@@ -273,6 +273,7 @@ map <silent> <Leader>qn :cnext<CR>
 map <silent> <Leader>qp :cprev<CR>
 map <silent> q<Left> :cprev<CR>
 map <silent> q<Right> :cnext<CR>
+map <silent> q<Space> :cnext<CR>
 map <silent> q<Up> :cpfile<CR>
 map <silent> q<Down> :cnfile<CR>
 function! s:OpenQuickfixWindow()
