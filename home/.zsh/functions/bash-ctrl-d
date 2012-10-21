@@ -19,8 +19,6 @@ if [[ $CURSOR == 0 && -z $BUFFER ]] ; then
       (( __BASH_IGNORE_EOF = IGNOREEOF-1 ))
     fi
     zle send-break
-elif [[ ${BUFFER// /} = \#* ]] ; then
-    zle accept-line
 else
     zle pound-insert
 fi
