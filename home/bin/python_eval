@@ -1,0 +1,15 @@
+#!/usr/bin/python
+
+import sys
+from math import *
+
+def main():
+  text = ''
+  if len(sys.argv) > 1:
+    text = ' '.join(sys.argv[1:])
+  else:
+    text = sys.stdin.read()
+  print eval('(%s)' % text)
+
+if __name__ == '__main__':
+  main()
