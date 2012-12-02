@@ -1,0 +1,2 @@
+#!/bin/sh
+for n in $(seq 0 15); do for m in $(seq 0 15); do C=$((n * 16 + m)); printf "\033[48;5;${C}m %3d \033[0m" "$C"; done; echo; done
