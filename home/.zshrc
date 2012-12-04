@@ -333,6 +333,12 @@ setopt short_loops
 # fancy mv
 autoload -U zmv
 
+# make fg work like in bash
+fg() { builtin fg "${@/#(\%|)/%}" }
+
+# helper function to determine how command line args are being split
+args() { echo ${(j:\n:)@} }
+
 # customise cd
 
 # If a command is issued that can’t be executed as a normal command, and the
