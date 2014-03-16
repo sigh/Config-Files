@@ -309,8 +309,8 @@ endfunction
 nnoremap <silent> <Tab> :bnext<CR>
 nnoremap <silent> <S-Tab> :bprevious<CR>
 
-" <count>- swithes to buffer <count>. With no count it switches the the previous
-" buffer.
+" <count>- switches to buffer <count>. With no count it switches the the
+" previous buffer.
 " NOTE: <C-U> is required is required to remove the line range that you get
 "       when typing ':' after a count.
 noremap <script> <silent> - :<C-U>call <SID>SwitchToBuffer()<CR>
