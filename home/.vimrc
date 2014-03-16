@@ -157,7 +157,7 @@ set mouse=a
 set ttymouse=xterm2
 
 " shortens messages to avoid 'press a key' prompt
-set shortmess=atI
+set shortmess=atIO
 
 " tell us when any line is changed via : commands
 set report=0
@@ -309,8 +309,8 @@ endfunction
 nnoremap <silent> <Tab> :bnext<CR>
 nnoremap <silent> <S-Tab> :bprevious<CR>
 
-" <count>- switches to buffer <count>. With no count it switches the the previous
-" buffer.
+" <count>- switches to buffer <count>. With no count it switches the the
+" previous buffer.
 " NOTE: <C-U> is required is required to remove the line range that you get
 "       when typing ':' after a count.
 noremap <script> <silent> - :<C-U>call <SID>SwitchToBuffer()<CR>
@@ -758,6 +758,20 @@ autocmd CmdwinEnter * map <buffer> <Down> :let@/='\c^'.getline('.')[:col('.')-1]
 
 " Start in insert mode
 noremap qi q:i
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Vundle
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+filetype off
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+Bundle 'gmarik/vundle'
+Bundle 'sjl/splice.vim'
+
+filetype plugin indent on
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Finally

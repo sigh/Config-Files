@@ -16,10 +16,10 @@ import readline
 import rlcompleter
 
 if 'libedit' in readline.__doc__:
-    # OS X hack.
-    readline.parse_and_bind("bind ^I rl_complete")
+    # OSX hack.
+    readline.parse_and_bind("bind ^I rl_complete')
 else:
-    readline.parse_and_bind("tab: complete")
+    readline.parse_and_bind('tab: complete')
 
 historyPath = os.path.expanduser("~/.pyhistory")
 
