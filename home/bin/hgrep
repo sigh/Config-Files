@@ -22,17 +22,30 @@ my $context_before;
 my $context_after;
 my $ignore_case;
 my $exit_status;
+my $include_hgrep;
 GetOptions(
+  # Match against the directory the command was run in.
   "dir|d=s" => \$dir_re,
+  # Match against the full log line (including metadata).
   "full|f" => \$full,
-  "no-prefix|N" => \$no_prefix,
+  # Don't display the [#N] prefix.
+  "no-prefix|p" => \$no_prefix,
+  # Sort output by shell session.
   "session|s" => \$by_session,
+  # Ignore case when matching.
   "ignore-case|i" => \$ignore_case,
+  # Only display the nth match.
   "n=i" => \$requested_match,
+  # Number of surrounding context lines to show.
   "context|C=i" => \$context,
+  # Number of proceeding context lines to show.
   "after|A=i" => \$context_after,
+  # Number of preceeding context lines to show.
   "before|B=i" => \$context_before,
+  # Filter by exit status.
   "exit-status|e=s" => \$exit_status,
+  # Don't filter out hgrep commands.
+  "include-hgrep" => \$include_hgrep,
 ) or die;
 
 my $want_context = defined($context) || defined($context_after) || defined($context_before);
@@ -66,7 +79,7 @@ $results = filter_by_status($results, $exit_status);
 # if we only wanted exit statuses, then just stop now
 if (not $by_session) {
   for my $result (@$results) {
-    print output_match($result) . "\n";
+    print output_match($result);
   }
   exit(0);
 }
@@ -246,8 +259,10 @@ sub filter_by_status {
   # do the filter
   my @output;
   for my $result (@$input) {
-    if ($negate xor exists($lookup{$result->{status}})) {
-      push @output, $result;
+    if (exists($result->{status})) { # Ensure we have a status.
+      if ($negate xor exists($lookup{$result->{status}})) {
+        push @output, $result;
+      }
     }
   }
 
@@ -269,6 +284,7 @@ sub quick_find_matches {
     chomp(my $line = $_);
     my ($init, $rest) = split(/ \$ /, $line, 2);
     if ($rest and $rest =~ $command_re) {
+      next if (not $include_hgrep and $rest =~ /^hgrep/);
       if (my $result = process_match($line, $line_no)) {
         print output_match($result);
       }
@@ -298,6 +314,7 @@ sub find_matches {
         delete $status_pids{$pid};
       }
     } elsif ($rest =~ $command_re) {
+      next if (not $include_hgrep and $rest =~ /^hgrep/);
       # handle match
       if (my $result = process_match($line, $line_no)) {
         $status_pids{$result->{pid}} = $result;
