@@ -157,7 +157,7 @@ set mouse=a
 set ttymouse=xterm2
 
 " shortens messages to avoid 'press a key' prompt
-set shortmess=atI
+set shortmess=atIO
 
 " tell us when any line is changed via : commands
 set report=0
