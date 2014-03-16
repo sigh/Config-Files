@@ -760,6 +760,20 @@ autocmd CmdwinEnter * map <buffer> <Down> :let@/='\c^'.getline('.')[:col('.')-1]
 noremap qi q:i
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Vundle
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+filetype off
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+Bundle 'gmarik/vundle'
+Bundle 'sjl/splice.vim'
+
+filetype plugin indent on
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Finally
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 

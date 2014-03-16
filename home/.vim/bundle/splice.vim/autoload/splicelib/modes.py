@@ -13,8 +13,9 @@ class Mode(object):
 
 
     def diff(self, diffmode):
-        with windows.remain():
-            getattr(self, '_diff_%d' % diffmode)()
+        with buffers.remain():
+            with windows.remain():
+                getattr(self, '_diff_%d' % diffmode)()
 
         # Reset the scrollbind to whatever it was before we diffed.
         if not diffmode:
@@ -138,7 +139,7 @@ class Mode(object):
         ])
         diagram = pad(self.hud_diagram())
         commands = pad([
-            r'Splice Commands (Leader: %s)' % setting('leader', '-'),
+            r'Splice Commands',
             r'd: cycle diffs   n: next conflict   space: cycle layouts   u: use hunk   o: original   1: one   q: save and quit',
             r'D: diffs off     N: prev conflict   s: toggle scrollbind                 r: result     2: two   CC: exit with error',
         ])
@@ -644,6 +645,15 @@ class CompareMode(Mode):
         # current window.
         windows.focus(2)
         if buffers.current == buffers.original:
+            windows.focus(3)
+            if buffers.current == buffers.result:
+                open_two(curwindow)
+                return
+
+        # If file one and the result are showing, then we open file two in the
+        # current window.
+        windows.focus(2)
+        if buffers.current == buffers.one:
             windows.focus(3)
             if buffers.current == buffers.result:
                 open_two(curwindow)
