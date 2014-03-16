@@ -46,6 +46,9 @@
     lg = log --date=short --pretty=format:'%C(bold)%C(ul)%C(blue)%s%+gs%Creset%n%C(yellow)%h %Creset%ad %C(magenta)%ae %Cgreen(%cr)%Creset%Cred%d%n' --stat --graph
     graph = log --graph --branches --date=short --pretty=format:'%C(bold)%C(ul)%C(blue)%s%Creset%n%C(yellow)%h %Creset%ad %Cgreen(%cr)%Creset%Cred%d%n' --simplify-by-decoration
 
+    # Show branches sorted by date.
+    bs = "!f() { git for-each-ref --sort=-committerdate --format=\"%(committerdate:short) $(tput setaf 5)%(refname:short)$(tput sgr0)\" refs/heads/; }; f"
+
     # open a github url for the current git repo
     hub = !git remote -v|sed "'s|.*git[:@]\\(.*\\).git.*|http://\\1|;s|m:|m/|'"|uniq|xargs open
 
