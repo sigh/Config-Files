@@ -154,7 +154,12 @@ set whichwrap+=<,>,b,[,],~
 
 " use mouse everywhere
 set mouse=a
-set ttymouse=xterm2
+" Fix bug where mouse is not usable across the entire width of the screen.
+if has("mouse_sgr")
+  set ttymouse=sgr
+else
+  set ttymouse=xterm2
+end
 
 " shortens messages to avoid 'press a key' prompt
 set shortmess=atIO
