@@ -1,0 +1,4 @@
+#!/bin/sh
+# List all the ports we are listening on.
+
+lsof -i -n +c0 -P -sTCP:LISTEN

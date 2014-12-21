@@ -13,15 +13,6 @@ title() {
     tmux rename-window "$title"
 }
 
-chdir() {
-    local abs_path=$(cd "${1:-.}" 2> /dev/null && pwd)
-    if [[ -n $abs_path ]] ; then
-        tmux set default-path "$abs_path"
-    else
-        echo "chdir: $1: No such directory"
-    fi
-}
-
 scrollback() {
     setopt localtraps
     local filename="$(mktemp)"

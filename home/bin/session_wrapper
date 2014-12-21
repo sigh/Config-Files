@@ -45,7 +45,7 @@ import re
 import sys
 import subprocess
 
-DEFAULT_SESSION_NAME = '.'
+DEFAULT_SESSION_NAME = '_'
 BLUE = '\033[94m'
 NOCOLOR = '\033[0m'
 
