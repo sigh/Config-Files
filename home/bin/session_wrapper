@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.6
+#!/usr/bin/env python
 
 # A wrapper for screen and tmux
 #
@@ -116,7 +116,7 @@ class TmuxSettings(object):
                 subprocess.check_call(
                         [self.binary, 'select-window', '-t', session_name + ':' + options['window']])
             if not options.get('reattach', False):
-                subprocess.check_call(
+                subprocess.call(
                         [self.binary, 'detach-client', '-P', '-s', session_name])
             else:
                 pass
