@@ -20,10 +20,6 @@ typeset -gU PATH
 # advanced input redirection (no need for tee)
 setopt multios
 
-# zsh reprints the prompt on window resize, but it messes with multiline
-# prompts. This work around moves the cursor up one row on window resize.
-trap 'tput cuu1' WINCH
-
 # disable flow control (C-s, C-r)
 stty -ixon
 
