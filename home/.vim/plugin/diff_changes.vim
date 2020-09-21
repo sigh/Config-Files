@@ -1,5 +1,5 @@
 " Diff changes script
-" Author: sigh <sigh.projects@gmail.com>
+" Author: sigh
 "
 " TODO: Handle bdelete on diff buffer
 " TODO: Autodetect VCS

@@ -85,3 +85,5 @@
     enabled = true
 [difftool "imagediff"]
     cmd = imagediff $LOCAL $REMOTE $MERGED
+[init]
+    defaultBranch = main
