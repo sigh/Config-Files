@@ -1,6 +1,6 @@
 [user]
     name = sigh
-    email = dilshan.a@gmail.com
+    email = sigh.projects@gmail.com
 [core]
     editor = vim
     excludesfile = ~/.gitignore
@@ -85,3 +85,5 @@
     enabled = true
 [difftool "imagediff"]
     cmd = imagediff $LOCAL $REMOTE $MERGED
+[init]
+    defaultBranch = main

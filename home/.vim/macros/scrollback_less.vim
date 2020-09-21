@@ -103,7 +103,7 @@ let g:whole_filler=1
 let g:number_lines=0
 
 function FoldLevel(line)
-  if getline(a:line) =~ '^\[\d\d:\d\d\] \[\d\+\] dilshan@[^:]\+:'
+  if getline(a:line) =~ '^\[\d\d:\d\d\] \[\d\+\] ' . $USER . '@[^:]\+:'
     return '>1'
   else
     return '1'
@@ -155,7 +155,7 @@ set fillchars=vert:\ ,stl:\ ,stlnc:\ ,diff:\ ,fold:\
 
 " Syntax highlighting
 syntax reset
-syn match command '^\[\d\d:\d\d\] \[\d\+\] dilshan@[^:]\+:.*\n\d\+ \$'
+exec "syn match command '" . '^\[\d\d:\d\d\] \[\d\+\] ' . $USER . '@[^:]\+:.*\n\d\+ \$' . "'"
 hi link command Comment
 
 if &term == "screen-256color" || &term == "xterm-256color"

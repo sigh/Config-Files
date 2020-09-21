@@ -1,7 +1,7 @@
 " Lucius vim color file
 " Maintainer: Jonathan Filip <jfilip1024@gmail.com>
 " Version: 7.1.1
-" Modified by sigh <dilshan.a@gmail.com>
+" Modified by sigh
 
 hi clear
 if exists("syntax_on")
