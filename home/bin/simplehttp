@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # Usage: simplehttp [PORT] [CONTENT_TYPE] COMMAND
 #   If COMMAND is a directory all its children are served.
@@ -22,17 +22,16 @@ import subprocess
 import sys
 import urllib
 
-import BaseHTTPServer
-import SimpleHTTPServer
+import http.server
 
 # FakeHandler exists purely so we can use its methods
 # Could use inheritance, but I don't know what other junk I'll pick up.
-class FakeHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+class FakeHandler(http.server.SimpleHTTPRequestHandler):
   def __init__(self):
     pass
 fake_handler = FakeHandler()
 
-class SimpleRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
     def translate_path(self, path):
       return fake_handler.translate_path(path)
 
@@ -172,11 +171,11 @@ def get_handler(args):
         content_type = TYPE_MAP.get(arg, arg)
 
     if os.path.isdir(serve_what):
-        # If serving a directory then use SimpleHTTPServer to serve the entire
+        # If serving a directory then use http.server to serve the entire
         # tree recursively
         os.chdir(serve_what)
-        print >>sys.stderr, 'Serving directory:', serve_what
-        handler = SimpleHTTPServer.SimpleHTTPRequestHandler
+        print('Serving directory:', serve_what, file=sys.stderr)
+        handler = http.server.SimpleHTTPRequestHandler
         set_content_type_method(handler, content_type)
         return handler
 
@@ -217,7 +216,7 @@ def main(args):
 
     # Setup the server
     handler = get_handler(args)
-    httpd = BaseHTTPServer.HTTPServer(('', port), handler)
+    httpd = http.server.HTTPServer(('', port), handler)
 
     # Don't show the traceback when a caller kills this process
     try:
