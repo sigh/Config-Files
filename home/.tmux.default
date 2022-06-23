@@ -1,4 +1,4 @@
 new-session -s _
-new-window -t _ -n ipython ". ~/.profile; ipython"
+new-window -t _ -n python3 "while :; do clear && PYTHONSTARTUP=~/.pystartup /usr/bin/python3; done"
 new-window -t _ -n Config-Files -c '~/git/Config-Files'
 select-window -t _:1

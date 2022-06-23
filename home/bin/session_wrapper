@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # A wrapper for screen and tmux
 #
@@ -116,8 +116,8 @@ class TmuxSettings(object):
                 subprocess.check_call(
                         [self.binary, 'select-window', '-t', session_name + ':' + options['window']])
             if not options.get('reattach', False):
-                subprocess.call(
-                        [self.binary, 'detach-client', '-P', '-s', session_name])
+                subprocess.check_call(
+                    [self.binary, 'detach-client', '-P', '-s', session_name])
             else:
                 pass
                 # TODO: implement reattach properly (with a separate session)
@@ -353,11 +353,13 @@ def filter_sessions(sessions, prefix):
             s.pid and (s.name  + '.' + s.pid).startswith(prefix)]
 
 def get_session_list(prog):
-    process = subprocess.Popen(prog.list_command(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
+    result = subprocess.run(
+            prog.list_command(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
 
     sessions = []
-    for line in stdout.split("\n"):
+    for line in result.stdout.decode('utf-8').split('\n'):
         result = prog.list_line_to_session(line)
         if result:
             sessions.append(result)

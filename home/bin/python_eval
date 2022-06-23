@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys
 from math import *
@@ -9,7 +9,7 @@ def main():
     text = ' '.join(sys.argv[1:])
   else:
     text = sys.stdin.read()
-  print eval('(%s)' % text)
+  print(eval(f'({text})'))
 
 if __name__ == '__main__':
   main()
