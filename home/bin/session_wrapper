@@ -115,13 +115,11 @@ class TmuxSettings(object):
             if options.get('window', None) is not None:
                 subprocess.check_call(
                         [self.binary, 'select-window', '-t', session_name + ':' + options['window']])
+
+            rest_args.append('attach-session')
             if not options.get('reattach', False):
-                subprocess.check_call(
-                    [self.binary, 'detach-client', '-P', '-s', session_name])
-            else:
-                pass
-                # TODO: implement reattach properly (with a separate session)
-            rest_args.extend(['attach-session', '-t'])
+                rest_args.append('-d');
+            rest_args.append('-t')
 
         # If we are inside tmux then do things a bit differently
         if options.get('current_prog', None) == 'tmux':
