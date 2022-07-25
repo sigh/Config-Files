@@ -5,6 +5,7 @@ curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh
 brew install tmux
 brew install coreutils
 brew install git-filter-repo
+brew install watch
 
 pip3 install --user ipython
 pip3 install --user numpy
