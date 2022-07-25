@@ -1,0 +1,16 @@
+{
+    "workbench.colorTheme": "Visual Studio Light",
+    "files.trimTrailingWhitespace": true,
+    "editor.minimap.enabled": false,
+    "editor.rulers": [
+        80
+    ],
+    "editor.tabSize": 2,
+    "editor.inlayHints.enabled": false,
+    "vim.useSystemClipboard": true,
+    "rust-analyzer.checkOnSave.command": "clippy",
+    "editor.formatOnSave": true,
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.autoClosingBrackets": "never",
+    "terminal.integrated.enableMultiLinePasteWarning": false,
+}

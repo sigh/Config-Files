@@ -1,0 +1,20 @@
+// Place your key bindings in this file to override the defaults
+[
+  // Pass alt-arrow to the terminal https://github.com/microsoft/vscode/issues/136339
+  {
+    "key": "alt+left",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": {
+      "text": "\u001b[1;3D"
+    },
+    "when": "terminalFocus"
+  },
+  {
+    "key": "alt+right",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": {
+      "text": "\u001b[1;3C"
+    },
+    "when": "terminalFocus"
+  }
+]
