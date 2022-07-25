@@ -540,7 +540,10 @@ _status_ps1() {
 export PS4="\[$(tput setaf 5)\]+\[$(tput sgr0)\] "
 
 # Rename prompt variables so that they don't confuse other subshells.
-PROMPT=$'$(_status_ps1)%F{blue}[%D{%H:%M}] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
+#   A visual bell is at the start, as tmux is configured to highlight the tab in
+#   this case. This allows us to see when long running commands in another tab
+#   completes.
+PROMPT=$'\a$(_status_ps1)%F{blue}[%D{%H:%M}] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
 PROMPT2=$'%F{blue}> %f'
 PROMPT4=$'%F{magenta}+%N:%i> %f'
 export GIT_PS1_SHOWDIRTYSTATE=true
