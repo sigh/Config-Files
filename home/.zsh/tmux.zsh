@@ -40,10 +40,6 @@ inline-screen-scrollback() {
 zle -N inline-screen-scrollback
 bindkey '\es' inline-screen-scrollback
 
-# Monitor for the start of the shell command prompt - this usually means
-# that a command has finished running.
-tmux setw monitor-content "\[??:??\] \[*\] $USER@*:"
-
 # monitor activity on a command
 monitor() {
     trap "tmux setw monitor-activity off" 0
