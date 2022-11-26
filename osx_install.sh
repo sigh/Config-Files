@@ -10,6 +10,11 @@ brew install watch
 pip3 install --user ipython
 pip3 install --user numpy
 
+# Make dock appear instantly.
+defaults write com.apple.dock autohide-delay -float 0
+defaults write com.apple.dock autohide-time-modifier -int 0
+killall Dock
+
 HOME_DIR=~
 cat <<EOF >> ~/.profile
 PATH="$HOME_DIR/bin:/usr/local/bin:\$PATH"
