@@ -13,6 +13,9 @@ pip3 install --user numpy
 # Make dock appear instantly.
 defaults write com.apple.dock autohide-delay -float 0
 defaults write com.apple.dock autohide-time-modifier -int 0
+# Show hidden apps as transparent.
+defaults write com.apple.Dock showhidden -bool TRUE
+# Restart dock to apply changes.
 killall Dock
 
 HOME_DIR=~
