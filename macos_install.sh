@@ -19,6 +19,10 @@ defaults write com.apple.Dock showhidden -bool TRUE
 # Restart dock to apply changes.
 killall Dock
 
+# Show hidden files in Finder
+defaults write com.apple.Finder AppleShowAllFiles -bool true
+killall Finder
+
 HOME_DIR=~
 cat <<EOF >> ~/.profile
 PATH="$HOME_DIR/bin:/usr/local/bin:\$PATH"
