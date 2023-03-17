@@ -1,5 +1,5 @@
 #!/bin/sh
-# These are commands to help setup a new install on osx.
+# These are commands to help setup a new install on macos.
 
 curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh
 brew install tmux
