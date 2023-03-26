@@ -138,6 +138,7 @@ setopt no_case_glob
 setopt no_nomatch
 # More globbing stuff.
 setopt extended_glob
+setopt globstarshort
 # Allow for correction of inaccurate commands
 setopt correct
 # Don't offer values starting with _ as corrections.
