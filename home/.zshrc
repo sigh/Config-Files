@@ -26,6 +26,9 @@ stty -ixon
 # don't echo control characters (in particular don't echo ^C on the command line).
 stty -ctlecho
 
+# Auto suggestions
+source ~/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+
 # Turn caching on
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path ~/.zsh/cache
@@ -572,3 +575,6 @@ preexec() {
     awk -v prefix="$$ $_FULL_HIST_LINENO $(date +%FT%T) $PWD \$" "{ print prefix, \$0 }" <<<"$1" >> "$FULLHISTFILE"
     _PS1_NEW_CMD=1
 }
+
+# Syntax highlighting
+source ~/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
