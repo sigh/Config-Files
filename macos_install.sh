@@ -7,6 +7,12 @@ brew install coreutils
 brew install git-filter-repo
 brew install watch
 brew install imagemagick
+brew install jekyll
+brew install sqlite
+brew install nasm
+brew install gdb
+
+brew install --cask macfuse
 
 pip3 install --user ipython
 pip3 install --user numpy
