@@ -69,7 +69,7 @@
     this = !git init && git add . && git commit -m \"initial commit\"
 
     # Determine the path relative to the root of the repository
-    path = "!python -c 'import os,sys; print \"\\n\".join(os.path.relpath(os.path.join(sys.argv[1], p)) for p in sys.argv[2:]);' \"$GIT_PREFIX\""
+    path = "!python3 -c 'import os,sys; print(\"\\n\".join(os.path.relpath(os.path.join(sys.argv[1], p)) for p in sys.argv[2:]));' \"$GIT_PREFIX\""
 [color]
     ui = true
 [color.diff]
