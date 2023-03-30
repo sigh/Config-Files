@@ -29,6 +29,8 @@ killall Dock
 defaults write com.apple.Finder AppleShowAllFiles -bool true
 killall Finder
 
+ssh-add -K ~/.ssh/id_rsa
+
 HOME_DIR=~
 cat <<EOF >> ~/.profile
 PATH="$HOME_DIR/bin:/usr/local/bin:\$PATH"
