@@ -11,6 +11,7 @@ brew install jekyll
 brew install sqlite
 brew install nasm
 brew install gdb
+brew install rename
 
 brew install --cask macfuse
 
