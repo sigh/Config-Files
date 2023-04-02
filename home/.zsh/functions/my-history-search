@@ -10,7 +10,7 @@
 
 _my-up-line-or-history-search-backward() {
     if (( CURSOR == 0 )) ; then
-        zle .up-history
+        zle .history-beginning-search-backward
     elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
         zle .up-history
     elif [[ $LBUFFER == *$'\n'* ]]; then
@@ -22,7 +22,7 @@ _my-up-line-or-history-search-backward() {
 
 _my-down-line-or-history-search-forward() {
     if (( CURSOR == 0 )) ; then
-        zle .down-history
+        zle .history-beginning-search-forward
     elif [[ $CURSOR -eq ${#BUFFER} && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
         zle .down-history
     elif [[ $LBUFFER != *$'\n'* && $LASTWIDGET == my-*-line-or-history-search-* ]]; then
