@@ -77,7 +77,7 @@ rationalise-dot() {
     zle -D save-rationalise-dot
     bindkey . rationalise-dot
 
-    test (( $stat )) && zle send-break
+    [[ $stat -ne 0 ]] && zle send-break
     [[ -z $_rationalise_dot_status ]] && zle accept-line
   else
     LBUFFER+=.
