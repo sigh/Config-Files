@@ -19,8 +19,8 @@ pip3 install --user ipython
 pip3 install --user numpy
 
 # Make dock appear instantly.
-defaults write com.apple.dock autohide-delay -float 0
-defaults write com.apple.dock autohide-time-modifier -int 0
+defaults write com.apple.Dock autohide-delay -float 0
+defaults write com.apple.Dock autohide-time-modifier -int 0
 # Show hidden apps as transparent.
 defaults write com.apple.Dock showhidden -bool TRUE
 # Restart dock to apply changes.
@@ -29,6 +29,11 @@ killall Dock
 # Show hidden files in Finder
 defaults write com.apple.Finder AppleShowAllFiles -bool true
 killall Finder
+
+# Turn of 2-finger swipe/scroll as its really annoying.
+defaults write "Apple Global Domain" AppleEnableSwipeNavigateWithScrolls -bool false
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 2
 
 ssh-add -K ~/.ssh/id_rsa
 
