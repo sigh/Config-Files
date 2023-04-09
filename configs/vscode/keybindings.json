@@ -16,5 +16,22 @@
       "text": "\u001b[1;3C"
     },
     "when": "terminalFocus"
+  },
+  // Cmd+arrow to navigate between panes.
+  {
+    "key": "cmd+left",
+    "command": "workbench.action.navigateLeft"
+  },
+  {
+    "key": "cmd+right",
+    "command": "workbench.action.navigateRight"
+  },
+  {
+    "key": "cmd+up",
+    "command": "workbench.action.navigateUp"
+  },
+  {
+    "key": "cmd+down",
+    "command": "workbench.action.navigateDown"
   }
 ]
