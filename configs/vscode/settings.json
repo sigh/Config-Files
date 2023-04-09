@@ -6,11 +6,31 @@
         80
     ],
     "editor.tabSize": 2,
-    "editor.inlayHints.enabled": false,
+    "editor.inlayHints.enabled": true,
     "vim.useSystemClipboard": true,
     "rust-analyzer.checkOnSave.command": "clippy",
     "editor.formatOnSave": true,
     "diffEditor.ignoreTrimWhitespace": false,
     "editor.autoClosingBrackets": "never",
     "terminal.integrated.enableMultiLinePasteWarning": false,
+    "debug.allowBreakpointsEverywhere": true,
+    "git.suggestSmartCommit": false,
+    "explorer.confirmDragAndDrop": false,
+    "[markdown]": {
+        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+    },
+    "lldb.suppressUpdateNotifications": true,
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "cSpell.language": "en,en-GB",
+    "explorer.confirmDelete": false,
+    "editor.inlineSuggest.enabled": true,
+    "github.copilot.enable": {
+        "*": true,
+        "yaml": false,
+        "plaintext": true,
+        "markdown": false,
+        "scminput": false
+    },
 }
