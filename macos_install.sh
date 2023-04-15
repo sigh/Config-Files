@@ -12,6 +12,7 @@ brew install sqlite
 brew install nasm
 brew install gdb
 brew install rename
+brew install telnet
 
 brew install --cask macfuse
 
@@ -30,7 +31,7 @@ killall Dock
 defaults write com.apple.Finder AppleShowAllFiles -bool true
 killall Finder
 
-# Turn of 2-finger swipe/scroll as its really annoying.
+# Turn off 2-finger swipe/scroll as it's really annoying.
 defaults write "Apple Global Domain" AppleEnableSwipeNavigateWithScrolls -bool false
 defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 2
