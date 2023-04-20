@@ -16,19 +16,30 @@ brew install telnet
 
 brew install --cask macfuse
 
+pip3 install --upgrade pip
 pip3 install --user ipython
 pip3 install --user numpy
+pip3 install --user autopep8
 
 # Make dock appear instantly.
+defaults write com.apple.Dock autohide -bool TRUE
 defaults write com.apple.Dock autohide-delay -float 0
 defaults write com.apple.Dock autohide-time-modifier -int 0
 # Show hidden apps as transparent.
 defaults write com.apple.Dock showhidden -bool TRUE
+# Don't reorder spaces.
+defaults write com.apple.Dock mru-spaces -bool FALSE
+# Place dock on the right.
+defaults write com.apple.Dock orientation right
+# Dock magnification.
+defaults write com.apple.Dock largesize -float 56
+defaults write com.apple.Dock magnification -float 1
+defaults write com.apple.Dock mineffect scale
 # Restart dock to apply changes.
 killall Dock
 
 # Show hidden files in Finder
-defaults write com.apple.Finder AppleShowAllFiles -bool true
+defaults write com.apple.Finder AppleShowAllFiles -bool TRUE
 killall Finder
 
 # Turn off 2-finger swipe/scroll as it's really annoying.
