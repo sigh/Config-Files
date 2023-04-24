@@ -240,22 +240,18 @@ export SVNEDITOR=vim
 # config for python interactive shell
 export PYTHONSTARTUP="$HOME/.pystartup"
 
-# screen commands
+# tmux/screen
+s() { session_wrapper tmux "$@"; }
 
-if [[ -z $STY ]] ; then
-    # commands for outside screen/tmux
+# completion for session_wrapper
+_session_wrapper() {
+    COMPREPLY=( $(session_wrapper tmux --complete "${COMP_WORDS[COMP_CWORD]}" ))
+}
 
-    # I use session_wrapper a lot
-    s() { session_wrapper tmux "$@"; }
+complete -F _session_wrapper session_wrapper
+complete -F _session_wrapper s
 
-    # completion for session_wrapper
-    _session_wrapper() {
-        COMPREPLY=( $(session_wrapper tmux --complete "${COMP_WORDS[COMP_CWORD]}" ))
-    }
-
-    complete -F _session_wrapper session_wrapper
-    complete -F _session_wrapper s
-else
+if [[ -n $STY ]] ; then
     # commands for use inside screen
 
     # ensure screendir is populated with the directory
@@ -335,6 +331,20 @@ else
         # clear the directory stack so that only the current directory is there.
         dirs -c
     fi
+elif [[ -n $TMUX ]] ; then
+    sessionname() {
+        tmux rename-session "$@"
+    }
+
+    # set title for current session
+    #   new title can contain spaces
+    title() {
+        local title="$*"
+        if [[ -z $title ]] ; then
+            title=$(basename "$PWD")
+        fi
+        tmux rename-window "$title"
+    }
 fi
 
 # reload the bashrc for the current shell
