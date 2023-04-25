@@ -13,6 +13,7 @@ brew install nasm
 brew install gdb
 brew install rename
 brew install telnet
+brew install jq
 
 brew install --cask macfuse
 
