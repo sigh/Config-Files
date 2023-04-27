@@ -48,6 +48,9 @@ defaults write "Apple Global Domain" AppleEnableSwipeNavigateWithScrolls -bool f
 defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 2
 
+# Don't write DS_Store files to network shares.
+defaults write com.apple.desktopservices DSDontWriteNetworkStores true
+
 ssh-add -K ~/.ssh/id_rsa
 
 HOME_DIR=~
