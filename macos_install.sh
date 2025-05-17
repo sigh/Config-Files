@@ -14,6 +14,7 @@ brew install gdb
 brew install rename
 brew install telnet
 brew install jq
+brew install node
 
 brew install --cask macfuse
 
