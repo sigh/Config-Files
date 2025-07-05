@@ -347,6 +347,9 @@ elif [[ -n $TMUX ]] ; then
     }
 fi
 
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --bash)"
+
 # reload the bashrc for the current shell
 reload() {
   . ~/.bashrc

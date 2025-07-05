@@ -577,5 +577,8 @@ preexec() {
     _PS1_NEW_CMD=1
 }
 
+# Set up fzf key bindings and fuzzy completion
+source <(fzf --zsh)
+
 # Syntax highlighting
 source ~/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
