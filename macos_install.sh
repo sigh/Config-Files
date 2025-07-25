@@ -62,3 +62,5 @@ PATH="/usr/local/opt/coreutils/libexec/gnubin:\$PATH"
 PATH="$HOME_DIR/Library/Python/3.7/bin:\$PATH"
 PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:\$PATH"
 EOF
+
+sudo chsh /bin/zsh "$USER"
