@@ -395,9 +395,6 @@ export VISUAL=vim
 if [[ -n $(vim --version | grep +clientserver) ]] ; then
     vim() {
         local server_name=$$
-        if [[ -n $STY ]] ; then
-            server_name="$STY-$WINDOW-$$"
-        fi
         command vim -X --servername "$server_name" "$@"
     }
 else
@@ -482,17 +479,14 @@ monitor() { watch -d -n1 -t "$@"; }
 
 # commands for outside screen/tmux
 
-# I use session_wrapper a lot
 alias s="session_wrapper tmux"
 _session_wrapper() {
     compadd - $(session_wrapper tmux --complete "$PREFIX")
 }
 compdef _session_wrapper session_wrapper
 
-# screen/tmux specific setup
-if [[ -n $STY ]] ; then
-    source ~/.zsh/screen.zsh
-elif [[ -n $TMUX ]] ; then
+# tmux specific setup
+if [[ -n $TMUX ]] ; then
     source ~/.zsh/tmux.zsh
 fi
 
@@ -508,9 +502,7 @@ fi
 
 if [[ -z $_ALREADY_LOADED ]] ; then
     session_info=
-    if [[ -n $STY ]] ; then
-        session_info=" screen:$STY"
-    elif [[ -n $TMUX ]] ; then
+    if [[ -n $TMUX ]] ; then
         session_info=" tmux:$(tmux display-message -p '#S.#I')"
     fi
     cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL ZSH_VERSION=$ZSH_VERSION$session_info" >> "$FULLHISTFILE"

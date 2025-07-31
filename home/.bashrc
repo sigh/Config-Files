@@ -240,7 +240,6 @@ export SVNEDITOR=vim
 # config for python interactive shell
 export PYTHONSTARTUP="$HOME/.pystartup"
 
-# tmux/screen
 s() { session_wrapper tmux "$@"; }
 
 # completion for session_wrapper
@@ -251,87 +250,7 @@ _session_wrapper() {
 complete -F _session_wrapper session_wrapper
 complete -F _session_wrapper s
 
-if [[ -n $STY ]] ; then
-    # commands for use inside screen
-
-    # ensure screendir is populated with the directory
-    #   that screen is actually using
-    SCREENDIR="$(screen -ls | tail -2 | sed -ne 's/^.* in \(\S\+\).$/\1/p')"
-
-    # fix the STY variable which gets messed up if we change the session name
-    sty-fix() {
-        export STY="$(basename $SCREENDIR/${STY%%.*}.*)"
-    }
-
-    # ensure that $STY is correct before running any screen commands
-    screen() {
-        sty-fix
-        command screen "$@"
-    }
-
-    # update the status to display the sessionname.
-    # if the displayname is the default sessioname (-) then show the hostname.
-    update-status() {
-        sty-fix
-        local display_name
-        if [[ ${STY#*.} == _ ]] ; then
-            display_name="${HOSTNAME%%.*}"
-        else
-            display_name="${STY#*.}"
-        fi
-        screen -X hardstatus string '%{= kG}'"$display_name"' %{= kW}%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<%{= kW} %='
-    }
-
-    # change the session name
-    sessionname() {
-        screen -X sessionname "$1"
-        update-status
-    }
-
-    # set title for current session
-    #   new title can contain spaces
-    title() {
-        screen -X title "$*"
-    }
-
-    # change the default directory that screens open in
-    #   screen -X chdir doesn't seem to work
-    chdir() {
-        local abs_path=$(cd "${1:-.}" 2> /dev/null && pwd)
-        if [[ -n "$abs_path" ]] ; then
-            screen -X setenv SCREEN_SHELLDIR "$abs_path"
-        else
-            echo "chdir: $1: No such directory"
-        fi
-    }
-    complete -F _cd -o nospace -o filenames chdir
-
-    # print entire scrollback to stdout
-    scrollback() {
-        (
-            local filename="$(mktemp)"
-            trap "rm -f -- '$filename'" 0
-            trap 'exit 2' 1 2 3 15
-            command screen -X hardcopy -h "$filename"
-            vim -u NONE -c "runtime! macros/scrollback_less.vim" "$filename"
-        )
-    }
-    sb() { scrollback; }
-
-    # revert titlebar if screen messes with it
-    printf "\033];$USER@${HOSTNAME%%.*}\007"
-
-    # ensure that the status is up-to-date
-    #   in particular if this the start of the session
-    update-status
-
-    # change the directory we start in if it has been specified
-    if [[ -n $SCREEN_SHELLDIR && ! $_ALREADY_LOADED ]]; then
-        cd "$SCREEN_SHELLDIR"
-        # clear the directory stack so that only the current directory is there.
-        dirs -c
-    fi
-elif [[ -n $TMUX ]] ; then
+if [[ -n $TMUX ]] ; then
     sessionname() {
         tmux rename-session "$@"
     }
@@ -362,7 +281,7 @@ trap reload CONT
 unset PROMPT_COMMAND
 if [[ ! $_ALREADY_LOADED ]] ; then
     # we don't want the first line when we reload
-    cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL STY=$STY SHELL=$SHELL BASH_VERSION=$BASH_VERSION" >> ~/._full_bash_history
+    cat <<<"$$ 0 $(date +%FT%T) $PWD \$ # PPID=$PPID SHLVL=$SHLVL SHELL=$SHELL BASH_VERSION=$BASH_VERSION" >> ~/._full_bash_history
     readonly _ALREADY_LOADED=1
 fi
 trap 'awk -v prefix="$$ $LINENO $(date +%FT%T) $PWD \$" "{ print prefix, \$0 }" <<<"$BASH_COMMAND" >> ~/._full_bash_history; history -a' DEBUG
