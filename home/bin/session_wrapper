@@ -1,209 +1,194 @@
 #!/usr/bin/env python3
 
-# A wrapper for screen and tmux
+# A wrapper for tmux
 #
-# usage: session_wrapper screen|tmux [-h] [--reattach] [--child] [--window WINDOW] [--ask]
+# usage: session_wrapper [-h] [--reattach] [--child] [--window WINDOW] [--ask]
 #                       [--list] [--complete] [--binary PATH] [--command COMMAND]
 #                       [session]
 #
 # positional arguments:
-#   session               The session to load. Can be identified by name, pid,
-#                         name.pid, pid.name or any unique prefix of previous
-#                         options. A "!" suffix forces the creation of a new
-#                         screen
+#   session               The session to load. Can be identified by name or any
+#                         unique prefix. A "!" suffix forces the creation of a
+#                         new session
 #
 # optional arguments:
 #   -h, --help            show this help message and exit
 #   --reattach, -r        Reattach session (don't close existing sessions)
 #   --child, -c           Create as child process, don't exec
-#   --ask, -a             Ask which screen to open even there is only one match
-#   --list, -l            List current screens
-#   --complete            List completions for current screens
-#   --binary              A path to the session program (tmux or screen)
+#   --ask, -a             Ask which session to open even there is only one match
+#   --list, -l            List current sessions
+#   --complete            List completions for current sessions
+#   --binary              A path to the tmux binary
 #   --command             The command to run in the window if this is a new session
 #
 # interactive prompt:
-#   The screen is chosen in the following order:
+#   The session is chosen in the following order:
 #   - Blank lines match the first preset (0).
 #   - Valid numbers match presets.
-#   - Unique exact name or pid matches.
+#   - Unique exact name matches.
 #   - Unique prefix matches.
 #   Otherwise the a new interactive prompt is shown.
 #
-#   A "*" prefix in the list means the screen is already attached.
-#   Append "!" to force creation of a new screen.
-#   CTRL-C or CTRL-D will exit without launching screen.
+#   A "*" prefix in the list means the session is already attached.
+#   Append "!" to force creation of a new session.
+#   CTRL-C or CTRL-D will exit without launching tmux.
 #   "?" will display this help.
 
-from __future__ import print_function
-
-import optparse
+import argparse
 import cmd
-import collections
 import os
 import re
 import sys
 import subprocess
+from typing import List, Optional, Tuple
 
-DEFAULT_SESSION_NAME = '_'
-BLUE = '\033[94m'
-NOCOLOR = '\033[0m'
+# ============================================================================
+# Constants and Configuration
+# ============================================================================
 
-class ScreenSettings(object):
-    LIST_RE = r'\t(\d+)\.([^\t]+)\t.*\((At|De)tached\)'
+DEFAULT_SESSION_NAME = "_"
+BLUE = "\033[94m"
+NOCOLOR = "\033[0m"
+TMUX_SESSION_LINE_PATTERN = r"([^:]+): .*"
 
-    def __init__(self, binary = None):
-        self.binary = binary or 'screen'
+TMUX_BINARY_DEFAULT = "tmux"
+FORCE_NEW_SESSION_SUFFIX = "!"
+TMUX_ATTACHED_SUFFIX = "(attached)"
 
-    def list_command(self):
-        return [self.binary, '-ls']
+# Interactive prompt constants
+PROMPT_SYMBOL = "> "
+ATTACHED_SESSION_MARKER = "*"
+UNATTACHED_SESSION_MARKER = " "
+CREATE_SESSION_SUFFIX = " (create)"
+DEFAULT_OPTION_SUFFIX = " [default]"
 
-    def list_line_to_session(self, line):
-        result = re.match(ScreenSettings.LIST_RE, line)
-        if result:
-            return Session(
-                pid = result.group(1),
-                name = result.group(2),
-                attached = result.group(3) == 'At',
-                exists = True,
+
+# ============================================================================
+# Core Session Management
+# ============================================================================
+
+
+def parse_tmux_session_line(line: str) -> Optional["Session"]:
+    """Parse a line from tmux list-sessions output"""
+    result = re.match(TMUX_SESSION_LINE_PATTERN, line)
+    if result:
+        return Session(
+            name=result.group(1),
+            attached=line.endswith(TMUX_ATTACHED_SUFFIX),
+            exists=True,
+        )
+    return None
+
+
+def launch_tmux_session(
+    session: "Session", binary: str, **options
+) -> Tuple[List[str], bool]:
+    """Launch or attach to a tmux session"""
+    session_name = str(session)
+    should_exec = not options.get("child", False)
+    base_args = [binary, "-2"]
+    tmux_args = []
+
+    if not session.exists:
+        # force creation of a new session
+        tmux_args.extend(["new-session", "-s"])
+    else:
+        if options.get("window", None) is not None:
+            subprocess.check_call(
+                [
+                    binary,
+                    "select-window",
+                    "-t",
+                    session_name + ":" + options["window"],
+                ]
             )
 
-    def launch_command(self, session, **options):
-        args = [self.binary]
-        if options.get('window', None) is not None:
-            args.extend(['-p', options['window']])
+        tmux_args.append("attach-session")
+        if not options.get("reattach", False):
+            tmux_args.append("-d")
+        tmux_args.append("-t")
+
+    # If we are inside tmux then do things a bit differently
+    if options.get("current_tmux_context", None) == "tmux":
+        # If the session doesn't exist yet then create it in detached mode.
         if not session.exists:
-            # force creation of a new session
-            args.extend(['-S'])
-        elif options.get('reattach', False):
-            args.extend(['-x', '-S'])
-        else:
-            args.extend(['-D', '-R'])
-        args.append(str(session))
+            # To create a new session the TMUX environment variable must be
+            # unset, otherwise tmux gets angry even though we aren't leaving
+            # the current sesssion :(
+            env = dict(os.environ)
+            del env["TMUX"]
 
-        return args, not options.get('child', False)
-
-class TmuxSettings(object):
-    LIST_RE = r'([^:]+): .*'
-
-    def __init__(self, binary = None):
-        self.binary = binary or 'tmux'
-        subprocess.check_call([self.binary, 'start-server'])
-
-    def list_command(self):
-        return [self.binary, 'list-sessions']
-
-    def list_line_to_session(self, line):
-        result = re.match(TmuxSettings.LIST_RE, line)
-        if result:
-            return Session(
-                name = result.group(1),
-                attached = line.endswith("(attached)"),
-                exists = True
+            subprocess.check_call(
+                [binary, "new-session", "-d", "-s", session_name], env=env
             )
 
-    def launch_command(self, session, **options):
-        session_name = str(session)
-        do_exec = not options.get('child', False)
-        base_args = [self.binary, '-2']
-        rest_args = []
+        tmux_args = ["switch-client", "-t"]
+        # This is important, if we exec then we destroy the current shell.
+        should_exec = False
 
-        if not session.exists:
-            # force creation of a new session
-            rest_args.extend(['new-session', '-s'])
-        else:
-            if options.get('window', None) is not None:
-                subprocess.check_call(
-                        [self.binary, 'select-window', '-t', session_name + ':' + options['window']])
+    tmux_args.append(session_name)
 
-            rest_args.append('attach-session')
-            if not options.get('reattach', False):
-                rest_args.append('-d');
-            rest_args.append('-t')
+    if not session.exists and options.get("command", None):
+        tmux_args.extend([options["command"]])
 
-        # If we are inside tmux then do things a bit differently
-        if options.get('current_prog', None) == 'tmux':
-            # If the session doesn't exist yet then create it in detached mode.
-            if not session.exists:
-                # To create a new session the TMUX environment variable must be
-                # unset, otherwise tmux gets angry even though we aren't leaving
-                # the current sesssion :(
-                env = dict(os.environ)
-                del env['TMUX']
+    return base_args + tmux_args, should_exec
 
-                subprocess.check_call(
-                        [self.binary, 'new-session', '-d', '-s', session_name], env = env)
 
-            rest_args = ['switch-client', '-t']
-            # This is important, if we exec then we destroy the current shell.
-            do_exec = False
+# ============================================================================
+# Data Classes
+# ============================================================================
 
-        rest_args.append(session_name)
 
-        if not session.exists and options.get('command', None):
-            rest_args.extend([options['command']])
-
-        return base_args + rest_args, do_exec
-
-class Session(object):
-    def __init__(self, name, pid = None, attached=False, exists=False):
+class Session:
+    def __init__(self, name: str, attached: bool = False, exists: bool = False):
         self.name = name
-        self.pid = pid
         self.attached = attached
         self.exists = exists
 
-    def __str__(self):
-        if self.pid:
-            return '%s.%s' % (self.pid, self.name)
-        else:
-            return self.name
+    def __str__(self) -> str:
+        return self.name
 
-    def pretty(self):
-        wrapped_name = '%s%s%s' % (BLUE, self.name, NOCOLOR)
-        if self.pid:
-            return '%s.%s' % (wrapped_name, self.pid)
-        else:
-            return wrapped_name
+    def format_colored(self) -> str:
+        return f"{BLUE}{self.name}{NOCOLOR}"
+
+
+# ============================================================================
+# Interactive Session Selection
+# ============================================================================
+
 
 class SessionPrompt(cmd.Cmd):
-    def __init__(self, all_sessions, initial_session_name):
+    def __init__(self, all_sessions: List[Session], initial_session_name: str):
         cmd.Cmd.__init__(self)
-        self.response = None
-        self.has_default = has_default(all_sessions)
+        self.response: Optional[Session] = None
+        self.has_default = has_default_session(all_sessions)
         self.sessions = all_sessions
-        self.prompt = '> '
+        self.prompt = PROMPT_SYMBOL
 
-        if initial_session_name:
-            # only show intro when there is some initial text, otherwise all
-            # options would be shown anyway.
-            self.intro = self.get_intro()
-        else:
-            self.intro = ''
+        self.intro = self.get_session_list_intro() if initial_session_name else ""
 
-        pre_prompt, self.options = self.generate_next_prompt(initial_session_name)
-        self.intro += pre_prompt
+        prompt_text, self.options = self.generate_next_prompt(initial_session_name)
+        self.intro += prompt_text
 
         if initial_session_name:
             # Add initial_session_name text to the history so that it can be
             # accessed by pressing up.
             import readline
+
             readline.add_history(initial_session_name)
 
     def precmd(self, line):
         # we only care about the first word
-        if not line:
-            return line
-        else:
-            return line.split()[0]
+        return line.split()[0] if line else line
 
     def onecmd(self, line):
-        """ Determine if the line matches a unique session, or keep going """
+        """Determine if the line matches a unique session, or keep going"""
 
         # First check if the user wants to stop.
-        if line == 'EOF' or line.startswith('#'):
+        if line == "EOF" or line.startswith("#"):
             return True
 
-        if line.startswith('?'):
+        if line.startswith("?"):
             self.do_help()
             return False
 
@@ -228,91 +213,112 @@ class SessionPrompt(cmd.Cmd):
             return True
 
         # No unique match, try again.
-        pre_prompt, self.options = self.generate_next_prompt(line)
-        self.stdout.write(pre_prompt + '\n')
+        prompt_text, self.options = self.generate_next_prompt(line)
+        self.stdout.write(prompt_text + "\n")
         return False
 
-    def completenames(self, text, *ignored):
+    def completenames(self, text: str, *ignored) -> List[str]:
         sessions = filter_sessions(self.sessions, text)
         return get_session_completions(sessions, text)
 
-    def do_help(self, *ignored):
-        self.stdout.write(self.get_intro())
-        self.stdout.write('\n')
-        self.stdout.write('The session is chosen in the following order:\n')
-        self.stdout.write('- Blank lines match the first preset (0).\n')
-        self.stdout.write('- Valid numbers match presets.\n')
-        self.stdout.write('- Unique exact name or pid matches.\n')
-        self.stdout.write('- Unique prefix matches.\n')
-        self.stdout.write('Otherwise the a new interactive prompt is shown.\n')
-        self.stdout.write('\n')
-        self.stdout.write('A "*" prefix in the list means the session is already attached.\n')
-        self.stdout.write('Append "!" to force creation of a new session.\n')
-        self.stdout.write('CTRL-C or CTRL-D will exit.\n')
-        self.stdout.write('"?" will display this help.\n')
-        self.stdout.write('\n')
+    def do_help(self, *ignored) -> None:
+        help_text = [
+            self.get_session_list_intro(),
+            "The session is chosen in the following order:",
+            "- Blank lines match the first preset (0).",
+            "- Valid numbers match presets.",
+            "- Unique exact name matches.",
+            "- Unique prefix matches.",
+            "Otherwise the a new interactive prompt is shown.",
+            "",
+            'A "*" prefix in the list means the session is already attached.',
+            'Append "!" to force creation of a new session.',
+            "CTRL-C or CTRL-D will exit.",
+            '"?" will display this help.',
+            "",
+        ]
+        self.stdout.write("\n".join(help_text))
 
-    def get_intro(self):
-        """ Get help text (list of all the sessions) """
+    def get_session_list_intro(self) -> str:
+        """Get help text (list of all the sessions)"""
         if self.sessions:
-            return ('All current sessions: \n' +
-                    get_session_list_string(self.sessions) +
-                    '\n')
+            return f"All current sessions: \n{get_session_list_string(self.sessions)}\n"
         else:
-            return 'No current sessions\n\n'
+            return "No current sessions\n\n"
 
-    def generate_next_prompt(self, session_name):
-        """ Returns the next prompt text as well as the list of options it offered """
+    def generate_next_prompt(self, session_name: str) -> Tuple[str, List[Session]]:
+        """Returns the next prompt text as well as the list of options it offered"""
         sessions = filter_sessions(self.sessions, session_name)
         if not session_name and not self.has_default:
-            # add the default if there is no default session open, make it the first option.
             sessions.insert(0, Session(DEFAULT_SESSION_NAME))
         elif not sessions:
-            # if there are no options at all then creating is the default.
             sessions.append(Session(session_name))
-        lines = ['Preset options (leave empty for default): ']
-        for i, session in enumerate(sessions):
-            text = '%s %s: %s' %('*' if session.attached else ' ', i, session.pretty())
-            if not session.exists:
-                text += ' (create)'
-            if i == 0:
-                text += ' [default]'
-            lines.append(text)
-        lines.append('Type ? for help')
-        return '\n'.join(lines), sessions
 
-    def get_user_response(self):
-        """ Ask the user which session they want to open and return the result """
+        lines = ["Preset options (leave empty for default): "]
+        for i, session in enumerate(sessions):
+            prefix = (
+                ATTACHED_SESSION_MARKER
+                if session.attached
+                else UNATTACHED_SESSION_MARKER
+            )
+            suffix = CREATE_SESSION_SUFFIX if not session.exists else ""
+            default = DEFAULT_OPTION_SUFFIX if i == 0 else ""
+            lines.append(f"{prefix} {i}: {session.format_colored()}{suffix}{default}")
+        lines.append("Type ? for help")
+        return "\n".join(lines), sessions
+
+    def get_user_response(self) -> Optional[Session]:
+        """Ask the user which session they want to open and return the result"""
         try:
             self.cmdloop()
         except KeyboardInterrupt:
             return None
         return self.response
 
-def run_prog(
-        prog,
-        session,
-        reattach = False,
-        child = False,
-        window = None,
-        current_prog = None,
-        command = None):
-    args, do_exec = prog.launch_command(
-            session,
-            reattach = reattach,
-            window = window,
-            child = child,
-            current_prog = current_prog,
-            command = command)
 
-    if do_exec:
+# ============================================================================
+# Session Execution
+# ============================================================================
+
+
+def run_tmux_session(
+    session: Session,
+    binary: str,
+    reattach: bool = False,
+    child: bool = False,
+    window: Optional[str] = None,
+    current_tmux_context: Optional[str] = None,
+    command: Optional[str] = None,
+) -> None:
+    args, should_exec = launch_tmux_session(
+        session,
+        binary=binary,
+        reattach=reattach,
+        window=window,
+        child=child,
+        current_tmux_context=current_tmux_context,
+        command=command,
+    )
+
+    if should_exec:
         os.execvp(args[0], args)
     else:
         subprocess.call(args)
 
-def find_session_to_load(all_sessions, session_name, default = None):
+
+# ============================================================================
+# Session Discovery and Filtering
+# ============================================================================
+
+
+def find_session_to_load(
+    all_sessions: List[Session], session_name: str, default: Optional[str] = None
+) -> Optional[Session]:
     # exclamation mark forces a new session to open
-    if session_name.endswith('!') and session_name != '!':
+    if (
+        session_name.endswith(FORCE_NEW_SESSION_SUFFIX)
+        and session_name != FORCE_NEW_SESSION_SUFFIX
+    ):
         return Session(session_name[:-1])
 
     # find all matching sessions
@@ -326,161 +332,133 @@ def find_session_to_load(all_sessions, session_name, default = None):
     if len(sessions) == 1:
         return sessions[0]
 
-    # Exact name or exact pid matches
-    exact_name = []
-    exact_pid = []
-    for session in sessions:
-        if session.name == session_name:
-            exact_name.append(session)
-        elif session.pid == session_name:
-            exact_pid.append(session)
-
-    if len(exact_name) == 1:
-        return exact_name[0]
-    elif len(exact_pid) == 1:
-        return exact_pid[0]
+    # Exact name matches
+    exact_matches = [s for s in sessions if s.name == session_name]
+    if len(exact_matches) == 1:
+        return exact_matches[0]
 
     return None
 
-def filter_sessions(sessions, prefix):
+
+def filter_sessions(sessions: List[Session], prefix: str) -> List[Session]:
     if not prefix:
         return sessions
-    return [s for s in sessions if
-            s.name.startswith(prefix) or
-            s.pid and (s.pid  + '.' + s.name).startswith(prefix) or
-            s.pid and (s.name  + '.' + s.pid).startswith(prefix)]
+    return [s for s in sessions if s.name.startswith(prefix)]
 
-def get_session_list(prog):
+
+def get_session_list(binary: str) -> List[Session]:
     result = subprocess.run(
-            prog.list_command(),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+        [binary, "list-sessions"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
 
-    sessions = []
-    for line in result.stdout.decode('utf-8').split('\n'):
-        result = prog.list_line_to_session(line)
-        if result:
-            sessions.append(result)
-    return sessions
+    return [
+        session
+        for line in result.stdout.decode("utf-8").split("\n")
+        if (session := parse_tmux_session_line(line))
+    ]
 
-def has_default(all_sessions):
-    """ Return true if there are any sessions with the default name """
+
+# ============================================================================
+# Utility Functions
+# ============================================================================
+
+
+def has_default_session(all_sessions: List[Session]) -> bool:
+    """Return true if there are any sessions with the default name"""
     return any(s.name == DEFAULT_SESSION_NAME for s in all_sessions)
 
-def get_session_list_string(sessions, file = sys.stdout):
-    lines = []
-    for session in sessions:
-        lines.append(('* ' if session.attached else '  ') + session.pretty())
-    return '\n'.join(lines)
 
-def get_session_completions(sessions, prefix):
-    by_name = {}
-    for session in sessions:
-        by_name[session.name] = []
-        if session.pid:
-            by_name[session.name].append(session.pid)
+def get_session_list_string(sessions: List[Session]) -> str:
+    return "\n".join(
+        (ATTACHED_SESSION_MARKER if session.attached else UNATTACHED_SESSION_MARKER)
+        + session.format_colored()
+        for session in sessions
+    )
 
-    completions = []
-    for name, pids in by_name.items():
-        if len(pids) <= 1 and session.name.startswith(prefix):
-            completions.append(name)
-        else:
-            for pid in pids:
-                completions.append('%s.%s' %(name, pid))
-    return completions
 
-def get_current_prog():
-    if os.environ.get('STY', ''):
-        return 'screen'
-    if os.environ.get('TMUX', ''):
-        return 'tmux'
-    return None
+def get_session_completions(sessions: List[Session], prefix: str) -> List[str]:
+    return [s.name for s in sessions if s.name.startswith(prefix)]
 
-def main():
-    parser = optparse.OptionParser(description = 'A wrapper for screen and tmux')
-    parser.add_option(
-        '--reattach', '-r',
-        action = 'store_true',
-        help = "Reattach session (don't close existing sessions)")
-    parser.add_option(
-        '--child', '-c',
-        action = 'store_true',
-        help = "Create as child process, don't exec")
-    parser.add_option(
-        '--window', '-p',
-        help = 'Open to given window')
-    parser.add_option(
-        '--ask', '-a',
-        action = 'store_true',
-        help = 'Ask which session to open even there is only one match')
-    parser.add_option(
-        '--list', '-l',
-        action = 'store_true',
-        help = 'List current sessions')
-    parser.add_option(
-        '--complete',
-        action = 'store_true',
-        help = 'List completions for current screens')
-    parser.add_option(
-        '--binary',
-        help = "The binary for the session program")
-    parser.add_option(
-        '--command',
-        help = "The command to run in the intial window if this is a new session")
 
-    options, args = parser.parse_args()
-    prog_name = args[0] if args else ''
-    session_name = args[1] if len(args) == 2 else ''
+def get_current_tmux_context() -> Optional[str]:
+    return "tmux" if os.environ.get("TMUX") else None
 
-    current_prog = get_current_prog()
-    if current_prog == 'screen':
-        print("Can't start a new session from within screen", file=sys.stderr)
-        sys.exit(1)
-    if current_prog == 'tmux' and prog_name != 'tmux':
-        print("Can only start tmux sessions from within tmux", file=sys.stderr)
-        sys.exit(1)
 
-    prog = None
-    if prog_name == "screen":
-        prog = ScreenSettings(options.binary)
-    elif prog_name == "tmux":
-        prog = TmuxSettings(options.binary)
-    else:
-        print("Unknown program: " + prog_name, file=sys.stderr)
-        sys.exit(1)
+# ============================================================================
+# Main Application
+# ============================================================================
 
-    # get all the screens
-    all_sessions = get_session_list(prog)
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="A wrapper for tmux")
+    parser.add_argument(
+        "--reattach",
+        "-r",
+        action="store_true",
+        help="Reattach session (don't close existing sessions)",
+    )
+    parser.add_argument(
+        "--child", "-c", action="store_true", help="Create as child process, don't exec"
+    )
+    parser.add_argument("--window", "-p", help="Open to given window")
+    parser.add_argument(
+        "--ask",
+        "-a",
+        action="store_true",
+        help="Ask which session to open even there is only one match",
+    )
+    parser.add_argument(
+        "--list", "-l", action="store_true", help="List current sessions"
+    )
+    parser.add_argument(
+        "--complete", action="store_true", help="List completions for current sessions"
+    )
+    parser.add_argument("--binary", help="The binary for tmux")
+    parser.add_argument(
+        "--command",
+        help="The command to run in the initial window if this is a new session",
+    )
+    parser.add_argument("session", nargs="?", default="", help="Session name")
+
+    args = parser.parse_args()
+
+    # Start tmux server if needed
+    binary = args.binary or TMUX_BINARY_DEFAULT
+    subprocess.check_call([binary, "start-server"])
+
+    # get all the sessions
+    all_sessions = get_session_list(binary)
 
     # if we just wanted a list of sessions (or completions) do that first
-    if (options.complete):
-        screens = filter_sessions(all_sessions, session_name)
-        print(' '.join(get_session_completions(screens, session_name)))
-        return
-    if (options.list):
-        sessions = filter_sessions(all_sessions, session_name)
-        print(get_session_list_string(sessions))
+    if args.complete or args.list:
+        sessions = filter_sessions(all_sessions, args.session)
+        if args.complete:
+            print(" ".join(get_session_completions(sessions, args.session)))
+        else:
+            print(get_session_list_string(sessions))
         return
 
     # Try to find which session is being asked for
     session = None
-    if not options.ask and session_name:
-        session = find_session_to_load(all_sessions, session_name, DEFAULT_SESSION_NAME)
+    if not args.ask and args.session:
+        session = find_session_to_load(all_sessions, args.session, DEFAULT_SESSION_NAME)
     if not session:
         # Multiple possible sessions, ask the user!
-        session = SessionPrompt(all_sessions, session_name).get_user_response()
+        session = SessionPrompt(all_sessions, args.session).get_user_response()
         if not session:
             print()
             sys.exit(2)
 
-    run_prog(
-        prog,
+    run_tmux_session(
         session,
-        child = options.child,
-        reattach = options.reattach,
-        window = options.window,
-        current_prog = current_prog,
-        command = options.command)
+        binary=binary,
+        child=args.child,
+        reattach=args.reattach,
+        window=args.window,
+        current_tmux_context=get_current_tmux_context(),
+        command=args.command,
+    )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

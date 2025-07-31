@@ -240,11 +240,11 @@ export SVNEDITOR=vim
 # config for python interactive shell
 export PYTHONSTARTUP="$HOME/.pystartup"
 
-s() { session_wrapper tmux "$@"; }
+s() { session_wrapper "$@"; }
 
 # completion for session_wrapper
 _session_wrapper() {
-    COMPREPLY=( $(session_wrapper tmux --complete "${COMP_WORDS[COMP_CWORD]}" ))
+    COMPREPLY=( $(session_wrapper --complete "${COMP_WORDS[COMP_CWORD]}" ))
 }
 
 complete -F _session_wrapper session_wrapper
