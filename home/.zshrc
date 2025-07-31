@@ -479,9 +479,9 @@ monitor() { watch -d -n1 -t "$@"; }
 
 # commands for outside screen/tmux
 
-alias s="session_wrapper tmux"
+alias s="session_wrapper"
 _session_wrapper() {
-    compadd - $(session_wrapper tmux --complete "$PREFIX")
+    compadd - $(session_wrapper --complete "$PREFIX")
 }
 compdef _session_wrapper session_wrapper
 
