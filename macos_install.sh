@@ -55,6 +55,10 @@ defaults write com.apple.desktopservices DSDontWriteNetworkStores true
 
 ssh-add -K ~/.ssh/id_rsa
 
+# Copy fonts to the user fonts directory.
+mkdir -p ~/Library/Fonts
+cp -r fonts/* ~/Library/Fonts/
+
 HOME_DIR=~
 cat <<EOF >> ~/.profile
 PATH="$HOME_DIR/bin:/usr/local/bin:\$PATH"
