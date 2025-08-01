@@ -83,51 +83,11 @@ export auto_resume=prefix
 # ignore files with the following suffixes for tab completion
 export FIGNORE='.swp:.svn:.0:~';
 
-_make_prompt() {
-    # make a colorful prompt
-    # (this must be done after git-completion has been initialised)
+# Initialize Starship prompt
+eval "$(starship init bash)"
 
-    # if tput doesn't exist then replace it with a python implementation
-    if ! type tput > /dev/null 2>&1 ; then
-        tput() {
-python - "$@" <<EOF
-from curses import *
-import sys
-setupterm()
-sys.stdout.buffer.write(tparm(tigetstr(sys.argv[1]), *map(int, sys.argv[2:])))
-EOF
-        }
-    fi
-
-    NONE="\[$(tput sgr0)\]"    # reset formatting to default
-
-    if [[ "$USER" == root ]] ; then
-        RAW_PROMPT_COLOR="$(tput setaf 1)" # red for root
-    else
-        RAW_PROMPT_COLOR="$(tput setaf 2)" # green for other
-    fi
-    PROMPT_COLOR="\[$RAW_PROMPT_COLOR\]"
-
-    if [[ "$TERM" == xterm* ]] ; then
-        TITLEBAR='\[\033]0;\u@\h\007\]'
-    else
-        TITLEBAR=
-    fi
-
-    export PS1="$TITLEBAR$PROMPT_COLOR[\A] [\j] \u@\h:\w\$(__git_ps1)\n$PROMPT_COLOR\! \$$NONE "
-    # tell __git_ps1 to show us when we've modified the state
-    export GIT_PS1_SHOWDIRTYSTATE=true
-
-    # set other prompts
-    export PS2="$PROMPT_COLOR>$NONE "
-    export PS4="\[$(tput setaf 5)\]+$NONE "
-
-    # mysql prompt
-    export MYSQL_PS1="$RAW_PROMPT_COLOR[\R:\m] \U:\d$(tput setaf 0)\nmysql> "
-}
-
-_make_prompt
-unset _make_prompt
+# Keep PS4 for debugging bash scripts (Starship doesn't handle this)
+export PS4="\[$(tput setaf 5)\]+$(tput sgr0) "
 
 # customise history
 

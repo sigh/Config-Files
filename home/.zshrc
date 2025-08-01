@@ -514,35 +514,11 @@ if [[ -z $_ALREADY_LOADED ]] ; then
 fi
 chmod 600 "$FULLHISTFILE"
 
-# Set up prompt
+# Initialize Starship prompt
+eval "$(starship init zsh)"
 
-setopt prompt_subst
-_dir_ps1() {
-    local dir="${PWD/#$HOME/~}"
-    local git_path="$(git rev-parse --show-prefix 2> /dev/null)"
-    if [[ -n $git_path ]] ; then
-        git_path="${git_path%/}"
-        dir="${dir%$git_path}%U$git_path%u"
-    fi
-    echo -n "$dir"
-}
-_status_ps1() {
-    if [[ $_PS1_NEW_CMD == 2 ]] ; then
-        echo -n "%(?..  %F{red}[exit %?]\n)"
-    fi
-}
-
-# For debugging bash scripts (must be defined before PROMPT4)
+# For debugging bash scripts
 export PS4="\[$(tput setaf 5)\]+\[$(tput sgr0)\] "
-
-# Rename prompt variables so that they don't confuse other subshells.
-#   A visual bell is at the start, as tmux is configured to highlight the tab in
-#   this case. This allows us to see when long running commands in another tab
-#   completes.
-PROMPT=$'\a$(_status_ps1)%F{blue}[%D{%H:%M}] [%j] %n@%m:$(_dir_ps1)$(__git_ps1)\n%h %(!.#.$) %f'
-PROMPT2=$'%F{blue}> %f'
-PROMPT4=$'%F{magenta}+%N:%i> %f'
-export GIT_PS1_SHOWDIRTYSTATE=true
 
 # Show this at the end of commands which don't output a newline at the end.
 PROMPT_EOL_MARK='%B%S %s%b'
