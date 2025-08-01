@@ -5,9 +5,9 @@
 # Put status/duration on separate line to separate from the main prompt line.
 # Start input on a newline so that indentation is consistent.
 format = """
-($status$cmd_duration
-)$time $jobs$username@$hostname:$directory$git_branch$git_status
-$shell$character"""
+($status
+)$time $jobs$username@$hostname:$directory$git_branch$git_state$git_status
+$shell$shlvl """
 
 [time]
 disabled = false
@@ -33,10 +33,6 @@ read_only = ' 🔒'
 [git_branch]
 format = ' [$symbol$branch]($style) '  # Suppress "on" prefix
 
-[character]
-success_symbol = '[❯](bold blue)'
-error_symbol = '[❯](bold blue)'  # Status module makes color redundant
-
 [shell]
 disabled = false
 format = '[$indicator]($style)'
@@ -47,8 +43,10 @@ disabled = false
 format = '[✗ exit $status]($style) '
 style = 'bold red'
 
-[cmd_duration]
+[shlvl]
 disabled = false
-min_time = 1_000
-format = '[⌛ $duration]($style)'
-style = 'bold yellow'
+format = '[$symbol]($style)'
+repeat = true
+symbol = '❯'
+style = 'bold blue'
+threshold = 0
