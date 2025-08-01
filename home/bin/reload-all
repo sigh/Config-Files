@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # send CONT to all shells so that they all reload their bashrc files.
-# Assumes the following (or equivelent) is defined in the shell:
+# Assumes the following (or equivalent) is defined in the shell:
 #   trap ". ~/.bashrc" CONT
 # SIGCONT is used because it does not terminate the shell by default.
 #

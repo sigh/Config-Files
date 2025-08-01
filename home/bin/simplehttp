@@ -5,15 +5,15 @@
 #   If COMMAND is a regular file then it is served.
 #   If COMMAND is an executable or a shell command, then it is run for every
 #     request and the output served.
-#   If COMMAND is 
+#   If COMMAND is
 #
 #   Executed commands can take advantage of CGI variables in the environment.
 #   NOTE: There is no support for real CGI scripts yet - the request body and
 #   the response header are handled by the server code.
 #
-#   For redular files (served directly or from inside a directory) the program
-#     attempts to guess the conent type unless overridden by CONTENT_TYPE.
-#   For executed commmands, the content type is text/plain by default.
+#   For regular files (served directly or from inside a directory) the program
+#     attempts to guess the content type unless overridden by CONTENT_TYPE.
+#   For executed commands, the content type is text/plain by default.
 #
 #   PORT is 8000 by default.
 
@@ -24,144 +24,159 @@ import urllib
 
 import http.server
 
+
 # FakeHandler exists purely so we can use its methods
 # Could use inheritance, but I don't know what other junk I'll pick up.
 class FakeHandler(http.server.SimpleHTTPRequestHandler):
-  def __init__(self):
-    pass
+    def __init__(self):
+        pass
+
+
 fake_handler = FakeHandler()
+
 
 class SimpleRequestHandler(http.server.BaseHTTPRequestHandler):
     def translate_path(self, path):
-      return fake_handler.translate_path(path)
+        return fake_handler.translate_path(path)
 
     def guess_type(self, path):
-      return fake_handler.guess_type(path)
+        return fake_handler.guess_type(path)
 
     def create_env(self):
         env = {}
-        rest, ignore, query = self.path.partition('?')
+        rest, ignore, query = self.path.partition("?")
 
         # Mostly copied from
         # http://code.google.com/p/unladen-swallow/source/browse/trunk/Lib/CGIHTTPServer.py
 
-        env['SERVER_SOFTWARE'] = self.version_string()
-        env['SERVER_NAME'] = self.server.server_name
+        env["SERVER_SOFTWARE"] = self.version_string()
+        env["SERVER_NAME"] = self.server.server_name
         # env['GATEWAY_INTERFACE'] = 'CGI/1.1'
-        env['SERVER_PROTOCOL'] = self.protocol_version
-        env['SERVER_PORT'] = str(self.server.server_port)
-        env['REQUEST_METHOD'] = self.command
+        env["SERVER_PROTOCOL"] = self.protocol_version
+        env["SERVER_PORT"] = str(self.server.server_port)
+        env["REQUEST_METHOD"] = self.command
         uqrest = urllib.unquote(rest)
-        env['PATH_INFO'] = uqrest
-        env['PATH_TRANSLATED'] = self.translate_path(uqrest)
+        env["PATH_INFO"] = uqrest
+        env["PATH_TRANSLATED"] = self.translate_path(uqrest)
         if self.SCRIPT_NAME:
-          env['SCRIPT_NAME'] = self.SCRIPT_NAME
+            env["SCRIPT_NAME"] = self.SCRIPT_NAME
         if query:
-            env['QUERY_STRING'] = query
+            env["QUERY_STRING"] = query
         host = self.address_string()
         if host != self.client_address[0]:
-            env['REMOTE_HOST'] = host
-        env['REMOTE_ADDR'] = self.client_address[0]
+            env["REMOTE_HOST"] = host
+        env["REMOTE_ADDR"] = self.client_address[0]
         authorization = self.headers.getheader("authorization")
         if authorization:
             authorization = authorization.split()
             if len(authorization) == 2:
                 import base64, binascii
-                env['AUTH_TYPE'] = authorization[0]
+
+                env["AUTH_TYPE"] = authorization[0]
                 if authorization[0].lower() == "basic":
                     try:
                         authorization = base64.decodestring(authorization[1])
                     except binascii.Error:
                         pass
                     else:
-                        authorization = authorization.split(':')
+                        authorization = authorization.split(":")
                         if len(authorization) == 2:
-                            env['REMOTE_USER'] = authorization[0]
+                            env["REMOTE_USER"] = authorization[0]
         if self.headers.typeheader is None:
-            env['CONTENT_TYPE'] = self.headers.type
+            env["CONTENT_TYPE"] = self.headers.type
         else:
-            env['CONTENT_TYPE'] = self.headers.typeheader
-        length = self.headers.getheader('content-length')
+            env["CONTENT_TYPE"] = self.headers.typeheader
+        length = self.headers.getheader("content-length")
         if length:
-            env['CONTENT_LENGTH'] = length
-        referer = self.headers.getheader('referer')
+            env["CONTENT_LENGTH"] = length
+        referer = self.headers.getheader("referer")
         if referer:
-            env['HTTP_REFERER'] = referer
+            env["HTTP_REFERER"] = referer
         accept = []
-        for line in self.headers.getallmatchingheaders('accept'):
+        for line in self.headers.getallmatchingheaders("accept"):
             if line[:1] in "\t\n\r ":
                 accept.append(line.strip())
             else:
-                accept = accept + line[7:].split(',')
-        env['HTTP_ACCEPT'] = ','.join(accept)
-        ua = self.headers.getheader('user-agent')
+                accept = accept + line[7:].split(",")
+        env["HTTP_ACCEPT"] = ",".join(accept)
+        ua = self.headers.getheader("user-agent")
         if ua:
-            env['HTTP_USER_AGENT'] = ua
-        co = filter(None, self.headers.getheaders('cookie'))
+            env["HTTP_USER_AGENT"] = ua
+        co = filter(None, self.headers.getheaders("cookie"))
         if co:
-            env['HTTP_COOKIE'] = ', '.join(co)
-        for k in ('QUERY_STRING', 'REMOTE_HOST', 'CONTENT_LENGTH',
-                  'HTTP_USER_AGENT', 'HTTP_COOKIE', 'HTTP_REFERER',
-                  'SCRIPT_NAME'):
-            env.setdefault(k, '')
+            env["HTTP_COOKIE"] = ", ".join(co)
+        for k in (
+            "QUERY_STRING",
+            "REMOTE_HOST",
+            "CONTENT_LENGTH",
+            "HTTP_USER_AGENT",
+            "HTTP_COOKIE",
+            "HTTP_REFERER",
+            "SCRIPT_NAME",
+        ):
+            env.setdefault(k, "")
 
         return env
 
     def get_content_length(self, env):
-      try:
-          return int(env['CONTENT_LENGTH'])
-      except:
-          return 0
+        try:
+            return int(env["CONTENT_LENGTH"])
+        except:
+            return 0
 
     def do_GET(self):
-      self.do_POST()
+        self.do_POST()
 
     def do_POST(self):
-        if not self.ALLOW_PATH and self.path != '/':
-            self.error_message_format = 'Not found'
+        if not self.ALLOW_PATH and self.path != "/":
+            self.error_message_format = "Not found"
             self.send_error(404)
             return
 
         env = self.create_env()
         os.environ.update(env)
         length = self.get_content_length(env)
-        content = ''
+        content = ""
         if length:
-          content = self.rfile.read(length)
+            content = self.rfile.read(length)
 
         p = subprocess.Popen(
             self.COMMAND,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=sys.stderr)
+            stderr=sys.stderr,
+        )
         out, err = p.communicate(content)
 
         if not p.returncode:
-            self.send_response(200, 'OK')
-            content_type = self.guess_type('')
-            self.send_header('content-type', content_type)
+            self.send_response(200, "OK")
+            content_type = self.guess_type("")
+            self.send_header("content-type", content_type)
             self.end_headers()
             self.wfile.write(out)
         else:
-            self.error_message_format = 'Server Error'
+            self.error_message_format = "Server Error"
             self.send_error(500)
 
-    error_content_type = 'text/plain'
+    error_content_type = "text/plain"
+
 
 TYPE_MAP = {
-    'text': 'text/plain',
-    'plain': 'text/plain',
-    'html': 'text/html',
+    "text": "text/plain",
+    "plain": "text/plain",
+    "html": "text/html",
 }
+
 
 def set_content_type_method(cls, content_type):
     if content_type:
-        print >>sys.stderr, 'Content type:', content_type
+        print >> sys.stderr, "Content type:", content_type
         cls.guess_type = lambda s, p: content_type
+
 
 def get_handler(args):
     # By default serve the current directory
-    serve_what = '.'
+    serve_what = "."
     if len(args):
         serve_what = args.pop()
 
@@ -174,7 +189,7 @@ def get_handler(args):
         # If serving a directory then use http.server to serve the entire
         # tree recursively
         os.chdir(serve_what)
-        print('Serving directory:', serve_what, file=sys.stderr)
+        print("Serving directory:", serve_what, file=sys.stderr)
         handler = http.server.SimpleHTTPRequestHandler
         set_content_type_method(handler, content_type)
         return handler
@@ -183,27 +198,28 @@ def get_handler(args):
     handler.ALLOW_PATH = True
     handler.SCRIPT_NAME = None
 
-    if serve_what == '-':
-        handler.COMMAND = ['echo', sys.stdin.read()]
+    if serve_what == "-":
+        handler.COMMAND = ["echo", sys.stdin.read()]
         handler.ALLOW_PATH = False
-        print >>sys.stderr, 'Serving stdin'
+        print >> sys.stderr, "Serving stdin"
     elif os.access(serve_what, os.X_OK):
-        print >>sys.stderr, 'Executing file:', serve_what
-        handler.COMMAND = ['sh', '-c', os.path.abspath(serve_what)]
+        print >> sys.stderr, "Executing file:", serve_what
+        handler.COMMAND = ["sh", "-c", os.path.abspath(serve_what)]
         handler.SCRIPT_NAME = serve_what
     elif os.path.isfile(serve_what):
-        print >>sys.stderr, 'Serving file:', serve_what
-        handler.COMMAND = ['cat', serve_what]
+        print >> sys.stderr, "Serving file:", serve_what
+        handler.COMMAND = ["cat", serve_what]
         handler.ALLOW_PATH = False
         if not content_type:
             content_type = fake_handler.guess_type(serve_what)
     else:
-        print >>sys.stderr, 'Running shell command:', serve_what
-        handler.COMMAND = ['sh', '-c', serve_what]
+        print >> sys.stderr, "Running shell command:", serve_what
+        handler.COMMAND = ["sh", "-c", serve_what]
 
-    set_content_type_method(handler, content_type or 'text/plain')
+    set_content_type_method(handler, content_type or "text/plain")
 
     return handler
+
 
 def main(args):
     # If the first argument is a number treat it as a port
@@ -216,7 +232,7 @@ def main(args):
 
     # Setup the server
     handler = get_handler(args)
-    httpd = http.server.HTTPServer(('', port), handler)
+    httpd = http.server.HTTPServer(("", port), handler)
 
     # Don't show the traceback when a caller kills this process
     try:
@@ -224,5 +240,6 @@ def main(args):
     except:
         pass
 
-if __name__ == '__main__':
-  main(sys.argv[1:])
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
