@@ -80,7 +80,7 @@ zstyle ':completion:*:*:extract:*' file-patterns \
     '*.(tar|bz2|rar|gz|tbz2|tgz|zip|Z|7z):zip\ files *(-/):directories'
 
 # tab completion # -u avoid unnecessary security check.
-autoload -U compinit && compinit -u
+autoload -Uz compinit && compinit -u
 source ~/.git-completion.bash
 
 _git-restore() {
@@ -221,7 +221,7 @@ alias -g H='| head'
 # history
 export HISTFILE="$HOME/._zsh_history"
 export HISTSIZE=100000
-export SAVEHIST=10000
+export SAVEHIST=100000
 setopt append_history
 setopt bang_hist
 setopt extended_history
