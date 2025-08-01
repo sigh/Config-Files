@@ -81,7 +81,6 @@ zstyle ':completion:*:*:extract:*' file-patterns \
 
 # tab completion # -u avoid unnecessary security check.
 autoload -Uz compinit && compinit -u
-source ~/.git-completion.bash
 
 _git-restore() {
     compadd - $( git tag -l )
