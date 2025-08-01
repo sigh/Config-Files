@@ -474,9 +474,9 @@ alias ackp="ack --pager=less"
 
 monitor() { watch -d -n1 -t "$@"; }
 
-# screen/tmux commands
+# tmux commands
 
-# commands for outside screen/tmux
+# commands for outside tmux
 
 alias s="session_wrapper"
 _session_wrapper() {
