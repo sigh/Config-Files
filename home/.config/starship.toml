@@ -1,0 +1,54 @@
+# Starship configuration
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Put status/duration on separate line to separate from the main prompt line.
+# Start input on a newline so that indentation is consistent.
+format = """
+($status$cmd_duration
+)$time $jobs$username@$hostname:$directory$git_branch$git_status
+$shell$character"""
+
+[time]
+disabled = false
+format = '[$time]($style)'
+style = 'bold blue'
+time_format = '[%H:%M]'
+
+[username]
+format = '[$user]($style)'
+style_user = 'bold blue'
+show_always = true
+
+[hostname]
+format = '[$hostname]($style)'
+style = 'bold blue'
+
+[directory]
+format = '[$path]($style)[$read_only]($read_only_style)'
+truncation_length = 0
+truncate_to_repo = false
+read_only = ' 🔒'
+
+[git_branch]
+format = ' [$symbol$branch]($style) '  # Suppress "on" prefix
+
+[character]
+success_symbol = '[❯](bold blue)'
+error_symbol = '[❯](bold blue)'  # Status module makes color redundant
+
+[shell]
+disabled = false
+format = '[$indicator]($style)'
+zsh_indicator = ''  # Only care when I'm NOT in my preferred shell
+
+[status]
+disabled = false
+format = '[✗ exit $status]($style) '
+style = 'bold red'
+
+[cmd_duration]
+disabled = false
+min_time = 1_000
+format = '[⌛ $duration]($style)'
+style = 'bold yellow'
