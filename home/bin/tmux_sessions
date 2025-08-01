@@ -10,233 +10,322 @@
 #   done
 # done
 
-import optparse
+import argparse
 import os
 import subprocess
+from typing import Dict, List, Set, Callable, Optional, Any
 
-def get_ps_info():
-  """ Return a dictionary mapping PIDs to PPID and command  """
-  process = subprocess.Popen(
-      ['ps', '-A', '-opid,ppid,args'],
-      stdout=subprocess.PIPE,
-      stderr=subprocess.PIPE)
-  stdout, stderr = process.communicate()
+# Type aliases
+ProcessInfo = Dict[str, Any]  # Contains 'ppid', 'command', 'children'
+ProcessDict = Dict[int, ProcessInfo]  # Maps PID to process info
+WindowInfo = Dict[str, Any]  # Contains 'name', 'panes'
+SessionInfo = Dict[int, WindowInfo]  # Maps window index to window info
+PaneInfo = Dict[str, Any]  # Contains 'pid', 'path'
+StringMatcher = Callable[[str], bool]
+ProcessMatcher = Callable[[int, str], bool]
 
-  current_pid = os.getpid()
+# Constants
+DEFAULT_MAX_DEPTH = 2
+UNLIMITED_DEPTH = -1
 
-  pids = {}
-  for line in stdout.split('\n')[1:]:
-    if not line: continue
-    parts = line.split()
-    pid = int(parts[0])
-    ppid = int(parts[1])
-    # Don't include the current process, or direct children
-    if current_pid in (pid, ppid): continue
-    command = ' '.join(parts[2:])
-    pids[pid] = {
-        'ppid': ppid,
-        'command': command
-    }
 
-  return pids
+def get_ps_info() -> ProcessDict:
+    """Return a dictionary mapping PIDs to PPID and command"""
+    process = subprocess.Popen(
+        ["ps", "-A", "-opid,ppid,args"], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    stdout, stderr = process.communicate()
 
-def fill_in_children(pids):
-  """ Determine the children of the given pids """
-  for info in pids.values():
-    info['children'] = []
+    current_pid = os.getpid()
 
-  for pid, info in pids.items():
-   if pid > 1:
-      pids[info['ppid']]['children'].append(pid)
+    pids = {}
+    for line in stdout.decode().split("\n")[1:]:
+        if not line:
+            continue
+        parts = line.split()
+        pid = int(parts[0])
+        ppid = int(parts[1])
+        # Don't include the current process, or direct children
+        if current_pid in (pid, ppid):
+            continue
+        command = " ".join(parts[2:])
+        pids[pid] = {"ppid": ppid, "command": command}
 
-def get_tmux_session_names():
-  """ Return the names of all tmux sessions """
-  process = subprocess.Popen(
-      ['tmux', 'list-sessions', '-F', '#{session_name}'],
-      stdout=subprocess.PIPE,
-      stderr=subprocess.PIPE)
-  stdout, stderr = process.communicate()
+    return pids
 
-  return stdout.split()
 
-def get_tmux_session_info(session_name):
-  """ Return infomation about the panes in the given tmux session """
-  process = subprocess.Popen(
-      ['tmux', 'list-panes', '-s', '-t', session_name,
-       '-F', '#{pane_pid}|#{window_index}|#{window_name}|#{pane_current_path}'],
-      stdout=subprocess.PIPE,
-      stderr=subprocess.PIPE)
-  stdout, stderr = process.communicate()
+def fill_in_children(pids: ProcessDict) -> None:
+    """Determine the children of the given pids"""
+    for info in pids.values():
+        info["children"] = []
 
-  windows = {}
-  for line in stdout.split('\n'):
-    if not line: continue
-    parts = line.split('|')
-    window = int(parts[1])
-    if window not in windows:
-      windows[window] = {
-        'name': parts[2],
-        'panes': []
-      }
-    windows[window]['panes'].append({
-      'pid': int(parts[0]),
-      'path': parts[3],
-    })
+    for pid, info in pids.items():
+        if pid > 1 and info["ppid"] in pids:
+            pids[info["ppid"]]["children"].append(pid)
 
-  return windows
 
-def find_descendent_pids(all_pids, matching_pids):
-  descendent_pids = []
-  stack = list(matching_pids)
-  while stack:
-    pid = stack.pop()
-    for child in all_pids[pid]['children']:
-      descendent_pids.append(child)
-      stack.append(child)
-  return set(descendent_pids)
+def get_tmux_session_names() -> List[str]:
+    """Return the names of all tmux sessions"""
+    process = subprocess.Popen(
+        ["tmux", "list-sessions", "-F", "#{session_name}"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    stdout, stderr = process.communicate()
 
-def find_wanted_pids(all_pids, process_matcher):
-  # First find all directly matching pids
-  matching_pids = set()
-  for pid, pid_info in all_pids.items():
-    if process_matcher(pid, pid_info['command']):
-      matching_pids.add(pid)
+    return stdout.decode().split()
 
-  # Find all ancestors
-  ancestor_pids = set()
-  for pid in matching_pids:
-    while pid in all_pids:
-      pid = all_pids[pid]['ppid']
-      ancestor_pids.add(pid)
 
-  # Find all descendents
-  descendent_pids = find_descendent_pids(all_pids, matching_pids)
+def get_tmux_session_info(session_name: str) -> SessionInfo:
+    """Return information about the panes in the given tmux session"""
+    process = subprocess.Popen(
+        [
+            "tmux",
+            "list-panes",
+            "-s",
+            "-t",
+            session_name,
+            "-F",
+            "#{pane_pid}|#{window_index}|#{window_name}|#{pane_current_path}",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    stdout, stderr = process.communicate()
 
-  return matching_pids | ancestor_pids | descendent_pids
+    windows = {}
+    for line in stdout.decode().split("\n"):
+        if not line:
+            continue
+        parts = line.split("|")
+        window = int(parts[1])
+        if window not in windows:
+            windows[window] = {"name": parts[2], "panes": []}
+        windows[window]["panes"].append(
+            {
+                "pid": int(parts[0]),
+                "path": parts[3],
+            }
+        )
 
-def show_tree(pid, pids, prefix, max_depth):
-  output = []
-  if pid not in pids: return output
-  if max_depth == 0: return output
+    return windows
 
-  info = pids[pid]
-  output.append('%s-- %-5i %s' %(prefix, pid, info['command']))
-  prefix = prefix.replace('`', ' ')
-  last_child = info['children'][-1] if info['children'] else 0
-  for child in info['children']:
-    ext = ' `' if last_child == child else ' |'
-    output.extend(show_tree(child, pids, prefix + ext, max_depth - 1))
-  return output
 
-def pretty_path(path):
-  if path.startswith(os.environ['HOME']):
-    return path.replace(os.environ['HOME'], '~', 1)
-  return path
+def find_descendent_pids(all_pids: ProcessDict, matching_pids: Set[int]) -> Set[int]:
+    descendent_pids = []
+    stack = list(matching_pids)
+    while stack:
+        pid = stack.pop()
+        for child in all_pids[pid]["children"]:
+            descendent_pids.append(child)
+            stack.append(child)
+    return set(descendent_pids)
 
-def show_pane(pane_info, pids, dir_matcher, max_depth, show_dir):
-  output = []
 
-  path = pretty_path(pane_info['path'])
-  if not dir_matcher(pane_info['path']) and not dir_matcher(path): return output
+def find_wanted_pids(
+    all_pids: ProcessDict, process_matcher: ProcessMatcher
+) -> Set[int]:
+    # First find all directly matching pids
+    matching_pids = set()
+    for pid, pid_info in all_pids.items():
+        if process_matcher(pid, pid_info["command"]):
+            matching_pids.add(pid)
 
-  tree_output = show_tree(pane_info['pid'], pids, '    ', max_depth)
-  if tree_output:
-    if show_dir:
-      output.append('    [%s]' %(path))
-    output.extend(tree_output)
-  return output
+    # Find all ancestors
+    ancestor_pids = set()
+    for pid in matching_pids:
+        while pid in all_pids:
+            pid = all_pids[pid]["ppid"]
+            ancestor_pids.add(pid)
 
-def make_string_matcher(pattern):
-  if not pattern:
-    return lambda _: True
-  if pattern.lower() == pattern:
-    return lambda v: pattern in v.lower()
-  return lambda v: pattern in v
+    # Find all descendants
+    descendent_pids = find_descendent_pids(all_pids, matching_pids)
 
-def make_process_matcher(pid, command):
-  # Make the common case fast
-  if not pid and not command:
-    return None
+    return matching_pids | ancestor_pids | descendent_pids
 
-  pid_matcher = lambda _: True
-  if pid:
-    pid = int(pid)
-    pid_matcher = lambda p: pid == p
 
-  command_matcher = make_string_matcher(command)
+def show_tree(pid: int, pids: ProcessDict, prefix: str, max_depth: int) -> List[str]:
+    output = []
+    if pid not in pids:
+        return output
+    if max_depth == 0:
+        return output
 
-  return lambda p, c: pid_matcher(p) and command_matcher(c)
+    info = pids[pid]
+    output.append(f"{prefix}-- {pid:<5} {info['command']}")
+    prefix = prefix.replace("`", " ")
+    last_child = info["children"][-1] if info["children"] else 0
+    for child in info["children"]:
+        ext = " `" if last_child == child else " |"
+        output.extend(show_tree(child, pids, prefix + ext, max_depth - 1))
+    return output
 
-def main():
-  parser = optparse.OptionParser(description = 'List tmux sessions')
-  parser.add_option(
-      '--full', '-f',
-      action = 'store_true',
-      help = "Show full process tree")
-  parser.add_option(
-      '--session', '-s',
-      help = "Only show matching sessions")
-  parser.add_option(
-      '--dir', '-d',
-      help = "Only show panes with matching directories")
-  parser.add_option(
-      '--pid', '-p',
-      help = "Only show panes with matching pid (as any descendent)")
-  parser.add_option(
-      '--command', '-c',
-      help = "Only show panes with matching process names (as any descendent)")
-  options, args = parser.parse_args()
 
-  process_matcher = make_process_matcher(options.pid, options.command)
-  session_matcher = make_string_matcher(options.session)
-  dir_matcher = make_string_matcher(options.dir)
+def pretty_path(path: str) -> str:
+    if path.startswith(os.environ["HOME"]):
+        return path.replace(os.environ["HOME"], "~", 1)
+    return path
 
-  session_names = [s for s in get_tmux_session_names() if session_matcher(s)]
-  session_info = dict((s, get_tmux_session_info(s)) for s in session_names)
 
-  pids = get_ps_info()
-  fill_in_children(pids)
-  if process_matcher:
+def show_pane(
+    pane_info: PaneInfo,
+    pids: ProcessDict,
+    dir_matcher: StringMatcher,
+    max_depth: int,
+    show_dir: bool,
+) -> List[str]:
+    output = []
+
+    path = pretty_path(pane_info["path"])
+    if not dir_matcher(pane_info["path"]) and not dir_matcher(path):
+        return output
+
+    tree_output = show_tree(pane_info["pid"], pids, "    ", max_depth)
+    if tree_output:
+        if show_dir:
+            output.append(f"    [{path}]")
+        output.extend(tree_output)
+    return output
+
+
+def make_string_matcher(pattern: Optional[str]) -> StringMatcher:
+    if not pattern:
+        return lambda _: True
+    if pattern.lower() == pattern:
+        return lambda v: pattern in v.lower()
+    return lambda v: pattern in v
+
+
+def make_process_matcher(
+    pid: Optional[str], command: Optional[str]
+) -> Optional[ProcessMatcher]:
+    # Make the common case fast
+    if not pid and not command:
+        return None
+
+    pid_matcher = lambda _: True
+    if pid:
+        pid = int(pid)
+        pid_matcher = lambda p: pid == p
+
+    command_matcher = make_string_matcher(command)
+
+    return lambda p, c: pid_matcher(p) and command_matcher(c)
+
+
+def parse_arguments() -> argparse.Namespace:
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description="List tmux sessions")
+    parser.add_argument(
+        "--full", "-f", action="store_true", help="Show full process tree"
+    )
+    parser.add_argument("--session", "-s", help="Only show matching sessions")
+    parser.add_argument("--dir", "-d", help="Only show panes with matching directories")
+    parser.add_argument(
+        "--pid", "-p", help="Only show panes with matching pid (as any descendent)"
+    )
+    parser.add_argument(
+        "--command",
+        "-c",
+        help="Only show panes with matching process names (as any descendent)",
+    )
+    return parser.parse_args()
+
+
+def get_session_data(session_matcher: StringMatcher) -> Dict[str, SessionInfo]:
+    """Get tmux session data filtered by session matcher."""
+    session_names = [s for s in get_tmux_session_names() if session_matcher(s)]
+    return dict((s, get_tmux_session_info(s)) for s in session_names)
+
+
+def filter_processes_by_matcher(
+    pids: ProcessDict,
+    process_matcher: ProcessMatcher,
+    session_info: Dict[str, SessionInfo],
+) -> ProcessDict:
+    """Filter processes based on process matcher and session panes."""
     # Restrict pids to just those which are panes or descendants of panes
-    pane_pids = set(p['pid'] for s in session_info.values()
-                             for w in s.values()
-                             for p in w['panes'])
+    pane_pids = set(
+        p["pid"] for s in session_info.values() for w in s.values() for p in w["panes"]
+    )
     pane_descendents = pane_pids | find_descendent_pids(pids, pane_pids)
     pids = dict(p for p in pids.items() if p[0] in pane_descendents)
 
-    # Filter down to the pids that match the process matcher + ancestors +
-    # descendents.
+    # Filter down to the pids that match the process matcher + ancestors + descendants
     wanted_pids = find_wanted_pids(pids, process_matcher)
     pids = dict(p for p in pids.items() if p[0] in wanted_pids)
     for pid_info in pids.values():
-      filter((lambda p: p in wanted_pids), pid_info['children'])
+        pid_info["children"] = [p for p in pid_info["children"] if p in wanted_pids]
 
-  max_depth = -1 if options.full else 2
+    return pids
 
-  output = []
-  for name in session_names:
+
+def format_session_output(
+    session_info: SessionInfo,
+    pids: ProcessDict,
+    dir_matcher: StringMatcher,
+    max_depth: int,
+) -> List[str]:
+    """Format output for a single session."""
     session_output = []
-    windows = session_info[name]
+    windows = session_info
+
     for window_index, window_info in sorted(windows.items()):
-      window_output = []
-      paths = [p['path'] for p in window_info['panes']]
-      all_paths_same = len(set(paths)) == 1
-      for pane_info in window_info['panes']:
-        window_output.extend(
-            show_pane(
-                pane_info, pids, dir_matcher, max_depth, not all_paths_same))
-      if window_output:
-        session_output.append(
-            '  [%i %s] %s'
-            % (window_index, window_info['name'],
-               pretty_path(paths[0]) if all_paths_same else ''))
-        session_output.extend(window_output)
-    # Only output the session if we displayed any of its panes.
-    if session_output:
-      output.append('> %s' %(name))
-      output.extend(session_output)
+        window_output = []
+        paths = [p["path"] for p in window_info["panes"]]
+        all_paths_same = len(set(paths)) == 1
 
-  print '\n'.join(output)
+        for pane_info in window_info["panes"]:
+            window_output.extend(
+                show_pane(pane_info, pids, dir_matcher, max_depth, not all_paths_same)
+            )
 
-if __name__ == '__main__':
+        if window_output:
+            session_output.append(
+                f"  [{window_index} {window_info['name']}] {pretty_path(paths[0]) if all_paths_same else ''}"
+            )
+            session_output.extend(window_output)
+
+    return session_output
+
+
+def main() -> None:
+    """Main entry point for the tmux sessions script."""
+    # Parse command line arguments
+    args = parse_arguments()
+
+    # Set up matcher functions
+    process_matcher = make_process_matcher(args.pid, args.command)
+    session_matcher = make_string_matcher(args.session)
+    dir_matcher = make_string_matcher(args.dir)
+
+    # Get session data
+    session_info = get_session_data(session_matcher)
+
+    # Get and filter process information
+    pids = get_ps_info()
+    fill_in_children(pids)
+
+    if process_matcher:
+        pids = filter_processes_by_matcher(pids, process_matcher, session_info)
+
+    # Determine tree depth
+    max_depth = UNLIMITED_DEPTH if args.full else DEFAULT_MAX_DEPTH
+
+    # Generate output for all sessions
+    output = []
+    for session_name, session_data in session_info.items():
+        session_output = format_session_output(
+            session_data, pids, dir_matcher, max_depth
+        )
+
+        # Only output the session if we displayed any of its panes
+        if session_output:
+            output.append(f"> {session_name}")
+            output.extend(session_output)
+
+    print("\n".join(output))
+
+
+if __name__ == "__main__":
     main()
