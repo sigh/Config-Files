@@ -137,7 +137,9 @@ setopt no_case_glob
 setopt no_nomatch
 # More globbing stuff.
 setopt extended_glob
-setopt globstarshort
+setopt glob_star_short
+setopt glob_dots
+setopt numeric_glob_sort
 # Allow for correction of inaccurate commands
 setopt correct
 # Don't offer values starting with _ as corrections.
@@ -232,6 +234,7 @@ setopt hist_lex_words
 setopt hist_reduce_blanks
 setopt hist_save_no_dups
 setopt inc_append_history
+setopt hist_fcntl_lock
 
 bindkey -e # use emacs mode by default
 
