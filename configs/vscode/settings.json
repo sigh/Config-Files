@@ -1,7 +1,6 @@
 {
     "workbench.colorTheme": "Visual Studio Light",
     "files.trimTrailingWhitespace": true,
-    "editor.minimap.enabled": false,
     "editor.rulers": [
         80
     ],
@@ -28,9 +27,16 @@
     "editor.inlineSuggest.enabled": true,
     "github.copilot.enable": {
         "*": true,
-        "yaml": false,
         "plaintext": true,
-        "markdown": false,
-        "scminput": false
+        "markdown": true,
+        "scminput": false,
+        "yaml": true
     },
+    "workbench.editor.closeEmptyGroups": false,
+    "diffEditor.renderSideBySide": false,
+    "editor.minimap.enabled": false,
+    "search.seedOnFocus": true,
+    "github.copilot.editor.enableAutoCompletions": true,
+    "gitlens.views.commitDetails.files.layout": "tree",
+    "workbench.editor.empty.hint": "hidden",
 }
