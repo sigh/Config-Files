@@ -1,15 +1,20 @@
 [user]
     name = sigh
     email = sigh.projects@gmail.com
+
 [core]
     editor = vim
     excludesfile = ~/.gitignore
-    pager = less -FXRiKa
+    pager = delta
+
 [merge]
     tool = splice
+    conflictstyle = zdiff3
+
 [mergetool "splice"]
     cmd = "vim -f $BASE $LOCAL $REMOTE $MERGED -c 'SpliceInit'"
     trustExitCode = true
+
 [alias]
     d = diff --relative
     h = help
@@ -70,20 +75,34 @@
 
     # Determine the path relative to the root of the repository
     path = "!python3 -c 'import os,sys; print(\"\\n\".join(os.path.relpath(os.path.join(sys.argv[1], p)) for p in sys.argv[2:]));' \"$GIT_PREFIX\""
+
 [color]
     ui = true
+
 [color.diff]
     meta = blue bold
     frag = magenta
     func = magenta ul
+
 [branch]
     autosetupmerge = true
+
 [diff]
     renames = copies
     mnemonicprefix = true
+
 [rerere]
     enabled = true
+
 [difftool "imagediff"]
     cmd = imagediff $LOCAL $REMOTE $MERGED
+
 [init]
     defaultBranch = main
+
+[delta]
+    side-by-side = true
+    navigate = true
+
+[rebase]
+    autoStash = true

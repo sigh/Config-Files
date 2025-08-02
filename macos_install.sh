@@ -16,6 +16,7 @@ brew install telnet
 brew install jq
 brew install node
 brew install fzf
+brew install git-delta
 
 brew install --cask macfuse
 
