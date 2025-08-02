@@ -33,5 +33,9 @@
   {
     "key": "cmd+down",
     "command": "workbench.action.navigateDown"
+  },
+  {
+    "key": "ctrl+cmd+s",
+    "command": "cSpell.goToNextSpellingIssue"
   }
 ]
