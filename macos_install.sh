@@ -65,6 +65,7 @@ cat <<EOF >> ~/.profile
 PATH="$HOME_DIR/bin:/usr/local/bin:\$PATH"
 PATH="/usr/local/opt/coreutils/libexec/gnubin:\$PATH"
 PATH="$HOME_DIR/Library/Python/3.7/bin:\$PATH"
+PATH="$HOME_DIR/Library/Python/3.9/bin:\$PATH"
 PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:\$PATH"
 EOF
 
