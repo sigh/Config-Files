@@ -17,6 +17,7 @@ brew install jq
 brew install node
 brew install fzf
 brew install git-delta
+brew install jj
 
 brew install --cask macfuse
 
