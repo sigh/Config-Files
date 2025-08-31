@@ -550,5 +550,8 @@ preexec() {
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
 
+# Set up zoxide
+eval "$(zoxide init zsh)"
+
 # Syntax highlighting
 source ~/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
