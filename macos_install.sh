@@ -18,6 +18,9 @@ brew install node
 brew install fzf
 brew install git-delta
 brew install jj
+brew install fd
+brew install zoxide
+brew install ripgrep
 
 brew install --cask macfuse
 
