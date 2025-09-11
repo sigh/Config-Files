@@ -5,7 +5,6 @@
 [core]
     editor = vim
     excludesfile = ~/.gitignore
-    pager = delta
 
 [merge]
     tool = splice
