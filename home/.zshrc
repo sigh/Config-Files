@@ -517,10 +517,10 @@ fi
 chmod 600 "$FULLHISTFILE"
 
 # Initialize Starship prompt
-eval "$(starship init zsh)"
+command -v starship &>/dev/null && eval "$(starship init zsh)"
 
 # For debugging bash scripts
-export PS4="\[$(tput setaf 5)\]+\[$(tput sgr0)\] "
+export PS4="\[\033[35m\]+\[\033[0m\] "
 
 # Show this at the end of commands which don't output a newline at the end.
 PROMPT_EOL_MARK='%B%S %s%b'
@@ -548,7 +548,7 @@ preexec() {
 }
 
 # Set up fzf key bindings and fuzzy completion
-source <(fzf --zsh)
+command -v fzf &>/dev/null && source <(fzf --zsh)
 
 # Set up zoxide
 eval "$(zoxide init zsh)"

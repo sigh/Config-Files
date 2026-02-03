@@ -84,10 +84,10 @@ export auto_resume=prefix
 export FIGNORE='.swp:.svn:.0:~';
 
 # Initialize Starship prompt
-eval "$(starship init bash)"
+command -v starship &>/dev/null && eval "$(starship init bash)"
 
 # Keep PS4 for debugging bash scripts (Starship doesn't handle this)
-export PS4="\[$(tput setaf 5)\]+$(tput sgr0) "
+export PS4="\[\033[35m\]+\[\033[0m\] "
 
 # customise history
 
@@ -227,7 +227,7 @@ if [[ -n $TMUX ]] ; then
 fi
 
 # Set up fzf key bindings and fuzzy completion
-eval "$(fzf --bash)"
+command -v fzf &>/dev/null && eval "$(fzf --bash)"
 
 # reload the bashrc for the current shell
 reload() {
