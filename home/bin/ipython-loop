@@ -1,0 +1,15 @@
+#!/bin/bash
+# IPython REPL in a loop, falls back to standard Python if unavailable
+
+while :; do
+    clear
+    if command -v ipython &>/dev/null; then
+        ipython
+    elif python3 -c "import IPython" 2>/dev/null; then
+        python3 -m IPython
+    else
+        python3
+    fi
+    echo "python stopped - press ctrl-c to exit or any other key to restart"
+    read
+done
