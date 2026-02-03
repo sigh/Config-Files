@@ -21,6 +21,7 @@ brew install jj
 brew install fd
 brew install zoxide
 brew install ripgrep
+brew install pipx
 
 brew install --cask macfuse
 
@@ -28,6 +29,8 @@ pip3 install --upgrade pip
 pip3 install --user ipython
 pip3 install --user numpy
 pip3 install --user autopep8
+
+pipx install ipython
 
 # Make dock appear instantly.
 defaults write com.apple.Dock autohide -bool TRUE
@@ -66,10 +69,10 @@ cp -r fonts/* ~/Library/Fonts/
 
 HOME_DIR=~
 cat <<EOF >> ~/.profile
-PATH="$HOME_DIR/bin:/usr/local/bin:\$PATH"
+PATH="/usr/local/bin:\$PATH"
+PATH="$HOME_DIR/bin:\$PATH"
+PATH="$HOME_DIR/.local/bin:\$PATH"
 PATH="/usr/local/opt/coreutils/libexec/gnubin:\$PATH"
-PATH="$HOME_DIR/Library/Python/3.7/bin:\$PATH"
-PATH="$HOME_DIR/Library/Python/3.9/bin:\$PATH"
 PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:\$PATH"
 EOF
 
