@@ -22,6 +22,7 @@ brew install fd
 brew install zoxide
 brew install ripgrep
 brew install pipx
+brew install starship
 
 brew install --cask macfuse
 
@@ -76,4 +77,4 @@ PATH="/usr/local/opt/coreutils/libexec/gnubin:\$PATH"
 PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:\$PATH"
 EOF
 
-sudo chsh /bin/zsh "$USER"
+sudo chsh "$(which zsh)" "$USER"
