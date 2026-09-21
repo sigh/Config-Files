@@ -31,11 +31,16 @@ brew install -y ripgrep
 brew install -y pipx
 brew install -y starship
 
+brew install -y chruby ruby-install
+ruby-install ruby 3.4.1
+
 brew install -y --cask macfuse
 
 brew install -y ipython
 brew install -y numpy
 brew install -y autopep8
+
+xcode-select --install
 
 # Make dock appear instantly.
 defaults write com.apple.Dock autohide -bool TRUE
