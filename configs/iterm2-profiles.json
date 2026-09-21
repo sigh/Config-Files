@@ -201,6 +201,14 @@
       "Text" : "[1;3C",
       "Escaping" : 2
     },
+    "0x7f-0x100000" : {
+      "Text" : "0x15",
+      "Action" : 11
+    },
+    "f728-0x0" : {
+      "Text" : "0x4",
+      "Action" : 11
+    },
     "0xf703-0x240000-0x7c" : {
       "Version" : 2,
       "Apply Mode" : 0,
@@ -208,16 +216,8 @@
       "Text" : "[1;5C",
       "Escaping" : 2
     },
-    "f728-0x0" : {
-      "Text" : "0x4",
-      "Action" : 11
-    },
     "f702-0x300000" : {
       "Text" : "0x1",
-      "Action" : 11
-    },
-    "0x7f-0x100000" : {
-      "Text" : "0x15",
       "Action" : 11
     }
   },
@@ -281,17 +281,17 @@
     "Alpha Component" : 1,
     "Green Component" : 0.98600882291793823
   },
-  "Idle Code" : 0,
-  "Ansi 10 Color" : {
-    "Green Component" : "0.8862745",
-    "Blue Component" : "0.2039216",
-    "Red Component" : "0.5411764999999999"
-  },
   "Ansi 8 Color" : {
     "Green Component" : "0.3411765",
     "Blue Component" : "0.3254902",
     "Red Component" : "0.3333333"
   },
+  "Ansi 10 Color" : {
+    "Green Component" : "0.8862745",
+    "Blue Component" : "0.2039216",
+    "Red Component" : "0.5411764999999999"
+  },
+  "Idle Code" : 0,
   "Badge Color" : {
     "Red Component" : 0.92929404973983765,
     "Color Space" : "P3",
@@ -302,8 +302,8 @@
   "Automatically Log" : false,
   "Smart Cursor Color" : true,
   "Semantic History" : {
-    "action" : "best editor",
     "text" : "",
+    "action" : "best editor",
     "editor" : "com.sublimetext.2"
   },
   "Ambiguous Double Width" : false,
@@ -327,8 +327,8 @@
   "Terminal Type" : "xterm-256color",
   "Horizontal Spacing" : 1,
   "Option Key Sends" : 2,
-  "Minimum Contrast" : 0,
   "Blink Allowed" : false,
+  "Minimum Contrast" : 0,
   "Ansi 15 Color" : {
     "Green Component" : "0.9333333",
     "Blue Component" : "0.9254902",
@@ -356,13 +356,13 @@
   "Columns" : 120,
   "Visual Bell" : true,
   "Use Selected Text Color" : true,
-  "ASCII Ligatures" : false,
   "Custom Directory" : "No",
   "Ansi 5 Color" : {
     "Green Component" : "0.3137255",
     "Blue Component" : "0.4823529",
     "Red Component" : "0.4588235"
-  }
+  },
+  "ASCII Ligatures" : false
 },
 {
   "Triggers" : [
@@ -460,11 +460,11 @@
       "Text" : "0x1b 0x7f",
       "Escaping" : 1
     },
-    "0xf703-0x240000-0x7c" : {
+    "0xf703-0x280000-0x7c" : {
       "Version" : 2,
       "Apply Mode" : 0,
       "Action" : 10,
-      "Text" : "[1;5C",
+      "Text" : "[1;3C",
       "Escaping" : 2
     },
     "0xf702-0x280000-0x7b" : {
@@ -488,12 +488,12 @@
       "Text" : "0x1",
       "Escaping" : 1
     },
-    "0xf703-0x280000-0x7c" : {
+    "0xf728-0x80000" : {
       "Version" : 2,
       "Apply Mode" : 0,
       "Action" : 10,
-      "Text" : "[1;3C",
-      "Escaping" : 2
+      "Text" : "d",
+      "Escaping" : 1
     },
     "0x7f-0x100000" : {
       "Version" : 2,
@@ -516,12 +516,12 @@
       "Text" : "0x4",
       "Escaping" : 1
     },
-    "0xf728-0x80000" : {
+    "0xf703-0x240000-0x7c" : {
       "Version" : 2,
       "Apply Mode" : 0,
       "Action" : 10,
-      "Text" : "d",
-      "Escaping" : 1
+      "Text" : "[1;5C",
+      "Escaping" : 2
     }
   },
   "AWDS Pane Option" : "No",
@@ -561,7 +561,7 @@
   "Smart Cursor Color" : true,
   "BM Growl" : true,
   "Prompt Before Closing 2" : 0,
-  "Command" : "~\/bin\/session_wrapper --child --binary=\/usr\/local\/bin\/tmux _",
+  "Command" : "~\/bin\/session_wrapper --child --binary=\/opt\/homebrew\/bin\/tmux _",
   "AWDS Tab Option" : "No",
   "Selected Text Color" : {
     "Red Component" : 0.34509803921568627,
@@ -697,8 +697,8 @@
   },
   "Title Components" : 66,
   "Semantic History" : {
-    "action" : "best editor",
     "text" : "",
+    "action" : "best editor",
     "editor" : "com.sublimetext.2"
   },
   "Working Directory" : "",
