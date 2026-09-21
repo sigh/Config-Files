@@ -516,6 +516,13 @@ if [[ -z $_ALREADY_LOADED ]] ; then
 fi
 chmod 600 "$FULLHISTFILE"
 
+# ruby
+if [ -d /opt/homebrew/opt/chruby/ ] ; then
+  source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
+  source /opt/homebrew/opt/chruby/share/chruby/auto.sh
+  chruby ruby-3.4.1
+fi
+
 # Initialize Starship prompt
 command -v starship &>/dev/null && eval "$(starship init zsh)"
 
