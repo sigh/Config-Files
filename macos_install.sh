@@ -69,7 +69,8 @@ defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGe
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 2
 
 # Don't write DS_Store files to network shares.
-defaults write com.apple.desktopservices DSDontWriteNetworkStores true
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
+defaults write com.apple.desktopservices DSDontWriteUSBStores -bool TRUE
 
 ssh-add -K ~/.ssh/id_rsa
 
