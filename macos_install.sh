@@ -6,6 +6,7 @@ cd "$(dirname "$0")"
 
 # Reset path in case it is mangled
 export PATH="/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 # Homebrew and Ruby builds need the Command Line Tools.
 if ! xcode-select -p >/dev/null 2>&1; then
@@ -14,13 +15,14 @@ if ! xcode-select -p >/dev/null 2>&1; then
     exit 1
 fi
 
-if [ ! -x /opt/homebrew/bin/brew ]; then
+if ! command -v brew >/dev/null 2>&1; then
     brew_installer=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)
     /bin/bash -c "$brew_installer"
 fi
-eval "$(/opt/homebrew/bin/brew shellenv bash)"
+eval "$(brew shellenv bash)"
 
 brew install -y git
+brew install -y bash-completion
 brew install -y tmux
 brew install -y coreutils
 brew install -y git-filter-repo
@@ -123,9 +125,9 @@ cat <<EOF >> ~/.profile
 PATH="/usr/local/bin:\$PATH"
 PATH="$HOME_DIR/bin:\$PATH"
 PATH="$HOME_DIR/.local/bin:\$PATH"
-PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:\$PATH"
+PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin:\$PATH"
 PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:\$PATH"
-eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+eval "\$($HOMEBREW_PREFIX/bin/brew shellenv bash)"
 EOF
 
 if [ "${SHELL:-}" != "$(command -v zsh)" ]; then
