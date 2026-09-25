@@ -23,17 +23,15 @@ shopt -u cdable_vars
 
 # turn on smart tab completion
 shopt -s progcomp
-. "$HOME/.bash_completion"
-. "$HOME/.git-completion.bash"
+if [ -r "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh" ]; then
+    . "$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh"
+fi
 
 # don't bother trying to complete all commands on empty prompt
 shopt -s no_empty_cmd_completion
 
 # allow us to cd to variables (turn on AFTER bash_completion)
 shopt -s cdable_vars
-
-# allow for correction of inaccurate cd commands
-shopt -s cdspell
 
 # customise cd
 
@@ -129,8 +127,7 @@ lth() { lla -t "$@" | head ; }
 lsd() { ls     "$@" | grep '/$' ; }
 
 # display full paths
-realpath() { readlink --verbose -e "${1:-.}" ; }
-rp() { realpath "$@" ; }
+alias rp=realpath
 
 # make disk usage display nicer
 du()  { command du -hc "$@" ; }
@@ -140,15 +137,11 @@ dus() { du -s  "$@" ; }
 shopt -s nocaseglob
 shopt -s extglob
 
-# colorize search results for grep
-zgr() { zgrep -e  --color=always "$@" ; }
-zgi() { zgrep -ei --color=always "$@" ; }
-gr()  { egrep     --color=always "$@" ; }
-gi()  { egrep -i  --color=always "$@" ; }
-
 # make git easier to type :)
 g() { git "$@"; }
-complete -o default -o nospace -F _git g
+if declare -F __git_complete >/dev/null; then
+    __git_complete g git
+fi
 
 # make less display colors
 less() { command less -R "$@" ; }

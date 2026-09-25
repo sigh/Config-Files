@@ -79,8 +79,8 @@ zstyle ':completion:*' insert-tab pending
 zstyle ':completion:*:*:extract:*' file-patterns \
     '*.(tar|bz2|rar|gz|tbz2|tgz|zip|Z|7z):zip\ files *(-/):directories'
 
-# tab completion # -u avoid unnecessary security check.
-autoload -Uz compinit && compinit -u
+# tab completion
+autoload -Uz compinit && compinit -i
 
 _git-restore() {
     compadd - $( git tag -l )
@@ -215,8 +215,8 @@ alias -g V='| vimless'
 alias -g NO="&> /dev/null"
 alias -g NE="2> /dev/null"
 alias -g NS="> /dev/null"
-alias -g G='| egrep --color=always'
-alias -g GI='| egrep -i --color=always'
+alias -g G='| grep -E --color=always'
+alias -g GI='| grep -Ei --color=always'
 alias -g H='| head'
 
 # history
@@ -451,22 +451,8 @@ alias du="du -hc --max-depth=1"
 alias dus="command du -hs"
 
 # display full paths
-realpath() {
-    if (( $# == 0 )) ; then
-        readlink --verbose -e .
-        return
-    fi
-    for p in "$@" ; do
-        readlink --verbose -e "$p"
-    done
-}
 alias rp=realpath
 
-# colorize search results for grep
-alias zgr="zgrep -e --color=always"
-alias zgi="zgrep -ei --color=always"
-alias gr="egrep --color=always"
-alias gi="egrep -i --color=always"
 
 # ack
 export ACK_COLOR_LINENO="yellow"
@@ -517,9 +503,9 @@ fi
 chmod 600 "$FULLHISTFILE"
 
 # ruby
-if [ -d /opt/homebrew/opt/chruby/ ] ; then
-  source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
-  source /opt/homebrew/opt/chruby/share/chruby/auto.sh
+if [ -d "$HOMEBREW_PREFIX/opt/chruby" ] ; then
+  source "$HOMEBREW_PREFIX/opt/chruby/share/chruby/chruby.sh"
+  source "$HOMEBREW_PREFIX/opt/chruby/share/chruby/auto.sh"
   chruby ruby-3.4.1
 fi
 
