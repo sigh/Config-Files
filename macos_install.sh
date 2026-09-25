@@ -46,8 +46,8 @@ brew install -y pipx
 brew install -y starship
 
 brew install -y chruby ruby-install
-if [ ! -x "$HOME/.rubies/ruby-3.4.1/bin/ruby" ]; then
-    ruby-install ruby 3.4.1
+if [ ! -x "$HOME/.rubies/ruby-3.4.11/bin/ruby" ]; then
+    ruby-install ruby 3.4.11
 fi
 
 brew install -y --cask macfuse
