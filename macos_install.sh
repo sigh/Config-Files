@@ -56,17 +56,43 @@ defaults write com.apple.Dock orientation right
 defaults write com.apple.Dock largesize -float 56
 defaults write com.apple.Dock magnification -float 1
 defaults write com.apple.Dock mineffect scale
+# Hot corners: top left Mission Control, top right Lock Screen,
+# bottom left Application Windows, bottom right Desktop.
+defaults write com.apple.Dock wvous-tl-corner -int 2
+defaults write com.apple.Dock wvous-tl-modifier -int 0
+defaults write com.apple.Dock wvous-tr-corner -int 13
+defaults write com.apple.Dock wvous-tr-modifier -int 0
+defaults write com.apple.Dock wvous-bl-corner -int 3
+defaults write com.apple.Dock wvous-bl-modifier -int 0
+defaults write com.apple.Dock wvous-br-corner -int 4
+defaults write com.apple.Dock wvous-br-modifier -int 0
 # Restart dock to apply changes.
 killall Dock
 
-# Show hidden files in Finder
+# Show hidden files, the path bar, and the status bar in Finder.
 defaults write com.apple.Finder AppleShowAllFiles -bool TRUE
+defaults write com.apple.Finder ShowPathbar -bool TRUE
+defaults write com.apple.Finder ShowStatusBar -bool TRUE
+# Open new Finder windows to the home folder.
+defaults write com.apple.Finder NewWindowTarget -string PfHm
+# Show all filename extensions and disable double-space periods.
+defaults write -g AppleShowAllExtensions -bool TRUE
+defaults write -g NSAutomaticPeriodSubstitutionEnabled -bool FALSE
 killall Finder
 
 # Turn off 2-finger swipe/scroll as it's really annoying.
 defaults write "Apple Global Domain" AppleEnableSwipeNavigateWithScrolls -bool false
 defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -int 2
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 2
+# Enable tap to click on built-in trackpad.
+defaults write com.apple.AppleMultitouchTrackpad Clicking -bool TRUE
+
+# Show the day of the week in the menu bar clock.
+defaults write com.apple.menuextra.clock ShowDayOfWeek -bool TRUE
+killall SystemUIServer
+
+# Keep the Mac awake on AC power and sleep the display after 60 minutes.
+sudo pmset -c sleep 0 displaysleep 60
 
 # Don't write DS_Store files to network shares.
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
