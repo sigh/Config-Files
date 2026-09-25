@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# send CONT to all shells so that they all reload their bashrc files.
+# send CONT to login shells to trigger their configured reload behavior.
 # Assumes the following (or equivalent) is defined in the shell:
 #   trap ". ~/.bashrc" CONT
 # SIGCONT is used because it does not terminate the shell by default.

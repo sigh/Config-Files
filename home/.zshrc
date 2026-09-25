@@ -506,7 +506,7 @@ chmod 600 "$FULLHISTFILE"
 if [ -d "$HOMEBREW_PREFIX/opt/chruby" ] ; then
   source "$HOMEBREW_PREFIX/opt/chruby/share/chruby/chruby.sh"
   source "$HOMEBREW_PREFIX/opt/chruby/share/chruby/auto.sh"
-  chruby ruby-3.4.1
+  chruby ruby-3.4.11
 fi
 
 # Initialize Starship prompt
