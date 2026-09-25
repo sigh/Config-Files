@@ -1,13 +1,25 @@
 #!/bin/sh
 # These are commands to help setup a new install on macos.
+set -eu
+
+cd "$(dirname "$0")"
 
 # Reset path in case it is mangled
 export PATH="/usr/bin:/bin:/usr/sbin:/sbin"
 
-# Uninstall homebrew to start from a clean slate
-# curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh
+# Homebrew and Ruby builds need the Command Line Tools.
+if ! xcode-select -p >/dev/null 2>&1; then
+    xcode-select --install
+    printf '%s\n' 'Finish installing the Command Line Tools, then rerun this script.' >&2
+    exit 1
+fi
 
-curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh
+if [ ! -x /opt/homebrew/bin/brew ]; then
+    brew_installer=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)
+    /bin/bash -c "$brew_installer"
+fi
+eval "$(/opt/homebrew/bin/brew shellenv bash)"
+
 brew install -y git
 brew install -y tmux
 brew install -y coreutils
@@ -32,15 +44,15 @@ brew install -y pipx
 brew install -y starship
 
 brew install -y chruby ruby-install
-ruby-install ruby 3.4.1
+if [ ! -x "$HOME/.rubies/ruby-3.4.1/bin/ruby" ]; then
+    ruby-install ruby 3.4.1
+fi
 
 brew install -y --cask macfuse
 
 brew install -y ipython
 brew install -y numpy
 brew install -y autopep8
-
-xcode-select --install
 
 # Make dock appear instantly.
 defaults write com.apple.Dock autohide -bool TRUE
@@ -98,11 +110,13 @@ sudo pmset -c sleep 0 displaysleep 60
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool TRUE
 
-ssh-add -K ~/.ssh/id_rsa
+if [ -f "$HOME/.ssh/id_rsa" ]; then
+    ssh-add -K "$HOME/.ssh/id_rsa" || printf '%s\n' 'Could not add the SSH key to the agent.' >&2
+fi
 
 # Copy fonts to the user fonts directory.
-mkdir -p ~/Library/Fonts
-cp -r fonts/* ~/Library/Fonts/
+mkdir -p "$HOME/Library/Fonts"
+find fonts -type f \( -name '*.ttf' -o -name '*.otf' \) -exec cp -f {} "$HOME/Library/Fonts/" \;
 
 HOME_DIR=~
 cat <<EOF >> ~/.profile
@@ -114,4 +128,6 @@ PATH="/Applications/Sublime Text.app/Contents/SharedSupport/bin:\$PATH"
 eval "$(/opt/homebrew/bin/brew shellenv zsh)"
 EOF
 
-sudo chsh "$(which zsh)" "$USER"
+if [ "${SHELL:-}" != "$(command -v zsh)" ]; then
+    sudo chsh -s "$(command -v zsh)" "$(id -un)"
+fi
