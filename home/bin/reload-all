@@ -4,12 +4,10 @@
 # Assumes the following (or equivalent) is defined in the shell:
 #   trap ". ~/.bashrc" CONT
 # SIGCONT is used because it does not terminate the shell by default.
-#
-# Adapted from https://github.com/thrig/sial.org-scripts/blob/master/allsh/allsh
 
 echo -n 'Reloading '
 ps xwwo pid,command | while read pid command; do
-    if egrep -- "^-(bash|zsh)$" <<<"$command" >/dev/null; then
+    if [[ $command =~ ^-(bash|zsh)$ ]]; then
         echo -n $pid ''
         kill -CONT $pid
     fi

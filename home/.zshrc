@@ -480,8 +480,8 @@ fi
 
 # reload zshrc for the current shell
 reload() { . ~/.zshrc }
-# use SIGCONT because it is does not terminate the shell by default
-trap 'touch "$HOME/.zshrc"' CONT
+# Reload at the next prompt, after the current command has finished.
+trap '_RELOAD_PENDING=1' CONT
 
 # full history file is used to create a verbose detailed record of my commands.
 if [[ -z $FULLHISTFILE ]] ; then
@@ -531,6 +531,10 @@ precmd() {
         _PS1_NEW_CMD=2
     else
         _PS1_NEW_CMD=0
+    fi
+    if [[ $_RELOAD_PENDING == 1 ]] ; then
+        _RELOAD_PENDING=0
+        reload
     fi
 }
 preexec() {
