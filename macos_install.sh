@@ -28,7 +28,6 @@ brew install -y coreutils
 brew install -y git-filter-repo
 brew install -y watch
 brew install -y imagemagick
-brew install -y jekyll
 brew install -y sqlite
 brew install -y nasm
 brew install -y gdb
@@ -45,12 +44,18 @@ brew install -y ripgrep
 brew install -y pipx
 brew install -y starship
 
+brew install -y maccy
+brew install -y vlc
+brew install -y gimp
+
 brew install -y chruby ruby-install
 if [ ! -x "$HOME/.rubies/ruby-3.4.11/bin/ruby" ]; then
     ruby-install ruby 3.4.11
 fi
+gem install jekyll
 
 brew install -y --cask macfuse
+brew install -y --cask stats
 
 brew install -y ipython
 brew install -y numpy
